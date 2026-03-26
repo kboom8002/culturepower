@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { login } from "./actions"
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const resolvedParams = await searchParams
   return (
     <div className="min-h-screen bg-surface-muted flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -13,7 +14,7 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-2xl sm:px-10 border border-line-default">
-          {searchParams?.error && (
+          {resolvedParams?.error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-200">
               이메일 또는 비밀번호가 올바르지 않습니다.
             </div>

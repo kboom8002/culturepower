@@ -1,45 +1,22 @@
-import { Search, Filter, CheckCircle, XCircle, AlertCircle, Clock } from "lucide-react"
+import { Search, Filter, AlertCircle, Clock, CheckCircle } from "lucide-react"
 import Link from "next/link"
 
-const MOCK_NEEDS_REVIEW = [
-  { id: "REV-201", objectId: "S-110", type: "Story", title: "K-콘텐츠 파이프라인의 핵심, 웹툰 제작의 모든 것", author: "최디렉터", reviewer: "김편집 편집장", submittedAt: "2026-03-24", priority: "High" },
-  { id: "REV-202", objectId: "ANS-105", type: "AnswerCard", title: "K-팝 성공 요인의 학술적 분석은?", author: "박리서처", reviewer: "미지정", submittedAt: "2026-03-25", priority: "Normal" },
-  { id: "REV-203", objectId: "EVT-042", type: "Event", title: "2026 상반기 문화정책 포럼 요약본 검수", author: "이운영", reviewer: "김편집 편집장", submittedAt: "2 hours ago", priority: "High" },
+const MOCK_MY_REVIEWS = [
+  { id: "REV-201", objectId: "S-110", type: "Story", title: "K-콘텐츠 파이프라인의 핵심, 웹툰 제작의 모든 것", author: "최디렉터", submittedAt: "2026-03-24", priority: "High" },
+  { id: "REV-203", objectId: "EVT-042", type: "Event", title: "2026 상반기 문화정책 포럼 요약본 검수", author: "이운영", submittedAt: "2 hours ago", priority: "High" },
 ]
 
-export default function NeedsReviewPage() {
+export default function MyReviewsPage() {
   return (
     <div className="flex flex-col gap-6 w-full pb-24">
       <div className="flex flex-col gap-2">
-        <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Needs Review</h1>
+        <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">My Reviews</h1>
         <p className="text-body text-neutral-600">
-          에디터가 초안 작성을 마치고 검수 대기 중인 항목들입니다. 보편적 진실(SSoT)의 기준에 부합하는지 평가해 주세요.
+          나에게 할당된 리뷰 요청 항목입니다. 가능한 한 빨리 승인 또는 반려 결정을 내려주세요.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-4 gap-4 mb-2">
-        <div className="bg-white p-5 rounded-xl border border-line-default shadow-sm">
-          <div className="text-sm font-bold text-neutral-500 mb-1">Pending Reviews</div>
-          <div className="text-[28px] font-extrabold text-trust-text">{MOCK_NEEDS_REVIEW.length}</div>
-        </div>
-        <div className="bg-white p-5 rounded-xl border border-line-default shadow-sm">
-          <div className="text-sm font-bold text-neutral-500 mb-1">High Priority</div>
-          <div className="text-[28px] font-extrabold text-danger-600">2</div>
-        </div>
-        <div className="bg-white p-5 rounded-xl border border-line-default shadow-sm">
-          <div className="text-sm font-bold text-neutral-500 mb-1">Avg. Turnaround</div>
-          <div className="text-[28px] font-extrabold text-neutral-900">4.2h</div>
-        </div>
-        <div className="bg-brand-900 p-5 rounded-xl border border-brand-800 shadow-sm text-white flex flex-col justify-center">
-          <div className="flex items-center gap-2 font-bold mb-1">
-            <CheckCircle className="w-5 h-5 text-brand-300" />
-            My Reviews
-          </div>
-          <div className="text-sm text-brand-200">You have 2 items awaiting your approval.</div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col mt-4">
         {/* Toolbar */}
         <div className="p-4 border-b border-line-soft flex md:flex-row flex-col gap-4 items-center justify-between bg-neutral-50/50">
           <div className="relative w-full md:w-80">
@@ -55,10 +32,6 @@ export default function NeedsReviewPage() {
               <Filter className="w-4 h-4" />
               Content Type
             </button>
-            <button className="flex items-center gap-2 px-3 py-2 border border-line-strong rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 transition-colors">
-              <Filter className="w-4 h-4" />
-              Reviewer
-            </button>
           </div>
         </div>
 
@@ -72,13 +45,12 @@ export default function NeedsReviewPage() {
                 <th className="px-6 py-4 min-w-[280px]">Title</th>
                 <th className="px-6 py-4">Priority</th>
                 <th className="px-6 py-4">Submitted By</th>
-                <th className="px-6 py-4">Reviewer</th>
                 <th className="px-6 py-4">Wait Time</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft text-neutral-900">
-              {MOCK_NEEDS_REVIEW.map((item) => (
+              {MOCK_MY_REVIEWS.map((item) => (
                 <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
                   <td className="px-6 py-4 font-mono font-bold text-neutral-500 group-hover:text-brand-600 transition-colors">
                     {item.id}
@@ -100,13 +72,6 @@ export default function NeedsReviewPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-neutral-600">{item.author}</td>
-                  <td className="px-6 py-4">
-                    {item.reviewer === "미지정" ? (
-                      <span className="text-warning-600 font-medium text-xs bg-warning-50 px-2 py-1 rounded">Unassigned</span>
-                    ) : (
-                      <span className="text-neutral-700">{item.reviewer}</span>
-                    )}
-                  </td>
                   <td className="px-6 py-4 text-neutral-500">
                     <div className="flex items-center gap-1.5 font-medium">
                       <Clock className="w-3.5 h-3.5" />
@@ -122,11 +87,11 @@ export default function NeedsReviewPage() {
                   </td>
                 </tr>
               ))}
-              {MOCK_NEEDS_REVIEW.length === 0 && (
+              {MOCK_MY_REVIEWS.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-neutral-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-neutral-500">
                     <CheckCircle className="w-8 h-8 mx-auto mb-3 text-neutral-300" />
-                    현재 대기 중인 검수 요청이 없습니다.
+                    현재 할당된 검수 요청이 없습니다.
                   </td>
                 </tr>
               )}
