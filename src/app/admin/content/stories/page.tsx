@@ -1,3 +1,5 @@
+"use client"
+
 import { Chip } from "@/components/ui/chip"
 import { Button } from "@/components/ui/button"
 import { Search, Plus, Filter, FileText, CheckCircle2, Clock } from "lucide-react"
