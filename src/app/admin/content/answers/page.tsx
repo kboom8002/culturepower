@@ -1,5 +1,6 @@
 import { Search, Plus, Filter, MoreVertical, FileText, CheckCircle, Clock } from "lucide-react"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 // MOCK DATA
 const MOCK_ANSWERS = [
@@ -88,9 +89,12 @@ export default function AdminAnswersPage() {
                     <td className="px-6 py-4 text-neutral-600">{ans.author}</td>
                     <td className="px-6 py-4 text-neutral-500 font-mono text-xs">{ans.date}</td>
                     <td className="px-6 py-4 text-right">
-                      <button className="p-1.5 text-neutral-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
-                        <MoreVertical className="w-5 h-5" />
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                         <Link href={`/admin/content/answers/${ans.id}`}>
+                           <Button variant="secondary" size="sm" className="px-3">Edit</Button>
+                         </Link>
+                         <Button variant="tertiary" size="sm" className="px-3 text-danger-600 hover:text-danger-700 hover:bg-danger-50" onClick={() => alert(`${ans.id} 정답카드를 삭제했습니다. (Demo)`)}>Delete</Button>
+                      </div>
                     </td>
                   </tr>
                 )

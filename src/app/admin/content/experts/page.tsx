@@ -56,11 +56,12 @@ export default function AdminExpertsIndexPage() {
                 <th className="px-6 py-4">State</th>
                 <th className="px-6 py-4">SsoT Linked</th>
                 <th className="px-6 py-4">Last Modified</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft text-neutral-900">
               {MOCK_EXPERTS.map((item) => (
-                <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors cursor-pointer group">
+                <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
                   <td className="px-6 py-4 font-mono font-bold text-neutral-500 group-hover:text-brand-600 transition-colors">{item.id}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -95,6 +96,14 @@ export default function AdminExpertsIndexPage() {
                   <td className="px-6 py-4 text-neutral-500 flex items-center gap-1.5 font-medium min-h-[72px]">
                      {item.status === 'Public' ? <CheckCircle2 className="w-3.5 h-3.5 text-success-500" /> : <Clock className="w-3.5 h-3.5" />}
                     {item.date}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                       <Link href={`/admin/content/experts/${item.id}`}>
+                         <Button variant="secondary" size="sm" className="px-3">Edit</Button>
+                       </Link>
+                       <Button variant="tertiary" size="sm" className="px-3 text-danger-600 hover:text-danger-700 hover:bg-danger-50" onClick={() => alert(`${item.name} 전문가를 삭제했습니다. (Demo)`)}>Delete</Button>
+                    </div>
                   </td>
                 </tr>
               ))}
