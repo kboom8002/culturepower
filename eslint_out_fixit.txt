@@ -1,0 +1,19 @@
+[0m[0m
+[0m[4mC:\Users\User\culturepower\src\app\admin\fixit\p0\page.tsx[24m[0m
+[0m  [2m1:25[22m  [33mwarning[39m  'CheckCircle2' is defined but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\User\culturepower\src\app\admin\fixit\release\page.tsx[24m[0m
+[0m  [2m1:24[22m  [33mwarning[39m  'RotateCcw' is defined but never used           [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m2:27[22m  [33mwarning[39m  'resolveFixitTicket' is defined but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m3:10[22m  [33mwarning[39m  'Button' is defined but never used              [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m4:8[22m   [33mwarning[39m  'Link' is defined but never used                [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Users\User\culturepower\src\app\admin\fixit\rootcause\page.tsx[24m[0m
+[0m  [2m40:122[22m  [31merror[39m  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m  [2m40:136[22m  [31merror[39m  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  [2mreact/no-unescaped-entities[22m[0m
+[0m[0m
+[0m[4mC:\Users\User\culturepower\src\app\admin\observatory\conversion\page.tsx[24m[0m
+[0m  [2m1:26[22m  [33mwarning[39m  'Users' is defined but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[31m[1m✖ 8 problems (2 errors, 6 warnings)[22m[39m[0m
+[0m[31m[1m[22m[39m[0m
