@@ -15,7 +15,7 @@ export default function AdminStoriesIndexPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Stories (웹진 기사)</h1>
         <p className="text-body text-neutral-600">
-          문화강국네트워크의 '문강 RIO' 섹션에 발행되는 해설형 기사(Story) 객체들을 제작하고 관리합니다.
+          문화강국네트워크의 &apos;문강 RIO&apos; 섹션에 발행되는 해설형 기사(Story) 객체들을 제작하고 관리합니다.
         </p>
       </div>
 
@@ -64,10 +64,10 @@ export default function AdminStoriesIndexPage() {
                 <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
                   <td className="px-6 py-4 font-mono font-bold text-neutral-500 group-hover:text-brand-600 transition-colors">{item.id}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 font-bold text-neutral-900">
+                    <Link href={`/admin/content/stories/${item.id}`} className="flex items-center gap-2 font-bold text-neutral-900 hover:text-brand-600 transition-colors">
                       <FileText className="w-4 h-4 text-neutral-400" />
                       <span className="truncate max-w-sm">{item.title}</span>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-neutral-600 font-medium">
                     {item.category}

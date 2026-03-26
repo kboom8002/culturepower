@@ -5,6 +5,7 @@ import { WhyThisMattersBox } from "@/components/domain/story/WhyThisMattersBox"
 import { BasedOnAnswersList } from "@/components/domain/story/BasedOnAnswersList"
 import { StoryBodyRichText } from "@/components/domain/story/StoryBodyRichText"
 import { TrustStrip } from "@/components/domain/trust/TrustStrip"
+import { ShareButtons } from "@/components/ui/ShareButtons"
 
 // MOCK DATA
 const MOCK_STORY = {
@@ -76,9 +77,11 @@ export default function StoryDetailPage() {
         />
         
         {/* Title & Deck */}
-        <h1 className="text-h2 md:text-[44px] leading-[1.2] text-neutral-900 mb-6 text-balance tracking-tight font-bold">
+        <h1 className="text-h2 md:text-[44px] leading-[1.2] text-neutral-900 mb-2 text-balance tracking-tight font-bold">
           {data.title}
         </h1>
+        
+        <ShareButtons title={data.title} description={data.deck} />
         
         <DeckBlock deck={data.deck} />
 

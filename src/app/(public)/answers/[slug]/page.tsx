@@ -6,6 +6,7 @@ import { ActionPointsBlock } from "@/components/domain/answer/ActionPointsBlock"
 import { ContextBlock } from "@/components/domain/answer/ContextBlock"
 import { TrustStrip } from "@/components/domain/trust/TrustStrip"
 import { EvidenceList } from "@/components/domain/trust/EvidenceList"
+import { ShareButtons } from "@/components/ui/ShareButtons"
 
 // MOCK DATA
 const MOCK_ANSWER = {
@@ -80,10 +81,11 @@ export default function AnswerDetailPage() {
           isReviewed={data.isReviewed} 
         />
         
-        {/* Title */}
-        <h1 className="text-h2 md:text-h1 text-neutral-900 mb-10 text-balance tracking-tight">
+        <h1 className="text-h2 md:text-h1 text-neutral-900 mb-2 text-balance tracking-tight">
           {data.title}
         </h1>
+
+        <ShareButtons title={data.title} description={data.directAnswer} />
 
         {/* Answer First Block */}
         <QuestionBubble question={data.question} />
