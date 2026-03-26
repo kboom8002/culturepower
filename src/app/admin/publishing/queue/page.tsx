@@ -1,116 +1,84 @@
-import { Rocket, Clock, Activity, Rss, Globe, CheckCircle2 } from "lucide-react"
+import { Search, Rocket, Filter, FileText, HelpCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { getPublishQueue } from "@/lib/actions/publishing"
+import { Chip } from "@/components/ui/chip"
+import { PublishActionBtn } from "@/components/domain/publishing/PublishActionBtn"
 
-const MOCK_PUBLISH_QUEUE = [
-  { id: "A-1238", type: "AnswerCard", title: "로컬 크리에이터 창업 지원 사업의 본질적 목표", status: "Approved", autoPublish: "Will publish in 2 hrs" },
-  { id: "S-088", type: "Story", title: "DDP 심포지엄 참관기: 우리는 왜 지금 K-문명을 논하는가", status: "Scheduled", autoPublish: "2026-03-27 09:00" },
-]
+export default async function AdminPublishingQueuePage() {
+  const queue = await getPublishQueue()
 
-export default function PublishingQueuePage() {
   return (
     <div className="flex flex-col gap-8 w-full pb-24">
       <div className="flex flex-col gap-2">
-        <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Publishing Hub</h1>
-        <p className="text-body text-neutral-600">
-          검수가 승인된 객체들의 퍼블릭 배포 상태를 관리하고, 검색 엔진 및 외부 AI 피드 파이프라인의 건강도를 모니터링합니다.
-        </p>
+        <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Publish Queue</h1>
+        <p className="text-body text-neutral-600">발행 대기 중인(Review) 콘텐츠나 임시저장(Draft)된 콘텐츠를 모아보고 최종 발행합니다.</p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
+        <div className="p-4 border-b border-line-soft flex md:flex-row flex-col gap-4 items-center justify-between bg-neutral-50/50">
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative w-full md:w-80">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+              <input 
+                type="text" 
+                placeholder="제목, 작성자 검색..."
+                className="w-full pl-9 pr-4 py-2 border border-line-strong rounded-lg text-sm focus:outline-none focus:border-brand-500"
+              />
+            </div>
+            <button className="flex items-center gap-2 px-3 py-2 border border-line-strong rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50">
+              <Filter className="w-4 h-4" /> Type
+            </button>
+          </div>
+          <div className="font-bold text-neutral-700 p-2 text-sm text-right">
+             총 {queue.length}건 대기 중
+          </div>
+        </div>
         
-        {/* Left Col: Publishing Queue */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
-            <div className="p-5 border-b border-line-soft flex items-center justify-between">
-              <h2 className="text-[18px] font-bold text-neutral-900 flex items-center gap-2">
-                <Rocket className="w-5 h-5 text-brand-600" />
-                Publish Queue
-              </h2>
-              <span className="bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1 rounded-full">{MOCK_PUBLISH_QUEUE.length} in queue</span>
-            </div>
-            <div className="divide-y divide-line-soft">
-              {MOCK_PUBLISH_QUEUE.map((item) => (
-                <div key={item.id} className="p-5 flex items-start justify-between hover:bg-neutral-50 transition-colors">
-                  <div className="flex flex-col gap-1.5">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-neutral-400">{item.id}</span>
-                      <span className="bg-neutral-100 text-neutral-700 text-[11px] font-bold px-2 py-0.5 rounded uppercase">{item.type}</span>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-[#1C2127] text-white font-bold border-b border-line-soft">
+              <tr>
+                <th className="px-6 py-4 w-20">Type</th>
+                <th className="px-6 py-4 min-w-[300px]">Content Title</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Created At</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line-soft text-neutral-900">
+              {queue.length === 0 ? (
+                 <tr><td colSpan={5} className="px-6 py-12 text-center text-neutral-500">발행 대기열이 비어있습니다.</td></tr>
+              ) : queue.map((item) => (
+                <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
+                  <td className="px-6 py-4">
+                     {item.content_type === 'Story' ? (
+                       <span className="flex items-center justify-center bg-brand-50 text-brand-600 w-8 h-8 rounded-lg" title="Webzine Story"><FileText className="w-4 h-4" /></span>
+                     ) : (
+                       <span className="flex items-center justify-center bg-purple-50 text-purple-600 w-8 h-8 rounded-lg" title="Knowledge Answer"><HelpCircle className="w-4 h-4" /></span>
+                     )}
+                  </td>
+                  <td className="px-6 py-4">
+                     <div className="font-bold text-neutral-900 truncate max-w-sm">{item.title}</div>
+                     <div className="text-neutral-500 text-[11px] font-mono mt-0.5">{item.id}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                     {item.status === 'Draft' && <Chip variant="default">Draft</Chip>}
+                     {item.status === 'Review' && <Chip variant="reviewed">Review</Chip>}
+                  </td>
+                  <td className="px-6 py-4 font-mono text-xs text-neutral-500 min-h-[56px]">
+                     {new Date(item.created_at).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                       <Button variant="secondary" size="sm" className="px-3 text-xs" disabled>미리보기</Button>
+                       <PublishActionBtn itemId={item.id} contentType={item.content_type} variant={item.status === 'Review' ? 'primary' : 'outline'} />
                     </div>
-                    <div className="font-bold text-neutral-900 text-[16px]">{item.title}</div>
-                    <div className="flex items-center gap-1.5 text-xs font-semibold text-brand-700 mt-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      {item.autoPublish}
-                    </div>
-                  </div>
-                  <button className="px-4 py-2 bg-neutral-900 text-white text-sm font-bold rounded-xl hover:bg-neutral-800 transition-colors">
-                    Publish Now
-                  </button>
-                </div>
+                  </td>
+                </tr>
               ))}
-              
-              {MOCK_PUBLISH_QUEUE.length === 0 && (
-                <div className="p-12 text-center text-neutral-500 font-medium">
-                  Queue is empty. No approved items waiting to be published.
-                </div>
-              )}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
-
-        {/* Right Col: Feed & Sitemap Status */}
-        <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-2xl border border-line-default shadow-sm p-6 flex flex-col gap-6">
-             <h2 className="text-[18px] font-bold text-neutral-900 flex items-center gap-2 mb-2">
-              <Globe className="w-5 h-5 text-brand-600" />
-              AEO & SEO Pipelines
-            </h2>
-
-            <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-center text-sm">
-                <div className="flex items-center gap-2 font-bold text-neutral-700">
-                  <Rss className="w-4 h-4 text-brand-500" /> 
-                  AI Feed (NDJSON)
-                </div>
-                <span className="flex items-center gap-1 text-success-600 font-bold bg-success-bg px-2 py-0.5 rounded text-xs">
-                  <CheckCircle2 className="w-3 h-3" /> Healthy
-                </span>
-              </div>
-              <div className="pl-6 text-xs text-neutral-500 space-y-1">
-                <p>Endpoint: <code className="bg-neutral-100 px-1 py-0.5 rounded">/api/ai/answers.ndjson</code></p>
-                <p>Last Pulled: 2 hrs ago (Perplexity Bot)</p>
-                <p>Public Entities Exported: 1,245</p>
-              </div>
-            </div>
-
-            <hr className="border-line-soft" />
-
-            <div className="flex flex-col gap-3">
-              <div className="flex justify-between items-center text-sm">
-                <div className="flex items-center gap-2 font-bold text-neutral-700">
-                  <Globe className="w-4 h-4 text-brand-500" /> 
-                  XML Sitemaps
-                </div>
-                <span className="flex items-center gap-1 text-success-600 font-bold bg-success-bg px-2 py-0.5 rounded text-xs">
-                  <CheckCircle2 className="w-3 h-3" /> Updated
-                </span>
-              </div>
-              <div className="pl-6 text-xs text-neutral-500 space-y-1">
-                <p>Index: <code className="bg-neutral-100 px-1 py-0.5 rounded">sitemap.xml</code></p>
-                <p>Last Sync: Today, 03:00 AM</p>
-                <p>Google Search Console: Connected</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-brand-50 rounded-2xl border border-brand-200 p-6">
-            <h3 className="text-brand-900 font-bold mb-2 flex items-center gap-2">
-              <Activity className="w-4 h-4" /> Pipeline Heartbeat
-            </h3>
-            <p className="text-xs text-brand-700 leading-relaxed">
-              모든 배포(Publishing) 액션은 1분 내로 Vercel Edge Cache를 무효화(Revalidate)하며, AI 봇이 실시간으로 NDJSON 피드를 읽어갈 수 있도록 즉시 동기화됩니다.
-            </p>
-          </div>
-        </div>
-
       </div>
     </div>
   )

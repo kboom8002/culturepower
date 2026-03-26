@@ -1,161 +1,121 @@
-"use client"
-
-import { useState } from "react"
+import { Save, Eye, ArrowLeft, PenTool } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Save, FileCheck, ArrowLeft, Trash2 } from "lucide-react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { getAnswerById } from "@/lib/actions/content"
+import { notFound } from "next/navigation"
 
-export default function AdminEditAnswerPage() {
-  const params = useParams()
-  const answerId = params.id as string
+export default async function AdminAnswerEditorPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  const isNew = params.id === 'new'
+  const answer = isNew ? null : await getAnswerById(params.id)
 
-  // Mock pre-populated data
-  const [title, setTitle] = useState("지역 소멸에 대응하는 K-컬처 예산 활용 방안은 어떻게 설계되어 있나요?")
-  const [directAnswer, setDirectAnswer] = useState("2024년 기준 지역 소멸에 대응하는 K-컬처 예산은 총 1.2조원 규모로 편성되었으며...")
-  const [context, setContext] = useState("이러한 예산 편성은 단순한 일회성 지원을 넘어 지속 가능한 문화 생태계 조성을 목표로 합니다...")
-  const [topic, setTopic] = useState("지역문화")
-
-  const handleSaveDraft = () => {
-    alert("임시저장 되었습니다 (Demo)")
-  }
-
-  const handlePublish = () => {
-    if (!title || !directAnswer) {
-      alert("질문(제목)과 핵심 정답은 필수입니다.")
-      return
-    }
-    alert("발행 승인 요청이 큐에 등록되었습니다. (Demo)")
-  }
-
-  const handleDelete = () => {
-    if(confirm("이 정답카드를 삭제하시겠습니까? 연결된 스토리나 근거 자료에 영향을 미칠 수 있습니다.")) {
-       alert("정답카드가 삭제되었습니다.")
-       // redirect back
-       window.location.href = '/admin/content/answers'
-    }
+  if (!isNew && !answer) {
+    notFound()
   }
 
   return (
-    <div className="flex flex-col w-full bg-surface-page min-h-screen pb-24">
-      {/* Top Action Bar */}
-      <div className="bg-white border-b border-line-default sticky top-0 z-40">
-        <div className="container mx-auto px-4 sm:px-6 h-[72px] flex items-center justify-between">
+    <div className="flex flex-col w-full h-full min-h-screen bg-neutral-50 -my-8 p-8 relative">
+       {/* Sticky Header */}
+       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-line-soft px-8 py-4 -mx-8 -mt-8 mb-8 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-4">
-            <Link href="/admin/content/answers" className="p-2 rounded-full hover:bg-neutral-100 text-neutral-600 transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div className="flex items-center gap-3">
-               <h1 className="text-[20px] font-bold text-neutral-900">정답카드 수정</h1>
-               <span className="px-2 py-1 bg-neutral-100 text-neutral-500 rounded text-xs font-mono font-bold">{answerId}</span>
-            </div>
+             <Link href="/admin/content/answers" className="p-2 text-neutral-400 hover:text-neutral-900 transition-colors bg-neutral-100 hover:bg-neutral-200 rounded-lg">
+                <ArrowLeft className="w-5 h-5" />
+             </Link>
+             <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                   <h1 className="font-bold text-[18px] text-neutral-900">{isNew ? '신규 정답카드 작성' : '정답카드 편집'}</h1>
+                   <span className="px-2 py-0.5 bg-neutral-100 text-neutral-600 rounded text-[10px] font-bold tracking-wider uppercase">
+                      {isNew ? 'Draft' : answer?.status}
+                   </span>
+                </div>
+             </div>
           </div>
+          
           <div className="flex items-center gap-3">
-             <Button variant="tertiary" size="sm" onClick={handleDelete} className="text-danger-600 hover:text-danger-700 hover:bg-danger-50">
-              <Trash2 className="w-4 h-4 mr-2" />
-              카드 삭제
-            </Button>
-            <Button variant="tertiary" size="sm" onClick={handleSaveDraft}>
-              <Save className="w-4 h-4 mr-2" />
-              변경사항 임시저장
-            </Button>
-            <Button variant="primary" size="sm" onClick={handlePublish}>
-              <FileCheck className="w-4 h-4 mr-2" />
-              수정 및 재승인
-            </Button>
+             <Button variant="secondary" className="px-4"><Eye className="w-4 h-4 mr-2" /> 미리보기</Button>
+             <Button variant="primary" className="px-6 min-w-[120px]"><Save className="w-4 h-4 mr-2" /> {isNew ? '임시저장' : '수정사항 저장'}</Button>
+             <Button variant="tool" className="px-4 bg-brand-50 text-brand-700 hover:bg-brand-100"><PenTool className="w-4 h-4 mr-2" /> 승인 큐 등록</Button>
           </div>
-        </div>
-      </div>
-      
-      <main className="container mx-auto px-4 sm:px-6 max-w-5xl py-8 flex gap-8">
-        
-        {/* Editor Area */}
-        <div className="flex-1 flex flex-col gap-6">
-          <div className="bg-white p-8 rounded-3xl border border-line-default shadow-sm min-h-[600px] flex flex-col gap-6">
-            
-            {/* Title (User Query) */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-neutral-600">사용자 예상 질문 (User Query / Title)</label>
-              <textarea 
-                rows={2}
-                className="w-full text-[24px] font-bold text-neutral-900 p-4 rounded-xl border border-line-default bg-surface-soft focus:bg-white focus:outline-none focus:border-brand-500 transition-colors resize-none"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
-            
-            {/* Direct Answer */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-brand-700 flex items-center gap-2">
-                <span className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center text-[11px] text-brand-800">A</span>
-                핵심 정답 (Direct Answer)
-              </label>
-              <textarea 
-                rows={4}
-                className="w-full text-[16px] text-neutral-800 p-4 rounded-xl border border-brand-200 bg-brand-50/30 focus:bg-white focus:outline-none focus:border-brand-500 transition-colors resize-y leading-relaxed"
-                value={directAnswer}
-                onChange={(e) => setDirectAnswer(e.target.value)}
-              />
-            </div>
-            
-            {/* Extended Context */}
-            <div className="flex flex-col gap-2 flex-1">
-              <label className="text-sm font-bold text-neutral-600">상세 해설 및 맥락 (Extended Context)</label>
-              <textarea 
-                rows={8}
-                className="w-full h-full text-[16px] text-neutral-700 p-4 rounded-xl border border-line-default bg-surface-soft focus:bg-white focus:outline-none focus:border-brand-500 transition-colors resize-y leading-relaxed"
-                value={context}
-                onChange={(e) => setContext(e.target.value)}
-              />
-            </div>
+       </div>
 
-          </div>
-        </div>
+       {/* Editor Body */}
+       <div className="flex lg:flex-row flex-col gap-8 flex-1">
+          {/* Main Editing Area */}
+          <div className="flex-1 flex flex-col gap-6 max-w-4xl mx-auto w-full">
+             <input 
+               type="text" 
+               defaultValue={answer?.title || ''}
+               placeholder="사용자들이 궁금해하는 질문 타이틀을 입력하세요..." 
+               className="text-4xl font-extrabold text-neutral-900 bg-transparent border-none placeholder:text-neutral-300 focus:outline-none focus:ring-0 px-0 py-2 w-full"
+             />
+             
+             <textarea 
+               defaultValue={answer?.summary || ''}
+               placeholder="정답에 핵심 요약 한 줄 (Summary)..." 
+               rows={2}
+               className="text-lg font-medium text-neutral-600 bg-transparent border border-line-soft rounded-xl p-4 placeholder:text-neutral-400 focus:outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-500/10 w-full resize-none leading-relaxed"
+             />
 
-        {/* Action Panel / Metadata */}
-        <div className="w-80 hidden lg:flex flex-col gap-6 shrink-0">
-          <div className="bg-white p-6 rounded-2xl border border-line-default shadow-sm flex flex-col gap-5">
-            <h3 className="font-bold text-[16px] text-neutral-900 border-b border-line-default pb-3">분류 및 SSoT 설정</h3>
-            
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-neutral-700">Topic 분류 (3 Pillars)</label>
-              <select className="w-full p-2.5 bg-surface-soft border border-line-default rounded-lg text-sm text-neutral-800 focus:outline-none focus:border-brand-500">
-                <option>K-문명</option>
-                <option>글로벌 중추국가</option>
-                <option>지역문화</option>
-                <option>청년/미래</option>
-              </select>
-            </div>
+             <div className="border border-line-default bg-white rounded-2xl flex-1 flex flex-col overflow-hidden shadow-sm">
+                <div className="border-b border-line-soft bg-neutral-50 p-2 flex items-center gap-1 overflow-x-auto">
+                   {['H1', 'H2', 'B', 'I', 'U', 'Link', 'Image', 'List', 'Quote'].map((tool) => (
+                      <button key={tool} className="px-3 py-1.5 text-xs font-bold text-neutral-600 hover:bg-neutral-200 rounded-md transition-colors">
+                         {tool}
+                      </button>
+                   ))}
+                </div>
+                <textarea 
+                   defaultValue={answer?.content_body || ''}
+                   className="flex-1 w-full bg-transparent p-6 text-neutral-800 focus:outline-none resize-none min-h-[500px] leading-loose text-base"
+                   placeholder="질문에 대한 구체적인 정답과 근거를 작성해 주세요..."
+                />
+             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border border-line-default shadow-sm flex flex-col gap-5">
-            <h3 className="font-bold text-[16px] text-neutral-900 border-b border-line-default pb-3">필수 신뢰 블록 구성</h3>
-            <p className="text-xs text-neutral-500 -mt-2">AnswerCard가 퍼블릭 사이트에 공개되려면 신뢰 블록 3대 요소가 모두 만족되어야 합니다.</p>
-            
-            <div className="flex flex-col gap-2">
-              <div className="flex justify-between items-center text-sm">
-                <span className="font-bold text-neutral-700">1. 증거 자료 (Evidence)</span>
-                <span className="text-danger-600 font-bold text-[11px]">미흡</span>
-              </div>
-              <Button variant="secondary" size="sm" className="w-full justify-start text-neutral-600">
-                + 파일 업로드 또는 링크 추가
-              </Button>
-            </div>
+          {/* Right Sidebar (Metadata) */}
+          <div className="w-full lg:w-[320px] shrink-0 flex flex-col gap-6">
+             {/* Expert Assignment */}
+             <div className="bg-white rounded-2xl border border-line-default p-5 shadow-sm">
+                <h3 className="text-[13px] font-bold text-neutral-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                   담당 전문가
+                </h3>
+                <div className="relative">
+                   <select className="w-full bg-neutral-50 border border-line-strong rounded-lg px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:border-brand-500 appearance-none">
+                      <option value="">전문가를 선택하세요</option>
+                      <option value="1">김문화 박사 (서울문화재단)</option>
+                      <option value="2">이정책 연구원 (문화관광연구원)</option>
+                   </select>
+                </div>
+             </div>
 
-            <div className="flex flex-col gap-2 pt-2 border-t border-line-soft">
-              <div className="flex justify-between items-center text-sm">
-                <span className="font-bold text-neutral-700">2. 지정 검수자 (Reviewer)</span>
-                <span className="text-success-600 font-bold text-[11px]">등록됨</span>
-              </div>
-              <Button variant="secondary" size="sm" className="w-full justify-start text-neutral-600">
-                Edit Reviewer (김에디터)
-              </Button>
-            </div>
-            
+             {/* Topic Classification */}
+             <div className="bg-white rounded-2xl border border-line-default p-5 shadow-sm">
+                <h3 className="text-[13px] font-bold text-neutral-900 uppercase tracking-widest mb-4">
+                   대주제 (Topic)
+                </h3>
+                <div className="flex flex-col gap-2">
+                   <select className="w-full bg-neutral-50 border border-line-strong rounded-lg px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:border-brand-500 appearance-none">
+                      <option value="">대주제 분류</option>
+                      <option value="1">정책</option>
+                      <option value="2">인프라</option>
+                      <option value="3">제도</option>
+                   </select>
+                </div>
+             </div>
+
+             {/* Additional Meta */}
+             <div className="bg-white rounded-2xl border border-line-default p-5 shadow-sm">
+                <h3 className="text-[13px] font-bold text-neutral-900 uppercase tracking-widest mb-4">
+                   SEO / Open Graph
+                </h3>
+                <div className="flex flex-col gap-4">
+                   <div className="w-full aspect-video bg-neutral-100 rounded-xl border border-dashed border-line-strong flex flex-col items-center justify-center cursor-pointer hover:bg-neutral-200 transition-colors">
+                      <span className="text-xs font-bold text-neutral-500">Upload OG Image</span>
+                   </div>
+                </div>
+             </div>
           </div>
-        </div>
-
-      </main>
+       </div>
     </div>
   )
 }

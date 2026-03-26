@@ -7,6 +7,8 @@ import { Save, FileCheck, ArrowLeft, Image as ImageIcon, Trash2, X, Plus, Loader
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
+import { useEffect } from "react"
+import { getStoryById, updateStory, deleteStory, createStory } from "@/lib/actions/story"
 
 const STORY_CATEGORIES = [
   { value: "editorial", label: "창간사" },
@@ -35,12 +37,28 @@ export default function AdminEditStoryPage() {
   const storyId = params.id as string
   const isNew = storyId === "new"
 
-  // Mock pre-populated data
-  const [title, setTitle] = useState(isNew ? "" : "지역 소멸을 박물관 미술관으로 막을 수 있을까")
-  const [deck, setDeck] = useState(isNew ? "" : "문체부와 한국문화예술위원회가 주관한 특별 컨퍼런스 기조 연설 요약")
-  const [category, setCategory] = useState(isNew ? "insight" : "report")
-  const [authorId, setAuthorId] = useState(isNew ? "EXP-001" : "EXP-002")
-  const [bodyHtml, setBodyHtml] = useState(isNew ? "" : "<p>본문 내용이 여기에 들어갑니다. 지역 소멸의 위기감 속에서...</p>")
+  // Data States
+  const [title, setTitle] = useState("")
+  const [deck, setDeck] = useState("")
+  const [category, setCategory] = useState("insight")
+  const [authorId, setAuthorId] = useState("EXP-001")
+  const [bodyHtml, setBodyHtml] = useState("")
+  const [isLoadingData, setIsLoadingData] = useState(!isNew)
+
+  useEffect(() => {
+    if (!isNew) {
+      getStoryById(storyId).then(story => {
+        if (story) {
+           setTitle(story.title)
+           setDeck(story.deck || "")
+           setBodyHtml(story.body)
+           setCategory(story.section || "insight")
+           setAuthorId(story.author_expert_id || "EXP-001")
+        }
+        setIsLoadingData(false)
+      })
+    }
+  }, [isNew, storyId])
   
   // Image Upload State
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -77,14 +95,26 @@ export default function AdminEditStoryPage() {
   }
 
   const handleSaveDraft = async () => {
-    setIsSaving(true)
-    // mock api call
-    await new Promise(resolve => setTimeout(resolve, 800))
-    setIsSaving(false)
-    alert("변경사항이 임시저장(Draft) 상태로 안전하게 보관되었습니다.")
-    if (isNew) {
-      router.push("/admin/content/stories")
+    if (!title) {
+      alert("제목은 필수입니다.")
+      return
     }
+    setIsSaving(true)
+    const payload = { title, deck, section: category, body: bodyHtml, author_expert_id: authorId, status: 'Draft' as const }
+    
+    if (isNew) {
+      const res = await createStory(payload)
+      if(res.success) {
+        alert("임시저장 되었습니다")
+        router.push("/admin/content/stories")
+      } else alert(`실패: ${res.error}`)
+    } else {
+      const res = await updateStory(storyId, payload)
+      if(res.success) {
+        alert("저장되었습니다")
+      } else alert(`실패: ${res.error}`)
+    }
+    setIsSaving(false)
   }
 
   const handlePublish = async () => {
@@ -92,23 +122,39 @@ export default function AdminEditStoryPage() {
       alert("제목, 요약(Deck), 본문은 필수 입력 항목입니다.")
       return
     }
-    if (!thumbnailPreview) {
-      alert("경고: 대표 썸네일 이미지가 등록되지 않았습니다. 그래도 진행하시겠습니까?")
-    }
-
     setIsPublishing(true)
-    // mock api call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    const payload = { title, deck, section: category, body: bodyHtml, author_expert_id: authorId, status: 'Review' as const }
+    
+    if (isNew) {
+      const res = await createStory(payload)
+      if(res.success) {
+        alert("발행 승인 요청이 큐에 안전하게 등록되었습니다!")
+        router.push("/admin/content/stories")
+      } else alert(`실패: ${res.error}`)
+    } else {
+      const res = await updateStory(storyId, payload)
+      if(res.success) {
+        alert("발행 승인 요청 등록!")
+        router.push("/admin/content/stories")
+      } else alert(`실패: ${res.error}`)
+    }
     setIsPublishing(false)
-    alert("발행 승인 요청이 큐에 안전하게 등록되었습니다! (퍼블리싱 대기열 이동)")
-    router.push("/admin/content/stories")
   }
 
-  const handleDelete = () => {
-    if(confirm("정말로 이 웹진 기사를 삭제하시겠습니까? 관련 피드 캐시도 무효화됩니다.")) {
-       alert("기사가 즉시 삭제되었습니다.")
-       router.push("/admin/content/stories")
+  const handleDelete = async () => {
+    if (confirm("정말로 이 웹진 기사를 삭제하시겠습니까? 관련 피드 캐시도 무효화됩니다.")) {
+      const res = await deleteStory(storyId)
+      if (res.success) {
+        alert("기사가 삭제되었습니다.")
+        router.push("/admin/content/stories")
+      } else {
+        alert(`삭제 실패: ${res.error}`)
+      }
     }
+  }
+
+  if (isLoadingData) {
+    return <div className="flex items-center justify-center p-24"><Loader2 className="w-8 h-8 animate-spin text-brand-500" /></div>
   }
 
   return (

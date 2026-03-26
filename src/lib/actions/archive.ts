@@ -1,0 +1,206 @@
+"use server"
+
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { revalidatePath } from 'next/cache'
+
+// Define the Types based on our schema
+export type ArchiveEvent = {
+  id: string
+  title: string
+  summary: string | null
+  event_type: string | null
+  status: 'Draft' | 'Review' | 'Public' | 'Hidden' | 'Archived' | 'Closed'
+  start_date: string | null
+  end_date: string | null
+  location: string | null
+  registration_link: string | null
+  slug: string | null
+  published_at: string | null
+  created_at: string
+  updated_at: string
+  program_json: any | null
+  topic_id: string | null
+  owner_user_id: string | null
+  reviewer_id: string | null
+}
+
+export type ArchiveVideo = {
+  id: string
+  title: string
+  summary: string | null
+  source_url: string
+  embed_url: string | null
+  thumbnail_url: string | null
+  duration_seconds: number | null
+  status: string
+  related_event_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ArchiveDocument = {
+  id: string
+  title: string
+  document_type: string | null
+  file_url: string
+  summary: string | null
+  source_label: string | null
+  status: string
+  related_event_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ArchiveGallery = {
+  id: string
+  title: string
+  caption_summary: string | null
+  photo_count: number
+  status: string
+  related_event_id: string | null
+  created_at: string
+  updated_at: string
+}
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+const isSupabaseConfigured = () => {
+  return SUPABASE_URL && SUPABASE_URL.length > 0 && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 0
+}
+
+export async function createArchiveClient() {
+  const cookieStore = await cookies()
+  return createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() { return cookieStore.getAll() },
+      setAll(cookiesToSet) {
+        try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) } 
+        catch {}
+      },
+    },
+  })
+}
+
+// Fallback Mock Data
+const MOCK_EVENTS: ArchiveEvent[] = [
+  {
+    id: "EVT-001", title: "[Mock] 제1회 K-문명 포럼", summary: "K-문명 기초 확립 컨퍼런스", event_type: "Conference",
+    status: "Closed", start_date: "2026-03-10T10:00:00Z", end_date: "2026-03-10T18:00:00Z", location: "서울 DDP",
+    registration_link: null, slug: "k-civilization-forum-1", published_at: "2026-03-01T00:00:00Z",
+    created_at: "2026-02-15T00:00:00Z", updated_at: "2026-03-11T00:00:00Z", program_json: null, topic_id: null, owner_user_id: null, reviewer_id: null
+  }
+]
+
+export async function getEvents(): Promise<ArchiveEvent[]> {
+  if (!isSupabaseConfigured()) return MOCK_EVENTS
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('events').select('*').order('start_date', { ascending: false })
+  if (error) { console.error("Error fetching events:", error); return [] }
+  return data as ArchiveEvent[]
+}
+
+export async function getEventById(id: string): Promise<ArchiveEvent | null> {
+  if (!isSupabaseConfigured()) return MOCK_EVENTS.find(e => e.id === id) || MOCK_EVENTS[0]
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('events').select('*').eq('id', id).single()
+  if (error) { console.error(`Error fetching event ${id}:`, error); return null }
+  return data as ArchiveEvent
+}
+
+export async function createEvent(payload: Partial<ArchiveEvent>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id: "mock-evt", ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('events').insert([payload]).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/events')
+  return { success: true, data }
+}
+
+export async function updateEvent(id: string, payload: Partial<ArchiveEvent>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id, ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('events').update(payload).eq('id', id).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/events')
+  revalidatePath(`/admin/archive/events/${id}`)
+  return { success: true, data }
+}
+
+export async function deleteEvent(id: string) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createArchiveClient()
+  const { error } = await supabase.from('events').delete().eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/events')
+  return { success: true }
+}
+
+// Completion Score Logic
+export type EventCompletionStatus = {
+  event: ArchiveEvent,
+  docsCount: number,
+  videosCount: number,
+  galleriesCount: number
+}
+
+export async function getEventCompletions(): Promise<EventCompletionStatus[]> {
+  const events = await getEvents()
+  
+  if (!isSupabaseConfigured()) {
+    // Mock Completion
+    return events.map(event => ({
+      event,
+      docsCount: 1,
+      videosCount: 0, // Missing!
+      galleriesCount: 2
+    }))
+  }
+
+  const supabase = await createArchiveClient()
+  
+  // To avoid N+1 queries in a real app, this should be a DB View or RPC, but for prototype we can fetch all or do Promise.all
+  // Since it's a prototype admin, Promise.all is acceptable for a small number of events.
+  const completions = await Promise.all(events.map(async (event) => {
+    const [{ count: docs }, { count: vids }, { count: gals }] = await Promise.all([
+      supabase.from('documents').select('*', { count: 'exact', head: true }).eq('related_event_id', event.id),
+      supabase.from('videos').select('*', { count: 'exact', head: true }).eq('related_event_id', event.id),
+      supabase.from('galleries').select('*', { count: 'exact', head: true }).eq('related_event_id', event.id),
+    ])
+    
+    return {
+      event,
+      docsCount: docs || 0,
+      videosCount: vids || 0,
+      galleriesCount: gals || 0
+    }
+  }))
+  
+  return completions
+}
+
+// Media Actions (Videos, Documents, Galleries)
+
+export async function getVideos(): Promise<ArchiveVideo[]> {
+  if (!isSupabaseConfigured()) return []
+  const supabase = await createArchiveClient()
+  const { data } = await supabase.from('videos').select('*').order('created_at', { ascending: false })
+  return (data || []) as ArchiveVideo[]
+}
+
+export async function getDocuments(): Promise<ArchiveDocument[]> {
+  if (!isSupabaseConfigured()) return [
+    { id: "DOC-1", title: "[Mock] 기조연설문", file_url: "#", document_type: "PDF", summary: null, source_label: null, status: "Public", related_event_id: "EVT-001", created_at: "", updated_at: "" }
+  ]
+  const supabase = await createArchiveClient()
+  const { data } = await supabase.from('documents').select('*').order('created_at', { ascending: false })
+  return (data || []) as ArchiveDocument[]
+}
+
+export async function getGalleries(): Promise<ArchiveGallery[]> {
+  if (!isSupabaseConfigured()) return []
+  const supabase = await createArchiveClient()
+  const { data } = await supabase.from('galleries').select('*').order('created_at', { ascending: false })
+  return (data || []) as ArchiveGallery[]
+}

@@ -1,117 +1,53 @@
-"use client"
-
-import { Chip } from "@/components/ui/chip"
+import { Plus, UserCircle2, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Search, Plus, Filter, UserCircle, CheckCircle2, Clock } from "lucide-react"
-import Link from "next/link"
+import { getExperts } from "@/lib/actions/content"
 
-const MOCK_EXPERTS = [
-  { id: "EXP-001", name: "김에디터", affiliation: "문화강국네트워크", title: "수석 연구위원", expertise: ["K-문명", "정책연구"], status: "Public", date: "2026-03-25" },
-  { id: "EXP-002", name: "최디렉터", affiliation: "한국예술종합학교", title: "겸임교수", expertise: ["지역문화", "디지털아트"], status: "Review", date: "2026-03-23" },
-  { id: "EXP-003", name: "이글로벌", affiliation: "해외문화홍보원", title: "정책기획관", expertise: ["글로벌 중추", "외교"], status: "Draft", date: "Just now" },
-]
+export default async function AdminExpertsPage() {
+  const experts = await getExperts()
 
-export default function AdminExpertsIndexPage() {
   return (
     <div className="flex flex-col gap-8 w-full pb-24">
       <div className="flex flex-col gap-2">
-        <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Experts (전문가 풀)</h1>
-        <p className="text-body text-neutral-600">
-          신뢰 텍스트를 검수하고(Reviewer) 웹진 기사를 작성하는(Creator) 기여자 및 전문가 객체를 등록 및 관리합니다.
-        </p>
+        <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Experts Directory</h1>
+        <p className="text-body text-neutral-600">지식 정답카드 검수 및 웹진 기고에 참여하는 내외부 전문가 프로필을 관리합니다.</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
-        {/* Toolbar */}
-        <div className="p-4 border-b border-line-soft flex md:flex-row flex-col gap-4 items-center justify-between bg-neutral-50/50">
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <div className="relative w-full md:w-80">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-              <input 
-                type="text" 
-                placeholder="Search by name, affiliation or expertise..."
-                className="w-full pl-9 pr-4 py-2 border border-line-strong rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-all"
-              />
-            </div>
-            <button className="flex items-center gap-2 px-3 py-2 border border-line-strong rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 transition-colors">
-              <Filter className="w-4 h-4" />
-              Status
-            </button>
-          </div>
-          
-          <Link href="/admin/content/experts/new" className="w-full md:w-auto">
-            <Button variant="primary" className="w-full md:w-auto">
-              <Plus className="w-4 h-4 xl:mr-2" />
-              <span className="hidden xl:inline">새 전문가 등록</span>
-            </Button>
-          </Link>
-        </div>
+      <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-line-default">
+         <div className="text-sm font-bold text-neutral-600">Total {experts.length} Experts</div>
+         <Button variant="primary" size="sm"><Plus className="w-4 h-4 mr-1" /> Add Expert</Button>
+      </div>
 
-        {/* Data Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-neutral-50 text-neutral-500 font-semibold border-b border-line-soft">
-              <tr>
-                <th className="px-6 py-4">ID</th>
-                <th className="px-6 py-4">Expert Profile</th>
-                <th className="px-6 py-4">Expertise (전문 분야)</th>
-                <th className="px-6 py-4">State</th>
-                <th className="px-6 py-4">SsoT Linked</th>
-                <th className="px-6 py-4">Last Modified</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line-soft text-neutral-900">
-              {MOCK_EXPERTS.map((item) => (
-                <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
-                  <td className="px-6 py-4 font-mono font-bold text-neutral-500 group-hover:text-brand-600 transition-colors">{item.id}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-neutral-100 border border-line-soft flex items-center justify-center">
-                        <UserCircle className="w-4 h-4 text-neutral-400" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-bold text-neutral-900 tracking-tight">{item.name}</span>
-                        <span className="text-xs text-neutral-500">{item.affiliation} · {item.title}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-1.5">
-                      {item.expertise.map(exp => (
-                        <span key={exp} className="px-2 py-0.5 bg-neutral-100 text-neutral-600 rounded-md text-[11px] font-medium border border-line-soft">
-                          {exp}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="mr-2">
-                       {item.status === 'Draft' && <Chip variant="default">Draft</Chip>}
-                       {item.status === 'Review' && <Chip variant="reviewed">Review</Chip>}
-                       {item.status === 'Public' && <Chip variant="success">Public</Chip>}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-neutral-500">
-                    <span className="text-body-sm font-medium">12 Answers, 3 Stories</span>
-                  </td>
-                  <td className="px-6 py-4 text-neutral-500 flex items-center gap-1.5 font-medium min-h-[72px]">
-                     {item.status === 'Public' ? <CheckCircle2 className="w-3.5 h-3.5 text-success-500" /> : <Clock className="w-3.5 h-3.5" />}
-                    {item.date}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                       <Link href={`/admin/content/experts/${item.id}`}>
-                         <Button variant="secondary" size="sm" className="px-3">Edit</Button>
-                       </Link>
-                       <Button variant="tertiary" size="sm" className="px-3 text-danger-600 hover:text-danger-700 hover:bg-danger-50" onClick={() => alert(`${item.name} 전문가를 삭제했습니다. (Demo)`)}>Delete</Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+         {experts.length === 0 ? (
+            <div className="col-span-full py-20 text-center text-neutral-500">등록된 전문가가 없습니다.</div>
+         ) : experts.map(expert => (
+            <div key={expert.id} className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-md transition-all">
+               <div className="h-20 bg-brand-50 w-full"></div>
+               <div className="px-6 pb-6 flex flex-col items-center -mt-10">
+                  <div className="w-20 h-20 rounded-full bg-white border-4 border-white shadow-sm flex items-center justify-center overflow-hidden mb-3 text-neutral-200 font-bold object-cover">
+                     {expert.profile_image_url ? (
+                        <img src={expert.profile_image_url} alt={expert.name} className="w-full h-full object-cover" />
+                     ) : (
+                        <UserCircle2 className="w-16 h-16" />
+                     )}
+                  </div>
+                  <h3 className="font-extrabold text-[18px] text-neutral-900">{expert.name}</h3>
+                  <div className="flex items-center gap-1.5 text-xs text-brand-600 font-bold mt-1 bg-brand-50 px-2 py-1 rounded">
+                     <Briefcase className="w-3 h-3" /> {expert.organization || '자유기고가'}
+                  </div>
+                  <span className="text-xs text-neutral-500 mt-1">{expert.role}</span>
+                  
+                  <p className="text-xs text-neutral-600 text-center mt-4 line-clamp-2 min-h-[32px]">
+                     {expert.bio || '등록된 약력이 없습니다.'}
+                  </p>
+                  
+                  <div className="mt-5 w-full flex gap-2">
+                     <Button variant="secondary" size="sm" className="flex-1 h-8 text-xs">Edit</Button>
+                     <Button variant="tool" size="sm" className="h-8 w-8 p-0 text-danger-500 border border-danger-100 hover:bg-danger-50">✕</Button>
+                  </div>
+               </div>
+            </div>
+         ))}
       </div>
     </div>
   )

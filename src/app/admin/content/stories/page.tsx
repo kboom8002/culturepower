@@ -1,17 +1,12 @@
-"use client"
-
 import { Chip } from "@/components/ui/chip"
 import { Button } from "@/components/ui/button"
 import { Search, Plus, Filter, FileText, CheckCircle2, Clock } from "lucide-react"
 import Link from "next/link"
+import { getStories } from "@/lib/actions/story"
+import { StoryListActions } from "@/components/domain/story/StoryListActions"
 
-const MOCK_STORIES = [
-  { id: "S-109", title: "지역 소멸을 박물관 미술관으로 막을 수 있을까", category: "Policy Insight", author: "에디터 M", status: "Public", date: "2026-03-20" },
-  { id: "S-110", title: "K-콘텐츠 파이프라인의 핵심, 웹툰 제작의 모든 것", category: "Culture Power Report", author: "최디렉터", status: "Review", date: "2026-03-24" },
-  { id: "S-111", title: "문화강국 네트워크 창간사", category: "Editorial", author: "Super Admin", status: "Draft", date: "Just now" },
-]
-
-export default function AdminStoriesIndexPage() {
+export default async function AdminStoriesIndexPage() {
+  const stories = await getStories()
   return (
     <div className="flex flex-col gap-8 w-full pb-24">
       <div className="flex flex-col gap-2">
@@ -62,9 +57,15 @@ export default function AdminStoriesIndexPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft text-neutral-900">
-              {MOCK_STORIES.map((item) => (
+              {stories.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center text-neutral-500">
+                    등록된 기사가 없습니다. 새 기사를 작성해 보세요.
+                  </td>
+                </tr>
+              ) : stories.map((item) => (
                 <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
-                  <td className="px-6 py-4 font-mono font-bold text-neutral-500 group-hover:text-brand-600 transition-colors">{item.id}</td>
+                  <td className="px-6 py-4 font-mono text-xs font-bold text-neutral-500 group-hover:text-brand-600 transition-colors">{item.id.slice(0,8)}</td>
                   <td className="px-6 py-4">
                     <Link href={`/admin/content/stories/${item.id}`} className="flex items-center gap-2 font-bold text-neutral-900 hover:text-brand-600 transition-colors">
                       <FileText className="w-4 h-4 text-neutral-400" />
@@ -72,7 +73,7 @@ export default function AdminStoriesIndexPage() {
                     </Link>
                   </td>
                   <td className="px-6 py-4 text-neutral-600 font-medium">
-                    {item.category}
+                    {item.section || "-"}
                   </td>
                   <td className="px-6 py-4">
                     <span className="mr-2">
@@ -82,19 +83,14 @@ export default function AdminStoriesIndexPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-neutral-600">
-                    {item.author}
+                    {item.author_expert_id || "-"}
                   </td>
-                  <td className="px-6 py-4 text-neutral-500 flex items-center gap-1.5 font-medium min-h-[56px]">
+                  <td className="px-6 py-4 text-neutral-500 flex items-center gap-1.5 font-medium min-h-[56px] text-xs">
                      {item.status === 'Public' ? <CheckCircle2 className="w-3.5 h-3.5 text-success-500" /> : <Clock className="w-3.5 h-3.5" />}
-                    {item.date}
+                    {new Date(item.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                       <Link href={`/admin/content/stories/${item.id}`}>
-                         <Button variant="secondary" size="sm" className="px-3">Edit</Button>
-                       </Link>
-                       <Button variant="tertiary" size="sm" className="px-3 text-danger-600 hover:text-danger-700 hover:bg-danger-50" onClick={() => alert(`${item.title} 기사를 삭제했습니다. (Demo)`)}>Delete</Button>
-                    </div>
+                    <StoryListActions storyId={item.id} title={item.title} />
                   </td>
                 </tr>
               ))}
@@ -104,7 +100,7 @@ export default function AdminStoriesIndexPage() {
         
         {/* Pagination mock */}
         <div className="p-4 border-t border-line-soft flex items-center justify-between text-sm text-neutral-500">
-           <span>Showing 1 to 3 of 3 entries</span>
+           <span>Showing {stories.length} entries</span>
            <div className="flex gap-1">
              <button className="px-3 py-1 border border-line-strong rounded hover:bg-neutral-50 disabled:opacity-50" disabled>Prev</button>
              <button className="px-3 py-1 bg-brand-50 text-brand-700 font-bold border border-brand-200 rounded">1</button>

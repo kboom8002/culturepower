@@ -1,0 +1,5 @@
+﻿src/lib/actions/observatory.ts(52,32): error TS2322: Type '({ id: string; severity: string; module: string; message: string; error_code: string; is_resolved: boolean; resolved_by: null; resolved_at: null; created_at: string; updated_at: string; } | { id: string; ... 8 more ...; updated_at: string; })[]' is not assignable to type 'SystemAlert[]'.
+  Type '{ id: string; severity: string; module: string; message: string; error_code: string; is_resolved: boolean; resolved_by: null; resolved_at: null; created_at: string; updated_at: string; } | { id: string; ... 8 more ...; updated_at: string; }' is not assignable to type 'SystemAlert'.
+    Type '{ id: string; severity: string; module: string; message: string; error_code: string; is_resolved: boolean; resolved_by: null; resolved_at: null; created_at: string; updated_at: string; }' is not assignable to type 'SystemAlert'.
+      Types of property 'severity' are incompatible.
+        Type 'string' is not assignable to type '"Critical" | "Warning" | "Info"'.

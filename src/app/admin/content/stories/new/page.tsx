@@ -6,6 +6,9 @@ import { RichTextEditor } from "@/components/ui/RichTextEditor"
 import { Button } from "@/components/ui/button"
 import { Save, FileCheck, ArrowLeft, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { createStory } from "@/lib/actions/story"
 
 const STORY_CATEGORIES = [
   { value: "editorial", label: "창간사" },
@@ -22,10 +25,23 @@ export default function AdminNewStoryPage() {
   const [deck, setDeck] = useState("")
   const [category, setCategory] = useState("insight")
   const [bodyHtml, setBodyHtml] = useState("")
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
   
   const handleSaveDraft = () => {
-    alert("임시저장 되었습니다 (Demo)")
-    console.log({ title, deck, category, bodyHtml, status: 'Draft' })
+    if (!title) {
+      alert("제목은 필수입니다.")
+      return
+    }
+    startTransition(async () => {
+      const res = await createStory({ title, deck, section: category, body: bodyHtml, status: 'Draft' })
+      if (res.success) {
+        alert("임시저장 되었습니다")
+        router.push("/admin/content/stories")
+      } else {
+        alert(`저장 실패: ${res.error}`)
+      }
+    })
   }
 
   const handlePublish = () => {
@@ -33,8 +49,15 @@ export default function AdminNewStoryPage() {
       alert("제목과 본문은 필수입니다.")
       return
     }
-    alert("발행 승인 요청이 큐에 등록되었습니다. (Demo)")
-    console.log({ title, deck, category, bodyHtml, status: 'Review' })
+    startTransition(async () => {
+      const res = await createStory({ title, deck, section: category, body: bodyHtml, status: 'Review' })
+      if (res.success) {
+        alert("발행 승인 요청이 큐에 등록되었습니다.")
+        router.push("/admin/content/stories")
+      } else {
+        alert(`저장 실패: ${res.error}`)
+      }
+    })
   }
 
   return (
@@ -48,13 +71,13 @@ export default function AdminNewStoryPage() {
             <h1 className="text-[20px] font-bold text-neutral-900">새 기사 작성 (문강 RIO)</h1>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="tertiary" size="sm" onClick={handleSaveDraft}>
+            <Button variant="tertiary" size="sm" onClick={handleSaveDraft} disabled={isPending}>
               <Save className="w-4 h-4 mr-2" />
-              임시저장
+              {isPending ? "저장 중..." : "임시저장"}
             </Button>
-            <Button variant="primary" size="sm" onClick={handlePublish}>
+            <Button variant="primary" size="sm" onClick={handlePublish} disabled={isPending}>
               <FileCheck className="w-4 h-4 mr-2" />
-              발행 큐 등록
+              {isPending ? "요청 중..." : "발행 큐 등록"}
             </Button>
           </div>
         </div>

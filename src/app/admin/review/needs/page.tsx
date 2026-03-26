@@ -1,135 +1,60 @@
-import { Search, Filter, CheckCircle, XCircle, AlertCircle, Clock } from "lucide-react"
-import Link from "next/link"
+import { Search, UserPlus } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { getReviewTasks } from "@/lib/actions/review"
 
-const MOCK_NEEDS_REVIEW = [
-  { id: "REV-201", objectId: "S-110", type: "Story", title: "K-콘텐츠 파이프라인의 핵심, 웹툰 제작의 모든 것", author: "최디렉터", reviewer: "김편집 편집장", submittedAt: "2026-03-24", priority: "High" },
-  { id: "REV-202", objectId: "ANS-105", type: "AnswerCard", title: "K-팝 성공 요인의 학술적 분석은?", author: "박리서처", reviewer: "미지정", submittedAt: "2026-03-25", priority: "Normal" },
-  { id: "REV-203", objectId: "EVT-042", type: "Event", title: "2026 상반기 문화정책 포럼 요약본 검수", author: "이운영", reviewer: "김편집 편집장", submittedAt: "2 hours ago", priority: "High" },
-]
+export default async function AdminReviewNeedsPage() {
+  const tasks = await getReviewTasks('Pending')
 
-export default function NeedsReviewPage() {
   return (
-    <div className="flex flex-col gap-6 w-full pb-24">
+    <div className="flex flex-col gap-8 w-full pb-24">
       <div className="flex flex-col gap-2">
         <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Needs Review</h1>
-        <p className="text-body text-neutral-600">
-          에디터가 초안 작성을 마치고 검수 대기 중인 항목들입니다. 보편적 진실(SSoT)의 기준에 부합하는지 평가해 주세요.
-        </p>
-      </div>
-
-      <div className="grid md:grid-cols-4 gap-4 mb-2">
-        <div className="bg-white p-5 rounded-xl border border-line-default shadow-sm">
-          <div className="text-sm font-bold text-neutral-500 mb-1">Pending Reviews</div>
-          <div className="text-[28px] font-extrabold text-trust-text">{MOCK_NEEDS_REVIEW.length}</div>
-        </div>
-        <div className="bg-white p-5 rounded-xl border border-line-default shadow-sm">
-          <div className="text-sm font-bold text-neutral-500 mb-1">High Priority</div>
-          <div className="text-[28px] font-extrabold text-danger-600">2</div>
-        </div>
-        <div className="bg-white p-5 rounded-xl border border-line-default shadow-sm">
-          <div className="text-sm font-bold text-neutral-500 mb-1">Avg. Turnaround</div>
-          <div className="text-[28px] font-extrabold text-neutral-900">4.2h</div>
-        </div>
-        <div className="bg-brand-900 p-5 rounded-xl border border-brand-800 shadow-sm text-white flex flex-col justify-center">
-          <div className="flex items-center gap-2 font-bold mb-1">
-            <CheckCircle className="w-5 h-5 text-brand-300" />
-            My Reviews
-          </div>
-          <div className="text-sm text-brand-200">You have 2 items awaiting your approval.</div>
-        </div>
+        <p className="text-body text-neutral-600">발행 대기 중이나 아직 검수자(Reviewer)가 배정되지 않은 콘텐츠 목록입니다.</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
-        {/* Toolbar */}
-        <div className="p-4 border-b border-line-soft flex md:flex-row flex-col gap-4 items-center justify-between bg-neutral-50/50">
+        <div className="p-4 border-b border-line-soft flex items-center justify-between bg-neutral-50/50">
           <div className="relative w-full md:w-80">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
             <input 
               type="text" 
-              placeholder="Search by ID or Title..."
-              className="w-full pl-9 pr-4 py-2 border border-line-strong rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-all bg-white"
+              placeholder="제목 검색..."
+              className="w-full pl-9 pr-4 py-2 border border-line-strong rounded-lg text-sm focus:outline-none focus:border-brand-500"
             />
           </div>
-          <div className="flex items-center gap-2 self-start md:self-auto">
-            <button className="flex items-center gap-2 px-3 py-2 border border-line-strong rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 transition-colors">
-              <Filter className="w-4 h-4" />
-              Content Type
-            </button>
-            <button className="flex items-center gap-2 px-3 py-2 border border-line-strong rounded-lg text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 transition-colors">
-              <Filter className="w-4 h-4" />
-              Reviewer
-            </button>
-          </div>
         </div>
-
-        {/* Data Table */}
+        
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-neutral-50 text-neutral-500 font-semibold border-b border-line-soft">
+            <thead className="bg-[#1C2127] text-white font-bold border-b border-line-soft">
               <tr>
-                <th className="px-6 py-4">Task ID</th>
-                <th className="px-6 py-4">Type</th>
-                <th className="px-6 py-4 min-w-[280px]">Title</th>
-                <th className="px-6 py-4">Priority</th>
-                <th className="px-6 py-4">Submitted By</th>
-                <th className="px-6 py-4">Reviewer</th>
-                <th className="px-6 py-4">Wait Time</th>
+                <th className="px-6 py-4 w-32">Type</th>
+                <th className="px-6 py-4">Content Title</th>
+                <th className="px-6 py-4">Requested At</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft text-neutral-900">
-              {MOCK_NEEDS_REVIEW.map((item) => (
-                <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
-                  <td className="px-6 py-4 font-mono font-bold text-neutral-500 group-hover:text-brand-600 transition-colors">
-                    {item.id}
-                  </td>
+              {tasks.length === 0 ? (
+                 <tr><td colSpan={4} className="px-6 py-12 text-center text-neutral-500">배정이 필요한 미결 로드가 없습니다. 🎉</td></tr>
+              ) : tasks.map((task) => (
+                <tr key={task.id} className="hover:bg-neutral-50/50 transition-colors">
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${item.type === 'Story' ? 'bg-indigo-100 text-indigo-700' : item.type === 'AnswerCard' ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700'}`}>
-                      {item.type}
-                    </span>
+                     <span className={`font-bold text-[11px] px-2 py-1 rounded tracking-widest uppercase ${task.content_type === 'Story' ? 'bg-purple-50 text-purple-700' : 'bg-brand-50 text-brand-700'}`}>
+                        {task.content_type}
+                     </span>
                   </td>
                   <td className="px-6 py-4 font-bold text-neutral-900 truncate max-w-sm">
-                    {item.title}
-                    <div className="text-xs text-neutral-400 font-mono mt-0.5 font-normal">{item.objectId}</div>
+                     {task.content_title || 'Unknown Title'}
                   </td>
-                  <td className="px-6 py-4">
-                    {item.priority === "High" ? (
-                      <span className="flex items-center gap-1.5 text-danger-600 font-bold text-xs"><AlertCircle className="w-3.5 h-3.5"/> High</span>
-                    ) : (
-                      <span className="text-neutral-500 text-xs font-semibold">{item.priority}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-neutral-600">{item.author}</td>
-                  <td className="px-6 py-4">
-                    {item.reviewer === "미지정" ? (
-                      <span className="text-warning-600 font-medium text-xs bg-warning-50 px-2 py-1 rounded">Unassigned</span>
-                    ) : (
-                      <span className="text-neutral-700">{item.reviewer}</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-neutral-500">
-                    <div className="flex items-center gap-1.5 font-medium">
-                      <Clock className="w-3.5 h-3.5" />
-                      {item.submittedAt}
-                    </div>
+                  <td className="px-6 py-4 text-xs font-mono text-neutral-500">
+                     {new Date(task.created_at).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Link href={`/admin/review/${item.id}`}>
-                      <button className="flex items-center gap-1 px-3 py-1.5 bg-brand-50 text-brand-700 hover:bg-brand-100 rounded-lg text-xs font-bold transition-colors ml-auto">
-                        Review
-                      </button>
-                    </Link>
+                    <Button variant="primary" size="sm" className="px-4"><UserPlus className="w-4 h-4 mr-1.5" /> 나에게 할당</Button>
                   </td>
                 </tr>
               ))}
-              {MOCK_NEEDS_REVIEW.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-neutral-500">
-                    <CheckCircle className="w-8 h-8 mx-auto mb-3 text-neutral-300" />
-                    현재 대기 중인 검수 요청이 없습니다.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
