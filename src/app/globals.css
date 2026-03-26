@@ -1,26 +1,171 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brand / Culture */
+  --color-brand-900: #16324F;
+  --color-brand-800: #1E4468;
+  --color-brand-700: #245C93;
+  --color-brand-600: #2F75B3;
+  --color-brand-100: #EAF3FF;
+  --color-brand-050: #F5F9FE;
+
+  /* Neutral */
+  --color-neutral-900: #1A2433;
+  --color-neutral-800: #2B3A4C;
+  --color-neutral-700: #425265;
+  --color-neutral-600: #5F6B7A;
+  --color-neutral-500: #798592;
+  --color-neutral-400: #97A2AE;
+  --color-neutral-300: #BCC7D2;
+  --color-neutral-200: #D8E2ED;
+  --color-neutral-100: #EEF3F8;
+  --color-neutral-050: #F6F8FB;
+
+  /* Trust / Review */
+  --color-trust-text: #8A6200;
+  --color-trust-bg: #FFF7E8;
+  --color-trust-line: #F0D39A;
+
+  /* Issue / Alert */
+  --color-danger-text: #B3261E;
+  --color-danger-bg: #FFF2F2;
+  --color-danger-line: #F2CACA;
+
+  /* Success */
+  --color-success-text: #2E7D32;
+  --color-success-bg: #EFFAF2;
+  --color-success-line: #BDE0C1;
+
+  /* Utility & Surface */
+  --color-line-default: #D8E2ED;
+  --color-line-strong: #B7C9DB;
+  --color-surface-page: #F6F8FB;
+  --color-surface-card: #FFFFFF;
+  --color-surface-soft: #FBFDFF;
+  --color-surface-muted: #F5F7FA;
+  --color-surface-answer: #EEF4FB;
+
+  /* Typography */
+  --font-sans: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+
+  /* Radius */
+  --radius-xs: 10px;
+  --radius-sm: 14px;
+  --radius-md: 16px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-2xl: 24px;
+  --radius-3xl: 28px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(16, 37, 62, 0.04);
+  --shadow-md: 0 6px 20px rgba(16, 37, 62, 0.06);
+  --shadow-lg: 0 10px 28px rgba(16, 37, 62, 0.08);
+  --shadow-focus: 0 0 0 3px rgba(36, 92, 147, 0.18);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Semantic Colors mapped for legacy CSS usage if needed, mostly handled by tailwind classes */
+  --text-primary: var(--color-neutral-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-tertiary: var(--color-neutral-500);
+  --text-link: var(--color-brand-700);
+  --bg-page: var(--color-surface-page);
+  --bg-card: var(--color-surface-card);
+  --bg-answer: var(--color-surface-answer);
+  --border-default: var(--color-line-default);
+  --accent-primary: var(--color-brand-700);
+  
+  /* Text Sizes - Mobile First */
+  --font-h1: 34px;
+  --line-h1: 1.2;
+  --font-h2: 28px;
+  --line-h2: 1.3;
+  --font-h3: 22px;
+  --line-h3: 1.35;
+  --font-h4: 20px;
+  --line-h4: 1.4;
+  --font-body-lg: 17px;
+  --line-body-lg: 1.65;
+  --font-body: 16px;
+  --line-body: 1.65;
+  --font-body-sm: 14px;
+  --line-body-sm: 1.55;
+  --font-caption: 13px;
+  --line-caption: 1.45;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (min-width: 768px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --font-h1: 52px;
+    --line-h1: 1.18;
+    --font-h2: 36px;
+    --line-h2: 1.28;
+    --font-h3: 28px;
+    --line-h3: 1.35;
+    --font-h4: 22px;
+    --line-h4: 1.4;
+    --font-body-lg: 18px;
+    --line-body-lg: 1.65;
+    --font-body: 16px;
+    --line-body: 1.65;
+    --font-body-sm: 14px;
+    --line-body-sm: 1.55;
+    --font-caption: 13px;
+    --line-caption: 1.45;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Utilities */
+.text-h1 {
+  font-size: var(--font-h1);
+  line-height: var(--line-h1);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.text-h2 {
+  font-size: var(--font-h2);
+  line-height: var(--line-h2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.text-h3 {
+  font-size: var(--font-h3);
+  line-height: var(--line-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.text-h4 {
+  font-size: var(--font-h4);
+  line-height: var(--line-h4);
+  font-weight: 700;
+}
+.text-body-lg {
+  font-size: var(--font-body-lg);
+  line-height: var(--line-body-lg);
+  font-weight: 400;
+}
+.text-body {
+  font-size: var(--font-body);
+  line-height: var(--line-body);
+  font-weight: 400;
+}
+.text-body-sm {
+  font-size: var(--font-body-sm);
+  line-height: var(--line-body-sm);
+  font-weight: 400;
+}
+.text-caption {
+  font-size: var(--font-caption);
+  line-height: var(--line-caption);
+  font-weight: 500;
+  color: var(--text-secondary);
 }
