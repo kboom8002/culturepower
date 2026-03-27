@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { AnswersClient } from "@/components/domain/answer/AnswersClient"
 import { getPublicAnswers } from "@/lib/actions/public"
 
-export const revalidate = 60 // Cache for 60 seconds
+export const dynamic = 'force-dynamic' // Force dynamic rendering
 
 export default async function AnswersIndexPage() {
   const answers = await getPublicAnswers()

@@ -2,7 +2,7 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { StoriesClient } from "@/components/domain/story/StoriesClient"
 import { getPublicStories } from "@/lib/actions/public"
 
-export const revalidate = 60 // Cache for 1 minute
+export const dynamic = 'force-dynamic' // Force dynamic rendering
 
 export default async function StoriesIndexPage() {
   const stories = await getPublicStories()
