@@ -1,22 +1,27 @@
 "use client"
 
-import { useTransition } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { assignReviewTask } from "@/lib/actions/review"
 import { UserPlus, Loader2 } from "lucide-react"
 
 export function ReviewAssignBtn({ taskId }: { taskId: string }) {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
 
-  const handleAssign = () => {
-    startTransition(async () => {
+  const handleAssign = async () => {
+    setIsPending(true)
+    try {
       const res = await assignReviewTask(taskId)
       if (!res.success) {
         alert("할당 실패: " + res.error)
       } else {
         alert("내 보관함으로 할당되었습니다!")
       }
-    })
+    } catch (e: any) {
+      alert("서버 연결 오류: " + e.message)
+    } finally {
+      setIsPending(false)
+    }
   }
 
   return (

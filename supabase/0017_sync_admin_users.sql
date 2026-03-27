@@ -27,6 +27,12 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
 
 -- 3. 이전에 이미 가입해버린 현재 사용자(대표님 계정)들을 위해 일괄 동기화(Backfill) 실행
+-- (에러 방지용: 과거 테스트 중 수동으로 생성되어 랜덤 ID를 가진 동일 이메일의 껍데기 계정들을 먼저 청소합니다)
+DELETE FROM public.admin_users 
+WHERE email IN (SELECT email FROM auth.users) 
+AND id NOT IN (SELECT id FROM auth.users);
+
+-- 정상 UUID로 다시 일괄 삽입/업데이트
 INSERT INTO public.admin_users (id, auth_user_id, email, name, role)
 SELECT 
     id, 
@@ -35,4 +41,8 @@ SELECT
     COALESCE(raw_user_meta_data->>'full_name', split_part(email, '@', 1)), 
     'Super Admin'
 FROM auth.users
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE 
+SET 
+    auth_user_id = EXCLUDED.auth_user_id,
+    email = EXCLUDED.email,
+    role = 'Super Admin';

@@ -87,20 +87,24 @@ export async function getReviewTasks(filterStatus: string, reviewerId?: string):
 }
 
 export async function assignReviewTask(taskId: string) {
-  if (!isSupabaseConfigured()) return { success: true }
-  const supabase = await createReviewClient()
-  
-  const { data: { user }, error: authErr } = await supabase.auth.getUser()
-  if (authErr || !user) return { success: false, error: "Authentication required" }
+  try {
+    if (!isSupabaseConfigured()) return { success: true }
+    const supabase = await createReviewClient()
+    
+    const { data: { user }, error: authErr } = await supabase.auth.getUser()
+    if (authErr || !user) return { success: false, error: "Authentication required" }
 
-  const { error } = await supabase.from('review_tasks')
-    .update({ reviewer_id: user.id, status: 'In Review' })
-    .eq('id', taskId)
+    const { error } = await supabase.from('review_tasks')
+      .update({ reviewer_id: user.id, status: 'In Review' })
+      .eq('id', taskId)
 
-  if (error) return { success: false, error: error.message }
-  revalidatePath('/admin/review/needs')
-  revalidatePath('/admin/review/mine')
-  return { success: true }
+    if (error) return { success: false, error: error.message }
+    revalidatePath('/admin/review/needs')
+    revalidatePath('/admin/review/mine')
+    return { success: true }
+  } catch (e: any) {
+    return { success: false, error: e.message || "Unknown error occurred" }
+  }
 }
 
 export async function submitToReview(contentType: 'Story' | 'Answer', contentId: string) {

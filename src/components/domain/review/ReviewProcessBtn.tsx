@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { processReviewTask } from "@/lib/actions/review"
 import { CheckCircle, XCircle, Loader2 } from "lucide-react"
@@ -11,9 +11,9 @@ type Props = {
 }
 
 export function ReviewProcessBtn({ taskId, action }: Props) {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
 
-  const handleProcess = () => {
+  const handleProcess = async () => {
     let comment = ""
     if (action === 'Return') {
       const msg = prompt("반려 사유(코멘트)를 입력하세요.")
@@ -24,14 +24,19 @@ export function ReviewProcessBtn({ taskId, action }: Props) {
       comment = "승인되었습니다."
     }
 
-    startTransition(async () => {
+    setIsPending(true)
+    try {
       const res = await processReviewTask(taskId, action, comment)
       if (!res.success) {
         alert("처리 실패: " + res.error)
       } else {
         alert(action === 'Approve' ? "승인되어 퍼블리싱 대기열로 이동했습니다!" : "반려 처리되었습니다.")
       }
-    })
+    } catch (e: any) {
+      alert("서버 연결 오류: " + e.message)
+    } finally {
+      setIsPending(false)
+    }
   }
 
   if (action === 'Approve') {
