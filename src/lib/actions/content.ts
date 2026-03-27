@@ -129,6 +129,14 @@ export async function getTopics(): Promise<ContentTopic[]> {
   return (data || []) as ContentTopic[]
 }
 
+export async function createTopic(payload: { name: string, slug: string, description?: string }) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createContentClient()
+  const { error } = await supabase.from('content_topics').insert([payload])
+  if (error) return { success: false, error: error.message }
+  return { success: true }
+}
+
 export async function getPartners(): Promise<Partner[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createContentClient()

@@ -2,6 +2,7 @@ import { Plus, Hash, FolderTree } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getTopics } from "@/lib/actions/content"
 import { Chip } from "@/components/ui/chip"
+import { AddTopicButton } from "./AddTopicButton"
 
 export default async function AdminTopicsPage() {
   const topics = await getTopics()
@@ -19,7 +20,7 @@ export default async function AdminTopicsPage() {
              <FolderTree className="w-5 h-5 text-brand-500" />
              총 {topics.length}개의 대주제
           </div>
-          <Button variant="primary" size="sm"><Plus className="w-4 h-4 mr-1" /> Add Topic</Button>
+          <AddTopicButton />
         </div>
         
         <div className="overflow-x-auto">
