@@ -10,6 +10,7 @@ import Image from "next/image"
 import { getStoryById, updateStory, deleteStory, createStory } from "@/lib/actions/story"
 import { submitToReview } from "@/lib/actions/review"
 import { getExperts, getAnswers, Expert, Answer } from "@/lib/actions/content"
+import { compressImage } from "@/lib/utils/image"
 
 const STORY_CATEGORIES = [
   { value: "editorial", label: "창간사" },
@@ -86,14 +87,11 @@ export default function AdminEditStoryPage() {
     loadData()
   }, [isNew, storyId])
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setThumbnailPreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+      const compressedObjectUrl = await compressImage(file)
+      setThumbnailPreview(compressedObjectUrl)
     }
   }
 

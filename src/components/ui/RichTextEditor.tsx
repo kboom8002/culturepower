@@ -4,6 +4,7 @@ import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Image from "@tiptap/extension-image"
 import { Bold, Italic, Heading2, Heading3, ImageIcon, List, ListOrdered, Quote, Undo, Redo } from "lucide-react"
+import { compressImage } from "@/lib/utils/image"
 
 export interface RichTextEditorProps {
   value: string
@@ -35,11 +36,9 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
           if (item.type.indexOf("image") === 0) {
             const file = item.getAsFile()
             if (file) {
-              const reader = new FileReader()
-              reader.onload = (e) => {
-                editor.chain().focus().setImage({ src: e.target?.result as string }).run()
-              }
-              reader.readAsDataURL(file)
+              compressImage(file).then((compressedBase64) => {
+                editor.chain().focus().setImage({ src: compressedBase64 }).run()
+              })
               return true
             }
           }
