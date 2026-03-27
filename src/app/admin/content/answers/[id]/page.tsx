@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { getAnswerById, upsertAnswer, getExperts, getTopics, Expert, ContentTopic } from "@/lib/actions/content"
+import { submitToReview } from "@/lib/actions/review"
 import { RichTextEditor } from "@/components/ui/RichTextEditor"
 
 export default function AdminAnswerEditorPage() {
@@ -71,6 +72,9 @@ export default function AdminAnswerEditorPage() {
     try {
       const res = await upsertAnswer(answerId, payload)
       if (res.success) {
+         if (targetStatus === 'Review') {
+            await submitToReview('Answer', res.id as string)
+         }
          alert(targetStatus === 'Draft' ? "임시저장 완료" : "승인 큐 등록 완료")
          router.push("/admin/content/answers")
       } else {

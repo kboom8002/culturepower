@@ -8,6 +8,7 @@ import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { getStoryById, updateStory, deleteStory, createStory } from "@/lib/actions/story"
+import { submitToReview } from "@/lib/actions/review"
 import { getExperts, getAnswers, Expert, Answer } from "@/lib/actions/content"
 
 const STORY_CATEGORIES = [
@@ -163,12 +164,14 @@ export default function AdminEditStoryPage() {
       if (isNew) {
         const res = await createStory(payload)
         if(res.success) {
+          await submitToReview('Story', res.data.id)
           alert("발행 승인 요청이 큐에 안전하게 등록되었습니다!")
           router.push("/admin/content/stories")
         } else alert(`실패: ${res.error}`)
       } else {
         const res = await updateStory(storyId, payload)
         if(res.success) {
+          await submitToReview('Story', res.data.id)
           alert("발행 승인 요청 등록!")
           router.push("/admin/content/stories")
         } else alert(`실패: ${res.error}`)

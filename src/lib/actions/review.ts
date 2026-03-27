@@ -96,6 +96,33 @@ export async function assignReviewTask(taskId: string, reviewerId: string) {
   return { success: true }
 }
 
+export async function submitToReview(contentType: 'Story' | 'Answer', contentId: string) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createReviewClient()
+
+  // 중복 큐 등록 방지 (이미 Pending 이나 In Review 인 항목이 있는지 확인)
+  const { data: existing } = await supabase
+    .from('review_tasks')
+    .select('id')
+    .eq('content_type', contentType)
+    .eq('content_id', contentId)
+    .in('status', ['Pending', 'In Review'])
+    .maybeSingle()
+
+  if (existing) return { success: true }
+
+  const { error } = await supabase.from('review_tasks').insert([{
+    content_type: contentType,
+    content_id: contentId,
+    status: 'Pending'
+  }])
+
+  if (error) return { success: false, error: error.message }
+  
+  revalidatePath('/admin/review/needs')
+  return { success: true }
+}
+
 export async function processReviewTask(taskId: string, action: 'Approve' | 'Return', comment: string) {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createReviewClient()
