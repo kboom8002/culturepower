@@ -16,7 +16,13 @@ export default async function StoryDetailPage({ params }: { params: { slug: stri
   const data = await getPublicStoryById(params.slug)
 
   if (!data) {
-    return notFound()
+    return (
+      <div className="w-full bg-surface-page py-10 min-h-screen text-black">
+        <h1 className="text-2xl font-bold">Diagnostic Mode</h1>
+        <p>Could not find story. This is what was returned:</p>
+        <pre>{JSON.stringify({ params, data }, null, 2)}</pre>
+      </div>
+    )
   }
 
   // Parse related answers from JSONB if available
