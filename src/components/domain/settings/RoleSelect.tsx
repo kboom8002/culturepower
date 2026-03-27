@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { updateAdminRole, ADMIN_ROLES } from "@/lib/actions/settings"
+import { updateAdminRole } from "@/lib/actions/settings"
+import { ADMIN_ROLES } from "@/lib/constants/settings"
 import { ShieldAlert, Shield, ChevronDown, Check, Loader2 } from "lucide-react"
 
 export function RoleSelect({ userId, currentRole }: { userId: string, currentRole: string }) {

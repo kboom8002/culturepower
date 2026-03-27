@@ -1,0 +1,35 @@
+
+> temp_app@0.1.0 build
+> next build
+
+▲ Next.js 16.2.1 (Turbopack)
+- Environments: .env.production
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.7s
+  Running TypeScript ...
+  Finished TypeScript in 6.4s ...
+  Collecting page data using 21 workers ...
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+Error: Failed to collect configuration for /admin/settings/audit
+    at ignore-listed frames {
+  [cause]: Error: A "use server" file can only export async functions, found object.
+  Read more: https://nextjs.org/docs/messages/invalid-use-server-value
+      at module evaluation (C:\Users\User\culturepower\.next\server\chunks\ssr\_13kitww._.js:1:3440)
+      at instantiateModule (C:\Users\User\culturepower\.next\server\chunks\ssr\[turbopack]_runtime.js:853:9)
+      at getOrInstantiateModuleFromParent (C:\Users\User\culturepower\.next\server\chunks\ssr\[turbopack]_runtime.js:877:12)
+      at Context.esmImport [as i] (C:\Users\User\culturepower\.next\server\chunks\ssr\[turbopack]_runtime.js:281:20)
+      at module evaluation (C:\Users\User\culturepower\.next\server\chunks\ssr\[root-of-the-server]__0c8fz3u._.js:1:3249)
+      at instantiateModule (C:\Users\User\culturepower\.next\server\chunks\ssr\[turbopack]_runtime.js:853:9)
+      at getOrInstantiateModuleFromParent (C:\Users\User\culturepower\.next\server\chunks\ssr\[turbopack]_runtime.js:877:12)
+      at Context.esmImport [as i] (C:\Users\User\culturepower\.next\server\chunks\ssr\[turbopack]_runtime.js:281:20)
+      at module evaluation (C:\Users\User\culturepower\.next\server\chunks\ssr\[root-of-the-server]__0c8fz3u._.js:1:6581)
+}
+
+> Build error occurred
+Error: Failed to collect page data for /admin/settings/audit
+    at ignore-listed frames {
+  type: 'Error'
+}
