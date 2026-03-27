@@ -2,6 +2,7 @@ import { Search, Clock, CalendarDays, FileText, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getScheduledItems } from "@/lib/actions/publishing"
 import { Chip } from "@/components/ui/chip"
+import { ScheduledActions } from "@/components/domain/publishing/ScheduledActions"
 
 export default async function AdminPublishingScheduledPage() {
   const items = await getScheduledItems()
@@ -61,10 +62,7 @@ export default async function AdminPublishingScheduledPage() {
                      {item.published_at ? new Date(item.published_at).toLocaleString() : 'TBD'}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                       <Button variant="secondary" size="sm" className="px-3 text-xs" disabled>시간 수정</Button>
-                       <Button variant="tertiary" size="sm" className="px-3 text-xs text-danger-500 hover:text-danger-600 border border-danger-200" disabled>예약 취소</Button>
-                    </div>
+                    <ScheduledActions itemId={item.id} contentType={item.content_type} currentDate={item.published_at} />
                   </td>
                 </tr>
               ))}

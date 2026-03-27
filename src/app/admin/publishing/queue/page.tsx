@@ -2,7 +2,7 @@ import { Search, Rocket, Filter, FileText, HelpCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getPublishQueue } from "@/lib/actions/publishing"
 import { Chip } from "@/components/ui/chip"
-import { PublishActionBtn } from "@/components/domain/publishing/PublishActionBtn"
+import { PublishActionGroup } from "@/components/domain/publishing/PublishActionGroup"
 
 export default async function AdminPublishingQueuePage() {
   const queue = await getPublishQueue()
@@ -70,8 +70,7 @@ export default async function AdminPublishingQueuePage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                       <Button variant="secondary" size="sm" className="px-3 text-xs" disabled>미리보기</Button>
-                       <PublishActionBtn itemId={item.id} contentType={item.content_type} variant={item.status === 'Review' ? 'primary' : 'outline'} />
+                       <PublishActionGroup itemId={item.id} contentType={item.content_type} />
                     </div>
                   </td>
                 </tr>

@@ -7,8 +7,8 @@ import { revalidatePath } from 'next/cache'
 export type PublishQueueItem = {
   id: string
   title: string
-  content_type: 'Story' | 'Answer'
-  status: 'Draft' | 'Review' | 'Scheduled'
+  content_type: 'Story' | 'Answer' | 'Event'
+  status: 'Draft' | 'Review' | 'Scheduled' | 'Public'
   author_id: string | null
   created_at: string
   published_at?: string | null
@@ -16,14 +16,10 @@ export type PublishQueueItem = {
 
 export type FeaturedContent = {
   id: string
-  placement_type: string
+  slot_name: string
   content_type: string
   content_id: string
   display_order: number
-  title_override: string | null
-  is_active: boolean
-  start_date: string | null
-  end_date: string | null
   created_at: string
   updated_at: string
 }
@@ -50,47 +46,75 @@ export async function createPublishingClient() {
 // Publishing Queue & Scheduled
 // ----------------------------------------------------
 export async function getPublishQueue(): Promise<PublishQueueItem[]> {
-  if (!isSupabaseConfigured()) return [
-    { id: "MOCK-1", title: "[Draft] 미래 정책 방향 제시", content_type: "Story", status: "Draft", author_id: null, created_at: new Date().toISOString() },
-    { id: "MOCK-2", title: "[Review] 지역 문화 예술 공간 활성화...", content_type: "Answer", status: "Review", author_id: null, created_at: new Date().toISOString() }
-  ]
+  if (!isSupabaseConfigured()) return []
   const supabase = await createPublishingClient()
   
-  // Aggregate from stories (Review, Draft)
-  const { data: storiesData } = await supabase.from('stories').select('id, title, status, author_id, created_at, published_at').in('status', ['Draft', 'Review']).order('created_at', { ascending: false })
+  // We fetch items that are ready for publishing (status = 'Review')
+  // For robustness, returning Drafts as well if they want to bypass review in small teams
+  const { data: storiesData } = await supabase.from('stories').select('id, title, status, author_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
   const stories = (storiesData || []).map(s => ({ ...s, content_type: 'Story' as const }))
   
-  // We'll mock answers table integration dynamically if it doesn't exist yet to prevent crashes
-  const { data: answersData, error: answersError } = await supabase.from('answers').select('id, title, status, author_id, created_at, published_at').in('status', ['Draft', 'Review']).order('created_at', { ascending: false })
-  const answers = !answersError && answersData ? answersData.map(a => ({ ...a, content_type: 'Answer' as const })) : []
+  const { data: answersData } = await supabase.from('answers').select('id, title, status, author_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
+  const answers = (answersData || []).map(a => ({ ...a, content_type: 'Answer' as const }))
 
-  return [...stories, ...answers].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const { data: eventsData } = await supabase.from('events').select('id, title:name, status, author_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
+  const events = (eventsData || []).map(e => ({ ...e, content_type: 'Event' as const }))
+
+  return [...stories, ...answers, ...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 }
 
 export async function getScheduledItems(): Promise<PublishQueueItem[]> {
-  if (!isSupabaseConfigured()) return [
-    { id: "MOCK-S1", title: "[Scheduled] 특집 기획 - AI 연대기", content_type: "Story", status: "Scheduled", author_id: null, created_at: new Date().toISOString(), published_at: new Date(Date.now() + 86400000).toISOString() }
-  ]
+  if (!isSupabaseConfigured()) return []
   const supabase = await createPublishingClient()
   
   const { data: storiesData } = await supabase.from('stories').select('id, title, status, author_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
   const stories = (storiesData || []).map(s => ({ ...s, content_type: 'Story' as const }))
   
-  const { data: answersData, error: answersError } = await supabase.from('answers').select('id, title, status, author_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
-  const answers = !answersError && answersData ? answersData.map(a => ({ ...a, content_type: 'Answer' as const })) : []
+  const { data: answersData } = await supabase.from('answers').select('id, title, status, author_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
+  const answers = (answersData || []).map(a => ({ ...a, content_type: 'Answer' as const }))
 
-  return [...stories, ...answers].sort((a: any, b: any) => new Date(a.published_at || "").getTime() - new Date(b.published_at || "").getTime())
+  const { data: eventsData } = await supabase.from('events').select('id, title:name, status, author_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
+  const events = (eventsData || []).map(e => ({ ...e, content_type: 'Event' as const }))
+
+  return [...stories, ...answers, ...events].sort((a: any, b: any) => new Date(a.published_at || "").getTime() - new Date(b.published_at || "").getTime())
 }
 
-export async function publishItemNow(id: string, contentType: 'Story' | 'Answer') {
+export async function publishImmediately(id: string, contentType: 'Story' | 'Answer' | 'Event') {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createPublishingClient()
-  const table = contentType === 'Story' ? 'stories' : 'answers'
+  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : 'events'
+  
   const { error } = await supabase.from(table).update({ status: 'Public', published_at: new Date().toISOString() }).eq('id', id)
   
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/publishing/queue')
-  revalidatePath('/admin/content/stories')
+  revalidatePath('/admin/publishing/scheduled')
+  return { success: true }
+}
+
+export async function schedulePublish(id: string, contentType: 'Story' | 'Answer' | 'Event', scheduledDate: string) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createPublishingClient()
+  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : 'events'
+
+  const { error } = await supabase.from(table).update({ status: 'Scheduled', published_at: scheduledDate }).eq('id', id)
+  
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/publishing/queue')
+  revalidatePath('/admin/publishing/scheduled')
+  return { success: true }
+}
+
+export async function returnToReview(id: string, contentType: 'Story' | 'Answer' | 'Event') {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createPublishingClient()
+  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : 'events'
+
+  const { error } = await supabase.from(table).update({ status: 'Review', published_at: null }).eq('id', id)
+  
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/publishing/queue')
+  revalidatePath('/admin/publishing/scheduled')
   return { success: true }
 }
 
@@ -100,6 +124,52 @@ export async function publishItemNow(id: string, contentType: 'Story' | 'Answer'
 export async function getFeaturedContents(): Promise<FeaturedContent[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createPublishingClient()
-  const { data } = await supabase.from('featured_contents').select('*').order('placement_type', { ascending: true }).order('display_order', { ascending: true })
+  const { data } = await supabase.from('featured_contents').select('*').order('slot_name', { ascending: true }).order('display_order', { ascending: true })
   return (data || []) as FeaturedContent[]
+}
+
+export async function getFeaturedSlots(slotName: string): Promise<FeaturedContent[]> {
+  if (!isSupabaseConfigured()) return []
+  const supabase = await createPublishingClient()
+  const { data } = await supabase.from('featured_contents').select('*').eq('slot_name', slotName).order('display_order', { ascending: true })
+  return (data || []) as FeaturedContent[]
+}
+
+export async function updateFeaturedContent(slotName: string, items: { content_type: string, content_id: string, display_order: number }[]) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createPublishingClient()
+  
+  // 1. Delete existing for this slot
+  await supabase.from('featured_contents').delete().eq('slot_name', slotName)
+
+  // 2. Insert new
+  if (items.length > 0) {
+    const payload = items.map(i => ({
+      slot_name: slotName,
+      content_type: i.content_type,
+      content_id: i.content_id,
+      display_order: i.display_order
+    }))
+    const { error } = await supabase.from('featured_contents').insert(payload)
+    if (error) return { success: false, error: error.message }
+  }
+
+  revalidatePath('/admin/publishing/featured')
+  // We might want to revalidate public routes like '/' here if we had them.
+  return { success: true }
+}
+
+export async function searchPublicContent(query: string) {
+  if (!isSupabaseConfigured() || !query) return []
+  const supabase = await createPublishingClient()
+  
+  const [stories, answers, events] = await Promise.all([
+    supabase.from('stories').select('id, title, status, published_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5),
+    supabase.from('answers').select('id, title, status, published_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5),
+    supabase.from('events').select('id, title:name, status, published_at').eq('status', 'Public').ilike('name', `%${query}%`).limit(5)
+  ])
+
+  const format = (data: any[] | null, type: string) => (data || []).map(d => ({ ...d, content_type: type }))
+  
+  return [...format(stories.data, 'Story'), ...format(answers.data, 'Answer'), ...format(events.data, 'Event')]
 }

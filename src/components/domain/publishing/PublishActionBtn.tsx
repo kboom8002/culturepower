@@ -2,7 +2,7 @@
 
 import { useTransition } from "react"
 import { Button } from "@/components/ui/button"
-import { publishItemNow } from "@/lib/actions/publishing"
+import { publishImmediately } from "@/lib/actions/publishing"
 import { Rocket, Loader2 } from "lucide-react"
 
 type Props = {
@@ -17,7 +17,7 @@ export function PublishActionBtn({ itemId, contentType, variant = 'primary' }: P
   const handlePublish = () => {
     if(!confirm(`해당 ${contentType} 컨텐츠를 지금 즉시 발행(Public)하시겠습니까?`)) return
     startTransition(async () => {
-      const res = await publishItemNow(itemId, contentType)
+      const res = await publishImmediately(itemId, contentType)
       if (!res.success) {
         alert(res.error)
       } else {
