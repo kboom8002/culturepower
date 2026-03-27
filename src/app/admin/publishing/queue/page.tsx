@@ -1,17 +1,47 @@
-import { Search, Rocket, Filter, FileText, HelpCircle } from "lucide-react"
+import { Search, Rocket, Filter, FileText, HelpCircle, History, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getPublishQueue } from "@/lib/actions/publishing"
+import { getPublishQueue, getPublishHistory } from "@/lib/actions/publishing"
 import { Chip } from "@/components/ui/chip"
 import { PublishActionGroup } from "@/components/domain/publishing/PublishActionGroup"
+import Link from "next/link"
 
-export default async function AdminPublishingQueuePage() {
-  const queue = await getPublishQueue()
+export default async function AdminPublishingQueuePage({ searchParams }: { searchParams: Promise<{ tab?: string, page?: string }> }) {
+  const resolvedParams = await searchParams
+  const tab = resolvedParams.tab || 'queue'
+  const page = parseInt(resolvedParams.page || '1', 10) || 1
+  const limit = 15
+
+  const isHistory = tab === 'history'
+  
+  let items: any[] = []
+  let total = 0
+  
+  if (isHistory) {
+    const historyRes = await getPublishHistory(page, limit)
+    items = historyRes.items
+    total = historyRes.total
+  } else {
+    items = await getPublishQueue()
+    total = items.length
+  }
+
+  const totalPages = isHistory ? Math.ceil(total / limit) : 1
 
   return (
     <div className="flex flex-col gap-8 w-full pb-24">
       <div className="flex flex-col gap-2">
         <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Publish Queue</h1>
-        <p className="text-body text-neutral-600">발행 대기 중인(Review) 콘텐츠나 임시저장(Draft)된 콘텐츠를 모아보고 최종 발행합니다.</p>
+        <p className="text-body text-neutral-600">발행 대기 중인 콘텐츠를 최종 발행하거나, 이전 발행 내역(History)을 조회합니다.</p>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex items-center gap-6 border-b border-line-soft">
+        <Link href="?tab=queue" className={`pb-3 text-sm font-bold border-b-2 transition-colors ${!isHistory ? 'border-brand-600 text-brand-700' : 'border-transparent text-neutral-500 hover:text-neutral-900'}`}>
+          대기열 (To Publish)
+        </Link>
+        <Link href="?tab=history" className={`pb-3 text-sm font-bold border-b-2 transition-colors ${isHistory ? 'border-brand-600 text-brand-700' : 'border-transparent text-neutral-500 hover:text-neutral-900'}`}>
+          발행 내역 (History)
+        </Link>
       </div>
 
       <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
@@ -30,7 +60,7 @@ export default async function AdminPublishingQueuePage() {
             </button>
           </div>
           <div className="font-bold text-neutral-700 p-2 text-sm text-right">
-             총 {queue.length}건 대기 중
+             총 {total}건 {isHistory ? '발행됨' : '대기 중'}
           </div>
         </div>
         
@@ -41,20 +71,22 @@ export default async function AdminPublishingQueuePage() {
                 <th className="px-6 py-4 w-20">Type</th>
                 <th className="px-6 py-4 min-w-[300px]">Content Title</th>
                 <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Created At</th>
+                <th className="px-6 py-4">{isHistory ? 'Published At' : 'Created At'}</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft text-neutral-900">
-              {queue.length === 0 ? (
-                 <tr><td colSpan={5} className="px-6 py-12 text-center text-neutral-500">발행 대기열이 비어있습니다.</td></tr>
-              ) : queue.map((item) => (
+              {items.length === 0 ? (
+                 <tr><td colSpan={5} className="px-6 py-12 text-center text-neutral-500">{isHistory ? '발행된 내역이 없습니다.' : '발행 대기열이 비어있습니다.'}</td></tr>
+              ) : items.map((item: any) => (
                 <tr key={item.id} className="hover:bg-neutral-50/50 transition-colors group">
                   <td className="px-6 py-4">
                      {item.content_type === 'Story' ? (
                        <span className="flex items-center justify-center bg-brand-50 text-brand-600 w-8 h-8 rounded-lg" title="Webzine Story"><FileText className="w-4 h-4" /></span>
-                     ) : (
+                     ) : item.content_type === 'Answer' ? (
                        <span className="flex items-center justify-center bg-purple-50 text-purple-600 w-8 h-8 rounded-lg" title="Knowledge Answer"><HelpCircle className="w-4 h-4" /></span>
+                     ) : (
+                       <span className="flex items-center justify-center bg-orange-50 text-orange-600 w-8 h-8 rounded-lg" title="Event"><Rocket className="w-4 h-4" /></span>
                      )}
                   </td>
                   <td className="px-6 py-4">
@@ -64,13 +96,21 @@ export default async function AdminPublishingQueuePage() {
                   <td className="px-6 py-4">
                      {item.status === 'Draft' && <Chip variant="default">Draft</Chip>}
                      {item.status === 'Review' && <Chip variant="reviewed">Review</Chip>}
+                     {item.status === 'Public' && <Chip variant="primary">Published</Chip>}
+                     {item.status === 'Archived' && <Chip variant="default">Archived</Chip>}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs text-neutral-500 min-h-[56px]">
-                     {new Date(item.created_at).toLocaleString()}
+                     {new Date(isHistory ? (item.published_at || item.created_at) : item.created_at).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                       <PublishActionGroup itemId={item.id} contentType={item.content_type} />
+                       {!isHistory ? (
+                         <PublishActionGroup itemId={item.id} contentType={item.content_type} />
+                       ) : (
+                         <Button variant="secondary" size="sm" asChild>
+                            <Link href={item.content_type === 'Story' ? `/webzine/stories/${item.id}` : `/answers/${item.id}`} target="_blank">View</Link>
+                         </Button>
+                       )}
                     </div>
                   </td>
                 </tr>
@@ -78,6 +118,25 @@ export default async function AdminPublishingQueuePage() {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination (History only) */}
+        {isHistory && totalPages > 1 && (
+          <div className="p-4 border-t border-line-soft flex items-center justify-between">
+            <span className="text-sm text-neutral-500">Page {page} of {totalPages}</span>
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" size="sm" asChild disabled={page <= 1}>
+                <Link href={`?tab=history&page=${page - 1}`} className={page <= 1 ? 'pointer-events-none opacity-50' : ''}>
+                  <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+                </Link>
+              </Button>
+              <Button variant="secondary" size="sm" asChild disabled={page >= totalPages}>
+                <Link href={`?tab=history&page=${page + 1}`} className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}>
+                  Next <ChevronRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -66,6 +66,36 @@ export async function getPublishQueue(): Promise<PublishQueueItem[]> {
   return [...stories, ...answers, ...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 }
 
+export async function getPublishHistory(page: number = 1, limit: number = 20): Promise<{ items: PublishQueueItem[], total: number }> {
+  if (!isSupabaseConfigured()) return { items: [], total: 0 }
+  const supabase = await createPublishingClient()
+  
+  const from = (page - 1) * limit
+  const to = from + limit - 1
+
+  // Since we aggregate across three tables, doing strict SQL union pagination via PostgREST is difficult.
+  // Instead, we will fetch the top N from each table, merge, sort, and slice. 
+  // In a massive scale, a dedicated materialized view or SQL function is needed.
+  // Here we fetch up to 'to + limit' from each just to be safe for local sorting.
+  const fetchLimit = to + 1
+
+  const { data: sData, count: sCount } = await supabase.from('stories').select('id, title, status, creator_id, created_at, published_at', { count: 'exact' }).in('status', ['Public', 'Archived']).order('published_at', { ascending: false }).limit(fetchLimit)
+  const stories = (sData || []).map(s => ({ ...s, author_id: s.creator_id, content_type: 'Story' as const }))
+  
+  const { data: aData, count: aCount } = await supabase.from('answers').select('id, title, status, creator_id, created_at, published_at', { count: 'exact' }).in('status', ['Public', 'Archived']).order('published_at', { ascending: false }).limit(fetchLimit)
+  const answers = (aData || []).map(a => ({ ...a, author_id: a.creator_id, content_type: 'Answer' as const }))
+
+  const { data: eData, count: eCount } = await supabase.from('events').select('id, title, status, created_at, published_at', { count: 'exact' }).in('status', ['Public', 'Archived']).order('published_at', { ascending: false }).limit(fetchLimit)
+  const events = (eData || []).map(e => ({ ...e, author_id: null, content_type: 'Event' as const }))
+
+  const allItems = [...stories, ...answers, ...events].sort((a: any, b: any) => new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime())
+  
+  const total = (sCount || 0) + (aCount || 0) + (eCount || 0)
+  const items = allItems.slice(from, to + 1)
+
+  return { items, total }
+}
+
 export async function getScheduledItems(): Promise<PublishQueueItem[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createPublishingClient()
