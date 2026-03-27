@@ -149,7 +149,7 @@ export async function processReviewTask(taskId: string, action: 'Approve' | 'Ret
 
   // Sync with original content table
   const targetTable = task.content_type === 'Story' ? 'stories' : 'answers'
-  const contentStatus = action === 'Approve' ? 'Scheduled' : 'Draft' // Return back to draft if rejected, or schedule it directly (which pushes to Publishing Queue)
+  const contentStatus = action === 'Approve' ? 'Review' : 'Draft' // Return back to draft if rejected, or push to Publishing Queue (Review)
   
   const { error: syncErr } = await supabase.from(targetTable).update({ status: contentStatus }).eq('id', task.content_id)
   
