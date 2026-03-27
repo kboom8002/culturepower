@@ -67,14 +67,19 @@ export default function AdminAnswerEditorPage() {
        topic_id: topicId || null,
        status: targetStatus
     }
-    const res = await upsertAnswer(answerId, payload)
-    setIsSaving(false)
     
-    if (res.success) {
-       alert(targetStatus === 'Draft' ? "임시저장 완료" : "승인 큐 등록 완료")
-       router.push("/admin/content/answers")
-    } else {
-       alert("에러: " + res.error)
+    try {
+      const res = await upsertAnswer(answerId, payload)
+      if (res.success) {
+         alert(targetStatus === 'Draft' ? "임시저장 완료" : "승인 큐 등록 완료")
+         router.push("/admin/content/answers")
+      } else {
+         alert("에러: " + res.error)
+      }
+    } catch (e: any) {
+      alert(`저장 중 네트워크/서버 에러가 발생했습니다. (첨부 이미지가 너무 큰 경우일 수 있습니다): ${e.message}`)
+    } finally {
+      setIsSaving(false)
     }
   }
 

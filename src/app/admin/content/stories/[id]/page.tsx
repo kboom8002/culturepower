@@ -128,19 +128,24 @@ export default function AdminEditStoryPage() {
     setIsSaving(true)
     const payload = buildPayload('Draft')
     
-    if (isNew) {
-      const res = await createStory(payload)
-      if(res.success) {
-        alert("임시저장 되었습니다")
-        router.push("/admin/content/stories")
-      } else alert(`실패: ${res.error}`)
-    } else {
-      const res = await updateStory(storyId, payload)
-      if(res.success) {
-        alert("저장되었습니다")
-      } else alert(`실패: ${res.error}`)
+    try {
+      if (isNew) {
+        const res = await createStory(payload)
+        if(res.success) {
+          alert("임시저장 되었습니다")
+          router.push("/admin/content/stories")
+        } else alert(`실패: ${res.error}`)
+      } else {
+        const res = await updateStory(storyId, payload)
+        if(res.success) {
+          alert("저장되었습니다")
+        } else alert(`실패: ${res.error}`)
+      }
+    } catch (e: any) {
+      alert(`네트워크/서버 에러가 발생했습니다. (첨부 이미지가 너무 큰 경우일 수 있습니다): ${e.message}`)
+    } finally {
+      setIsSaving(false)
     }
-    setIsSaving(false)
   }
 
   const handlePublish = async () => {
@@ -154,20 +159,25 @@ export default function AdminEditStoryPage() {
     setIsPublishing(true)
     const payload = buildPayload('Review')
     
-    if (isNew) {
-      const res = await createStory(payload)
-      if(res.success) {
-        alert("발행 승인 요청이 큐에 안전하게 등록되었습니다!")
-        router.push("/admin/content/stories")
-      } else alert(`실패: ${res.error}`)
-    } else {
-      const res = await updateStory(storyId, payload)
-      if(res.success) {
-        alert("발행 승인 요청 등록!")
-        router.push("/admin/content/stories")
-      } else alert(`실패: ${res.error}`)
+    try {
+      if (isNew) {
+        const res = await createStory(payload)
+        if(res.success) {
+          alert("발행 승인 요청이 큐에 안전하게 등록되었습니다!")
+          router.push("/admin/content/stories")
+        } else alert(`실패: ${res.error}`)
+      } else {
+        const res = await updateStory(storyId, payload)
+        if(res.success) {
+          alert("발행 승인 요청 등록!")
+          router.push("/admin/content/stories")
+        } else alert(`실패: ${res.error}`)
+      }
+    } catch (e: any) {
+      alert(`네트워크/서버 에러가 발생했습니다. (첨부 이미지가 너무 큰 경우일 수 있습니다): ${e.message}`)
+    } finally {
+      setIsPublishing(false)
     }
-    setIsPublishing(false)
   }
 
   const handleDelete = async () => {
