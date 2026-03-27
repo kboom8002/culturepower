@@ -26,6 +26,7 @@ export type Story = {
   meta_description: string | null
   og_image_url: string | null
   canonical_slug: string | null
+  related_answers_meta: any | null
 }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -44,7 +45,7 @@ const FALLBACK_MOCK_STORIES: Story[] = [
     deck: null, body: "...", why_this_matters: null,
     section: "Policy Insight", 
     story_type: null, author_expert_id: null, reviewer_id: null, featured_flag: false,
-    meta_title: null, meta_description: null, og_image_url: null, canonical_slug: null,
+    meta_title: null, meta_description: null, og_image_url: null, canonical_slug: null, related_answers_meta: null,
     status: "Public", 
     created_at: "2026-03-20T00:00:00Z", updated_at: "2026-03-20T00:00:00Z",
     creator_id: null, slug: "local-extinction", published_at: "2026-03-20T00:00:00Z"

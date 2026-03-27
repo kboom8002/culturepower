@@ -29,6 +29,23 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
       attributes: {
         class: 'prose prose-neutral max-w-none min-h-[400px] w-full p-6 outline-none',
       },
+      handlePaste: (view, event) => {
+        const items = Array.from(event.clipboardData?.items || [])
+        for (const item of items) {
+          if (item.type.indexOf("image") === 0) {
+            const file = item.getAsFile()
+            if (file) {
+              const reader = new FileReader()
+              reader.onload = (e) => {
+                editor.chain().focus().setImage({ src: e.target?.result as string }).run()
+              }
+              reader.readAsDataURL(file)
+              return true
+            }
+          }
+        }
+        return false
+      }
     },
   })
 
