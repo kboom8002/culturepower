@@ -6,6 +6,9 @@ import { getPublicAnswerById } from "@/lib/actions/public"
 import { notFound } from "next/navigation"
 
 export const dynamic = 'force-dynamic' // Bypass cache for immediate real-time rendering
+
+export default async function AnswerDetailPage({ params }: { params: { slug: string } }) {
+  // slug param receives the ID based on our index page routing
   const data = await getPublicAnswerById(params.slug)
 
   if (!data) {
