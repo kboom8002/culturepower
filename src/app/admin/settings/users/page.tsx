@@ -2,6 +2,7 @@ import { Search, ShieldAlert, CheckCircle2, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getAdminUsers } from "@/lib/actions/settings"
 import { Chip } from "@/components/ui/chip"
+import { RoleSelect } from "@/components/domain/settings/RoleSelect"
 
 export default async function AdminUsersPage() {
   const users = await getAdminUsers()
@@ -34,7 +35,6 @@ export default async function AdminUsersPage() {
                 <th className="px-6 py-4">Role</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4">Last Login</th>
-                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft text-neutral-900">
@@ -52,19 +52,13 @@ export default async function AdminUsersPage() {
                      </div>
                   </td>
                   <td className="px-6 py-4">
-                     {user.role === 'Super Admin' && <span className="flex items-center gap-1.5 text-danger-600 font-bold text-xs bg-danger-50 px-2 py-1 rounded w-fit"><ShieldAlert className="w-3 h-3" /> Super Admin</span>}
-                     {user.role === 'Editor' && <span className="font-bold text-brand-600 text-xs bg-brand-50 px-2 py-1 rounded w-fit">Editor</span>}
-                     {user.role === 'Reviewer' && <span className="font-bold text-warning-700 text-xs bg-warning-50 px-2 py-1 rounded w-fit">Reviewer</span>}
-                     {user.role === 'View-Only' && <span className="font-medium text-neutral-600 text-xs bg-neutral-100 px-2 py-1 rounded w-fit">View-Only</span>}
+                     <RoleSelect userId={user.id} currentRole={user.role} />
                   </td>
                   <td className="px-6 py-4">
                      {user.is_active ? <Chip variant="success"><CheckCircle2 className="w-3 h-3 mr-1 inline" /> Active</Chip> : <Chip variant="issue">Disabled</Chip>}
                   </td>
                   <td className="px-6 py-4 text-neutral-500 text-xs font-mono">
                      {user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never'}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <Button variant="tool" size="sm" className="p-2 text-neutral-400 hover:text-neutral-900"><MoreHorizontal className="w-4 h-4" /></Button>
                   </td>
                 </tr>
               ))}
