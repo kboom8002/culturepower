@@ -10,8 +10,7 @@ export function ReviewAssignBtn({ taskId }: { taskId: string }) {
 
   const handleAssign = () => {
     startTransition(async () => {
-      // In MVP, we use a generic placeholder ID for the reviewer
-      const res = await assignReviewTask(taskId, "admin-user")
+      const res = await assignReviewTask(taskId)
       if (!res.success) {
         alert("할당 실패: " + res.error)
       } else {

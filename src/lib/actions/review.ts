@@ -86,10 +86,17 @@ export async function getReviewTasks(filterStatus: string, reviewerId?: string):
   return enrichReviewTasks(supabase, data)
 }
 
-export async function assignReviewTask(taskId: string, reviewerId: string) {
+export async function assignReviewTask(taskId: string) {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createReviewClient()
-  const { error } = await supabase.from('review_tasks').update({ reviewer_id: reviewerId, status: 'In Review' }).eq('id', taskId)
+  
+  const { data: { user }, error: authErr } = await supabase.auth.getUser()
+  if (authErr || !user) return { success: false, error: "Authentication required" }
+
+  const { error } = await supabase.from('review_tasks')
+    .update({ reviewer_id: user.id, status: 'In Review' })
+    .eq('id', taskId)
+
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/review/needs')
   revalidatePath('/admin/review/mine')

@@ -16,7 +16,13 @@ ADD COLUMN IF NOT EXISTS canonical_slug VARCHAR(255),
 ADD COLUMN IF NOT EXISTS related_answers_meta JSONB;
 
 -- 2. Status 컬럼 유연화 (enum -> Varchar)
--- 기존 ENUM ('Draft', 'Review', 'Public', 'Hidden', 'Archived') 에 
--- 방금 추가된 파이프라인의 'Scheduled(예약/발행 대기)' 상태가 들어갈 수 있도록 VARCHAR로 변환합니다.
+-- 기존 ENUM 타입이 이미 접근성(RLS) 정책에 묶여있으므로, 의존성 정책을 임시 해제(Drop) 후 컬럼을 변환합니다.
+DROP POLICY IF EXISTS "Public can view active stories" ON public.stories;
+DROP POLICY IF EXISTS "Public can view active events" ON public.events;
+
 ALTER TABLE public.stories ALTER COLUMN status TYPE VARCHAR(50) USING status::text;
 ALTER TABLE public.events ALTER COLUMN status TYPE VARCHAR(50) USING status::text;
+
+-- 3. 의존성 정책 복구
+CREATE POLICY "Public can view active stories" ON public.stories FOR SELECT USING (status = 'Public');
+CREATE POLICY "Public can view active events" ON public.events FOR SELECT USING (status = 'Public');
