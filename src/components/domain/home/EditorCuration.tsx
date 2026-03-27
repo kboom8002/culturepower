@@ -6,7 +6,7 @@ import { getFeaturedSlots } from "@/lib/actions/publishing"
 import { getPublicStories } from "@/lib/actions/public"
 
 export async function EditorCuration() {
-  const featured = await getFeaturedSlots('Home Main Story') // or whatever the slot name was, 'Home Hero' maybe? Let's check 0018_publishing_features.sql
+  const featured = await getFeaturedSlots('Home Hero') 
   const allStories = await getPublicStories()
   
   const stories = featured
