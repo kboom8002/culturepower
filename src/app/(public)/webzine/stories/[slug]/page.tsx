@@ -9,7 +9,7 @@ import { ShareButtons } from "@/components/ui/ShareButtons"
 import { getPublicStoryById } from "@/lib/actions/public"
 import { notFound } from "next/navigation"
 
-export const revalidate = 60 // Cache for 1 minute
+export const dynamic = 'force-dynamic' // Force dynamic rendering to bypass cached 404s
 
 export default async function StoryDetailPage({ params }: { params: { slug: string } }) {
   // slug param receives the ID based on our index page routing

@@ -38,7 +38,7 @@ export async function getPublicStories(): Promise<PublicStory[]> {
   const nowIso = new Date().toISOString()
   let { data, error } = await supabase
     .from('stories')
-    .select('*, experts(name, organization, role)')
+    .select('*')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .order('published_at', { ascending: false })
   
@@ -65,7 +65,7 @@ export async function getPublicStoryById(id: string): Promise<PublicStory | null
   const nowIso = new Date().toISOString()
   let { data, error } = await supabase
     .from('stories')
-    .select('*, experts(name, organization, role)')
+    .select('*')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .eq('id', id)
     .single()
