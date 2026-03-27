@@ -19,13 +19,7 @@ const ADMIN_MENUS = [
     title: "Inbox",
     icon: Inbox,
     href: "/admin/inbox",
-    submenus: [
-      { label: "All", href: "/admin/inbox/all" },
-      { label: "Questions", href: "/admin/inbox/questions" },
-      { label: "Suggestions", href: "/admin/inbox/suggestions" },
-      { label: "Corrections", href: "/admin/inbox/corrections" },
-      { label: "Participation Inquiries", href: "/admin/inbox/participation" }
-    ]
+    submenus: []
   },
   {
     title: "Content",
