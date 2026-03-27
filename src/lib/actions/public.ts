@@ -36,12 +36,23 @@ export type PublicAnswer = Answer & {
 export async function getPublicStories(): Promise<PublicStory[]> {
   const supabase = await createPublicClient()
   const nowIso = new Date().toISOString()
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('stories')
     .select('*, experts(name, organization, role)')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .order('published_at', { ascending: false })
   
+  if (error && error.code === 'PGRST200') {
+    console.warn("Schema cache error! Falling back to raw stories query.");
+    const fallback = await supabase
+      .from('stories')
+      .select('*')
+      .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
+      .order('published_at', { ascending: false })
+    data = fallback.data;
+    error = fallback.error;
+  }
+
   if (error || !data) return []
   return data as PublicStory[]
 }
@@ -52,13 +63,25 @@ export async function getPublicStories(): Promise<PublicStory[]> {
 export async function getPublicStoryById(id: string): Promise<PublicStory | null> {
   const supabase = await createPublicClient()
   const nowIso = new Date().toISOString()
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('stories')
     .select('*, experts(name, organization, role), admin_users(name)')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .eq('id', id)
     .single()
   
+  if (error && error.code === 'PGRST200') {
+    console.warn("Schema cache error! Falling back to raw story query.");
+    const fallback = await supabase
+      .from('stories')
+      .select('*')
+      .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
+      .eq('id', id)
+      .single()
+    data = fallback.data;
+    error = fallback.error;
+  }
+
   if (error || !data) return null
   return data as PublicStory
 }
@@ -69,12 +92,22 @@ export async function getPublicStoryById(id: string): Promise<PublicStory | null
 export async function getPublicAnswers(): Promise<PublicAnswer[]> {
   const supabase = await createPublicClient()
   const nowIso = new Date().toISOString()
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('answers')
     .select('*, topics(name, slug, description)')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .order('published_at', { ascending: false })
   
+  if (error && error.code === 'PGRST200') {
+    const fallback = await supabase
+      .from('answers')
+      .select('*')
+      .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
+      .order('published_at', { ascending: false })
+    data = fallback.data;
+    error = fallback.error;
+  }
+
   if (error || !data) return []
   return data as PublicAnswer[]
 }
@@ -85,13 +118,24 @@ export async function getPublicAnswers(): Promise<PublicAnswer[]> {
 export async function getPublicAnswerById(id: string): Promise<PublicAnswer | null> {
   const supabase = await createPublicClient()
   const nowIso = new Date().toISOString()
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('answers')
     .select('*, topics(name, slug, description), experts(name, organization, role, profile_image_url), admin_users(name)')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .eq('id', id)
     .single()
   
+  if (error && error.code === 'PGRST200') {
+    const fallback = await supabase
+      .from('answers')
+      .select('*')
+      .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
+      .eq('id', id)
+      .single()
+    data = fallback.data
+    error = fallback.error
+  }
+
   if (error || !data) return null
   return data as PublicAnswer
 }
