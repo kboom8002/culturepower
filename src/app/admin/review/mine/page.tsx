@@ -1,10 +1,9 @@
-import { Search, CheckCircle, XCircle, Clock } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Search, Clock } from "lucide-react"
 import { getReviewTasks } from "@/lib/actions/review"
+import { ReviewProcessBtn } from "@/components/domain/review/ReviewProcessBtn"
 
 export default async function AdminMyReviewsPage() {
-  // Mock logic: assuming current user is 'USR-01'
-  const tasks = await getReviewTasks('In Review', 'USR-01')
+  const tasks = await getReviewTasks('In Review')
 
   return (
     <div className="flex flex-col gap-8 w-full pb-24">
@@ -58,12 +57,8 @@ export default async function AdminMyReviewsPage() {
                      {new Date(task.updated_at).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 flex items-center justify-end gap-2">
-                     <Button variant="tool" size="sm" className="px-3 bg-danger-50 text-danger-700 hover:bg-danger-100 border-none">
-                        <XCircle className="w-4 h-4 mr-1.5" /> Return
-                     </Button>
-                     <Button variant="tool" size="sm" className="px-3 bg-success-50 text-success-700 hover:bg-success-100 border-none">
-                        <CheckCircle className="w-4 h-4 mr-1.5" /> Approve
-                     </Button>
+                     <ReviewProcessBtn taskId={task.id} action="Return" />
+                     <ReviewProcessBtn taskId={task.id} action="Approve" />
                   </td>
                 </tr>
               ))}

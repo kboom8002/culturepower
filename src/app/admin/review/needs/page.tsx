@@ -1,6 +1,6 @@
-import { Search, UserPlus } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Search } from "lucide-react"
 import { getReviewTasks } from "@/lib/actions/review"
+import { ReviewAssignBtn } from "@/components/domain/review/ReviewAssignBtn"
 
 export default async function AdminReviewNeedsPage() {
   const tasks = await getReviewTasks('Pending')
@@ -51,7 +51,7 @@ export default async function AdminReviewNeedsPage() {
                      {new Date(task.created_at).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Button variant="primary" size="sm" className="px-4"><UserPlus className="w-4 h-4 mr-1.5" /> 나에게 할당</Button>
+                    <ReviewAssignBtn taskId={task.id} />
                   </td>
                 </tr>
               ))}
