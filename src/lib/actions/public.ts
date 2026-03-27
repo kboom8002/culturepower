@@ -153,3 +153,20 @@ export async function getPublicEventById(id: string): Promise<PublicEvent | null
     galleries: galleriesDb.data || []
   } as PublicEvent
 }
+
+export async function getPublicResources() {
+  const supabase = await createPublicClient()
+  const nowIso = new Date().toISOString()
+  
+  const [vids, docs, gals] = await Promise.all([
+    supabase.from('videos').select('*').or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`).order('created_at', { ascending: false }),
+    supabase.from('documents').select('*').or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`).order('created_at', { ascending: false }),
+    supabase.from('galleries').select('*').or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`).order('created_at', { ascending: false })
+  ])
+  
+  return {
+    videos: vids.data || [],
+    documents: docs.data || [],
+    galleries: gals.data || []
+  }
+}

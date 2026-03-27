@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { FeaturedContent, updateFeaturedContent, searchPublicContent } from "@/lib/actions/publishing"
-import { MonitorSmartphone, Star, CalendarDays, GripVertical, Trash2, Plus, Loader2 } from "lucide-react"
+import { MonitorSmartphone, Star, CalendarDays, GripVertical, Trash2, Plus, Loader2, Database } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import * as Dialog from "@radix-ui/react-dialog"
 
@@ -21,7 +21,8 @@ type UIItem = {
 const SLOTS = [
   { id: "Home Hero", label: "Homepage Hero", icon: MonitorSmartphone, max: 3 },
   { id: "Home Answers", label: "Top Answers", icon: Star, max: 4 },
-  { id: "Home Events", label: "Upcoming Events", icon: CalendarDays, max: 4 }
+  { id: "Home Events", label: "Upcoming Events", icon: CalendarDays, max: 4 },
+  { id: "Data/Resources", label: "데이터/자료 추천", icon: Database, max: 6 }
 ]
 
 export function FeaturedManager({ initialItems }: Props) {

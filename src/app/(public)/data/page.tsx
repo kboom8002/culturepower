@@ -1,137 +1,120 @@
-"use client"
-
-import { useState, useEffect, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
 import { PageHeader } from "@/components/layout/PageHeader"
-import { FilterBar } from "@/components/layout/FilterBar"
-import { FileText, Download } from "lucide-react"
-import Link from "next/link"
+import { getPublicResources } from "@/lib/actions/public"
+import { getFeaturedSlots } from "@/lib/actions/publishing"
+import { DataFeatured } from "@/components/domain/data/DataFeatured"
+import { FileText, Video, Image as ImageIcon, Calendar, ExternalLink } from "lucide-react"
 
-const DATA_FILTERS = [
-  { value: "all", label: "전체 자료" },
-  { value: "info", label: "문화예술정보" },
-  { value: "schedule", label: "주요 행사/일정" },
-  { value: "contest", label: "공모사업" },
-  { value: "brief", label: "One-Pager / Brief" },
-  { value: "note", label: "데이터 노트" }
-]
+export const revalidate = 60 // 1 min ISR
 
-const MOCK_DATA = Array.from({ length: 12 }).map((_, i) => {
-  const slugs = ["brief", "note", "info", "contest"]
-  const labels = ["One-Pager", "데이터 노트", "문화예술정보", "공모사업"]
-  const cats = i % slugs.length
-
-  return {
-    id: `data-${i + 1}`,
-    categorySlug: slugs[cats],
-    categoryLabel: labels[cats],
-    title: [
-      "[Brief] 2026 문화예술진흥기금 운용 효율화 방안",
-      "[Note] 지역소멸 대응 문화도시 예산 분석 엑셀 데이터",
-      "[Info] K-콘텐츠 유럽 시장 진출 현황과 통계",
-      "[Contest] 하반기 시각예술 분야 창작지원 공모사업 요약"
-    ][cats],
-    date: "2026-03-" + (25 - i).toString().padStart(2, '0'),
-    size: ["1.2MB PDF", "450KB XLSX", "2.1MB PDF", "800KB PDF"][cats],
-    isDownloadable: true
-  }
-})
-
-function DataContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const initialFilter = searchParams.get("category") || "all"
-  const [activeFilter, setActiveFilter] = useState(initialFilter)
-
-  useEffect(() => {
-    const cat = searchParams.get("category")
-    if (cat) setActiveFilter(cat)
-    else setActiveFilter("all")
-  }, [searchParams])
-
-  const filteredData = activeFilter === "all" 
-    ? MOCK_DATA 
-    : MOCK_DATA.filter(d => d.categorySlug === activeFilter)
+export default async function DataHubPage() {
+  const [resources, featuredSlots] = await Promise.all([
+    getPublicResources(),
+    getFeaturedSlots('Data/Resources') // Matching SLOTS.id in FeaturedManager
+  ])
 
   return (
-    <main className="container mx-auto px-4 sm:px-6 max-w-5xl py-12">
-      <FilterBar 
-        options={DATA_FILTERS} 
-        initialValue={activeFilter} 
-        onChange={(val) => {
-          setActiveFilter(val)
-          window.history.replaceState(null, '', val === 'all' ? '/data' : `/data?category=${val}`)
-        }}
+    <div className="flex flex-col w-full bg-surface-page min-h-screen">
+      <PageHeader 
+        breadcrumbs={[{ label: "데이터·자료", href: "/data" }]}
+        title="데이터·자료"
+        description="문화강국네트워크가 제공하는 심층 보고서, 통계 자료, 행사 영상 및 시각 자산들을 통합 제공합니다."
       />
       
-      {filteredData.length > 0 ? (
-        <div className="bg-white rounded-2xl border border-line-default overflow-hidden mt-6 shadow-sm">
-          <div className="hidden sm:grid grid-cols-12 gap-4 p-4 bg-surface-soft border-b border-line-default text-caption font-bold text-neutral-500 uppercase">
-            <div className="col-span-2 pl-2">분류</div>
-            <div className="col-span-7">자료명</div>
-            <div className="col-span-2 text-center">등록일</div>
-            <div className="col-span-1 text-right pr-2">파일</div>
-          </div>
+      <main className="container mx-auto px-4 md:px-6 py-12 flex-1">
+        {/* Featured Control Section */}
+        <DataFeatured items={featuredSlots} resources={resources} />
+
+        {/* All Hub Resources */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           
-          <div className="flex flex-col divide-y divide-line-soft">
-            {filteredData.map((item) => (
-              <div 
-                key={item.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => router.push(`/data/${item.id}`)}
-                className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 p-5 sm:p-4 hover:bg-brand-050 transition-colors group cursor-pointer items-center"
-              >
-                <div className="col-span-2 sm:pl-2">
-                  <span className="inline-block px-2.5 py-1 bg-neutral-100 text-neutral-600 rounded-md text-xs font-medium border border-line-soft">
-                    {item.categoryLabel}
-                  </span>
-                </div>
-                
-                <div className="col-span-7 font-medium text-[16px] text-neutral-900 group-hover:text-brand-700 transition-colors">
-                  {item.title}
-                </div>
-                
-                <div className="col-span-2 text-sm text-neutral-500 sm:text-center mt-2 sm:mt-0 font-mono">
-                  {item.date}
-                </div>
-                
-                <div className="col-span-1 flex items-center justify-end mt-2 sm:mt-0 sm:pr-2">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      alert('파일 다운로드가 시작되었습니다. (Demo)');
-                    }}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-brand-600 hover:text-brand-800 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-md transition-colors"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">다운로드</span>
-                  </button>
+          {/* Documents */}
+          <div className="col-span-1 flex flex-col gap-6">
+            <div className="flex items-center gap-3 mb-2 border-b border-line-default pb-4">
+              <div className="bg-blue-100 text-blue-700 p-2 rounded-xl">
+                <FileText className="w-5 h-5" />
+              </div>
+              <h2 className="text-xl font-bold text-neutral-900">발제문 및 문서</h2>
+              <span className="ml-auto bg-neutral-100 text-neutral-600 text-xs font-bold px-2 py-1 rounded-full">{resources.documents.length}</span>
+            </div>
+            {resources.documents.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center bg-white rounded-xl border border-line-soft">등록된 문서가 없습니다.</p>}
+            {resources.documents.map(doc => (
+              <div key={doc.id} className="bg-white rounded-xl p-5 border border-line-soft shadow-sm hover:border-brand-300 transition-colors">
+                <div className="text-xs font-bold text-blue-600 mb-2">{doc.document_type || "일반 문서"}</div>
+                <h3 className="font-bold text-neutral-900 mb-2 leading-snug">{doc.title}</h3>
+                <p className="text-xs text-neutral-500 line-clamp-2 mb-4">{doc.summary}</p>
+                <div className="flex justify-between items-center mt-auto">
+                  <span className="text-xs text-neutral-400 font-mono">{new Date(doc.created_at).toISOString().split('T')[0]}</span>
+                  {doc.file_url && (
+                    <a href={doc.file_url} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 flex items-center hover:underline">
+                      다운로드 <ExternalLink className="w-3 h-3 ml-1" />
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      ) : (
-        <div className="py-24 text-center text-neutral-500 bg-surface-soft rounded-2xl border border-line-default mt-6">
-          해당 분야의 자료가 없습니다.
-        </div>
-      )}
-    </main>
-  )
-}
 
-export default function DataIndexPage() {
-  return (
-    <div className="flex flex-col w-full bg-surface-page min-h-screen pb-24">
-      <PageHeader 
-        breadcrumbs={[{ label: "데이터·자료" }]}
-        title="데이터·자료 아카이브"
-        description="정책 결정과 연구에 필요한 핵심 데이터 노트, One-Pager 브리프, 공모사업 정보를 투명하게 개방합니다."
-      />
-      <Suspense fallback={<div className="container mx-auto py-24 text-center">Loading Data Hub...</div>}>
-        <DataContent />
-      </Suspense>
+          {/* Videos */}
+          <div className="col-span-1 flex flex-col gap-6">
+            <div className="flex items-center gap-3 mb-2 border-b border-line-default pb-4">
+              <div className="bg-red-100 text-red-700 p-2 rounded-xl">
+                <Video className="w-5 h-5" />
+              </div>
+              <h2 className="text-xl font-bold text-neutral-900">영상 자료</h2>
+              <span className="ml-auto bg-neutral-100 text-neutral-600 text-xs font-bold px-2 py-1 rounded-full">{resources.videos.length}</span>
+            </div>
+            {resources.videos.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center bg-white rounded-xl border border-line-soft">등록된 영상이 없습니다.</p>}
+            {resources.videos.map(vid => (
+              <div key={vid.id} className="bg-white rounded-xl overflow-hidden border border-line-soft shadow-sm hover:border-brand-300 transition-colors">
+                {vid.thumbnail_url ? (
+                  <div className="w-full aspect-video bg-neutral-100 relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={vid.thumbnail_url} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-full aspect-video bg-neutral-800 flex items-center justify-center">
+                    <Video className="w-8 h-8 text-neutral-600" />
+                  </div>
+                )}
+                <div className="p-5">
+                  <h3 className="font-bold text-neutral-900 mb-2 leading-snug">{vid.title}</h3>
+                  <div className="flex justify-between items-center mt-4">
+                    <span className="text-xs text-neutral-400 font-mono">{new Date(vid.created_at).toISOString().split('T')[0]}</span>
+                    {vid.source_url && (
+                      <a href={vid.source_url} target="_blank" rel="noreferrer" className="text-xs font-bold text-red-600 flex items-center hover:underline">
+                        시청하기 <ExternalLink className="w-3 h-3 ml-1" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Galleries */}
+          <div className="col-span-1 flex flex-col gap-6">
+            <div className="flex items-center gap-3 mb-2 border-b border-line-default pb-4">
+              <div className="bg-purple-100 text-purple-700 p-2 rounded-xl">
+                <ImageIcon className="w-5 h-5" />
+              </div>
+              <h2 className="text-xl font-bold text-neutral-900">현장 갤러리</h2>
+              <span className="ml-auto bg-neutral-100 text-neutral-600 text-xs font-bold px-2 py-1 rounded-full">{resources.galleries.length}</span>
+            </div>
+            {resources.galleries.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center bg-white rounded-xl border border-line-soft">등록된 갤러리가 없습니다.</p>}
+            {resources.galleries.map(gal => (
+              <div key={gal.id} className="bg-white rounded-xl p-5 border border-line-soft shadow-sm hover:border-brand-300 transition-colors">
+                <h3 className="font-bold text-neutral-900 mb-2 leading-snug">{gal.title}</h3>
+                <p className="text-xs text-neutral-500 line-clamp-2 mb-4">{gal.caption_summary}</p>
+                <div className="flex justify-between items-center mt-auto border-t border-line-soft pt-4">
+                  <span className="text-xs font-bold text-neutral-400">사진 {gal.photo_count || 0}장</span>
+                  <span className="text-xs text-neutral-400 font-mono">{new Date(gal.created_at).toISOString().split('T')[0]}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </main>
     </div>
   )
 }

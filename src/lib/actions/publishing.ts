@@ -180,13 +180,26 @@ export async function searchPublicContent(query: string) {
   if (!isSupabaseConfigured() || !query) return []
   const supabase = await createPublishingClient()
   
-  const [stories, answers, events] = await Promise.all([
+  const [stories, answers, events, vids, docs, gals] = await Promise.all([
     supabase.from('stories').select('id, title, status, published_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5),
     supabase.from('answers').select('id, title, status, published_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5),
-    supabase.from('events').select('id, title:name, status, published_at').eq('status', 'Public').ilike('name', `%${query}%`).limit(5)
+    supabase.from('events').select('id, title, status, published_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5),
+    supabase.from('videos').select('id, title, status, created_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5),
+    supabase.from('documents').select('id, title, status, created_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5),
+    supabase.from('galleries').select('id, title, status, created_at').eq('status', 'Public').ilike('title', `%${query}%`).limit(5)
   ])
 
-  const format = (data: any[] | null, type: string) => (data || []).map(d => ({ ...d, content_type: type }))
+  const format = (res: any, type: string) => {
+    if (res.error) console.error(`Search error for ${type}:`, res.error);
+    return (res.data || []).map((d: any) => ({ ...d, content_type: type }))
+  }
   
-  return [...format(stories.data, 'Story'), ...format(answers.data, 'Answer'), ...format(events.data, 'Event')]
+  return [
+    ...format(stories, 'Story'), 
+    ...format(answers, 'Answer'), 
+    ...format(events, 'Event'),
+    ...format(vids, 'Video'),
+    ...format(docs, 'Document'),
+    ...format(gals, 'Gallery')
+  ]
 }

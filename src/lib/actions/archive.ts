@@ -203,6 +203,8 @@ export async function createVideo(payload: Partial<ArchiveVideo>) {
   const { data, error } = await supabase.from('videos').insert([payload]).select().single()
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/videos')
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true, data }
 }
 
@@ -213,6 +215,8 @@ export async function updateVideo(id: string, payload: Partial<ArchiveVideo>) {
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/videos')
   revalidatePath(`/admin/archive/videos/${id}`)
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true, data }
 }
 
@@ -222,6 +226,8 @@ export async function deleteVideo(id: string) {
   const { error } = await supabase.from('videos').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/videos')
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true }
 }
 
@@ -246,6 +252,8 @@ export async function createDocument(payload: Partial<ArchiveDocument>) {
   const { data, error } = await supabase.from('documents').insert([payload]).select().single()
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/documents')
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true, data }
 }
 
@@ -256,6 +264,8 @@ export async function updateDocument(id: string, payload: Partial<ArchiveDocumen
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/documents')
   revalidatePath(`/admin/archive/documents/${id}`)
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true, data }
 }
 
@@ -265,6 +275,8 @@ export async function deleteDocument(id: string) {
   const { error } = await supabase.from('documents').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/documents')
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true }
 }
 
@@ -289,6 +301,8 @@ export async function createGallery(payload: Partial<ArchiveGallery>) {
   const { data, error } = await supabase.from('galleries').insert([payload]).select().single()
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/galleries')
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true, data }
 }
 
@@ -299,6 +313,8 @@ export async function updateGallery(id: string, payload: Partial<ArchiveGallery>
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/galleries')
   revalidatePath(`/admin/archive/galleries/${id}`)
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true, data }
 }
 
@@ -308,5 +324,7 @@ export async function deleteGallery(id: string) {
   const { error } = await supabase.from('galleries').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/galleries')
+  revalidatePath('/data')
+  revalidatePath('/events')
   return { success: true }
 }
