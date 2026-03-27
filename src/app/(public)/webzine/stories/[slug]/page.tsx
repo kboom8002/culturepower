@@ -11,18 +11,13 @@ import { notFound } from "next/navigation"
 
 export const dynamic = 'force-dynamic' // Force dynamic rendering to bypass cached 404s
 
-export default async function StoryDetailPage({ params }: { params: { slug: string } }) {
+export default async function StoryDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   // slug param receives the ID based on our index page routing
-  const data = await getPublicStoryById(params.slug)
+  const resolvedParams = await params
+  const data = await getPublicStoryById(resolvedParams.slug)
 
   if (!data) {
-    return (
-      <div className="w-full bg-surface-page py-10 min-h-screen text-black">
-        <h1 className="text-2xl font-bold">Diagnostic Mode</h1>
-        <p>Could not find story. This is what was returned:</p>
-        <pre>{JSON.stringify({ params, data }, null, 2)}</pre>
-      </div>
-    )
+    return notFound()
   }
 
   // Parse related answers from JSONB if available

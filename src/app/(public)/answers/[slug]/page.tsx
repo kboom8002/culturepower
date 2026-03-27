@@ -7,9 +7,10 @@ import { notFound } from "next/navigation"
 
 export const dynamic = 'force-dynamic' // Bypass cache for immediate real-time rendering
 
-export default async function AnswerDetailPage({ params }: { params: { slug: string } }) {
+export default async function AnswerDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   // slug param receives the ID based on our index page routing
-  const data = await getPublicAnswerById(params.slug)
+  const resolvedParams = await params
+  const data = await getPublicAnswerById(resolvedParams.slug)
 
   if (!data) {
     return notFound()
