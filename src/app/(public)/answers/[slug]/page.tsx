@@ -5,10 +5,7 @@ import { ShareButtons } from "@/components/ui/ShareButtons"
 import { getPublicAnswerById } from "@/lib/actions/public"
 import { notFound } from "next/navigation"
 
-export const revalidate = 60 // Cache for 1 minute
-
-export default async function AnswerDetailPage({ params }: { params: { slug: string } }) {
-  // slug param receives the ID based on our index page routing
+export const dynamic = 'force-dynamic' // Bypass cache for immediate real-time rendering
   const data = await getPublicAnswerById(params.slug)
 
   if (!data) {
