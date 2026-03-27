@@ -2,31 +2,19 @@ import { Chip } from "@/components/ui/chip"
 import { ArrowRight, Clock } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { getFeaturedSlots } from "@/lib/actions/publishing"
+import { getPublicStories } from "@/lib/actions/public"
 
-const MOCK_STORIES = [
-  {
-    id: "s1",
-    section: "정책 하이라이트",
-    type: "기획 기사",
-    title: "K-건축, 전 세계가 한옥의 철학을 주목하는 이유 3가지",
-    deck: "기후 변화와 거주 환경의 위기 속, 우리 고유의 방식이 어떻게 글로벌 스탠다드로 발전할 수 있는지 집중 조명합니다.",
-    author: "김편집",
-    date: "2026-03-22",
-    href: "/webzine/stories/k-architecture-philosophy"
-  },
-  {
-    id: "s2",
-    section: "현장 인터뷰",
-    type: "전문가 대담",
-    title: "“예산보다 중요한 건 자생력입니다” - 로컬 크리에이터 3인 대담",
-    deck: "지방 소멸을 방어하는 최전선, 현장에서 활동하는 크리에이터들에게 필요한 진짜 정책을 물었습니다.",
-    author: "이리서치",
-    date: "2026-03-24",
-    href: "/webzine/stories/local-creator-interview"
-  }
-]
+export async function EditorCuration() {
+  const featured = await getFeaturedSlots('Home Main Story') // or whatever the slot name was, 'Home Hero' maybe? Let's check 0018_publishing_features.sql
+  const allStories = await getPublicStories()
+  
+  const stories = featured
+    .sort((a, b) => a.display_order - b.display_order)
+    .map(f => allStories.find(a => a.id === f.content_id))
+    .filter(Boolean)
 
-export function EditorCuration() {
+  if (stories.length === 0) return null
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4 md:px-6">
@@ -40,15 +28,15 @@ export function EditorCuration() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {MOCK_STORIES.map((story) => (
+          {stories.map((story: any) => (
             <Link 
               key={story.id} 
-              href={story.href}
+              href={`/webzine/stories/${story.id}`}
               className="group flex flex-col items-start bg-surface-soft p-8 rounded-2xl border border-line-default hover:border-brand-600 hover:shadow-md transition-all"
             >
               <div className="flex items-center gap-2 mb-4">
-                <Chip variant="default" className="h-7 text-xs px-3">{story.section}</Chip>
-                <span className="text-caption font-medium border border-line-default rounded-sm px-2 py-0.5">{story.type}</span>
+                <Chip variant="default" className="h-7 text-xs px-3">{story.section || "기사"}</Chip>
+                <span className="text-caption font-medium border border-line-default rounded-sm px-2 py-0.5">{story.story_type || "웹진"}</span>
               </div>
               <h3 className="text-[24px] leading-[1.38] font-bold text-neutral-900 mb-4 group-hover:text-brand-700 transition-colors">
                 {story.title}
@@ -59,10 +47,10 @@ export function EditorCuration() {
               
               <div className="mt-auto flex items-center justify-between w-full pt-4 border-t border-line-default">
                 <div className="flex items-center gap-3 text-caption text-neutral-500">
-                  <span className="font-medium text-neutral-700">{story.author}</span>
+                  <span className="font-medium text-neutral-700">{story.experts?.name || "편집부"}</span>
                   <div className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5" />
-                    <span>{new Date(story.date).toLocaleDateString("ko-KR")}</span>
+                    <span>{new Date(story.published_at || story.created_at).toLocaleDateString("ko-KR")}</span>
                   </div>
                 </div>
                 <div className="flex items-center text-sm font-medium text-brand-700 group-hover:translate-x-1 transition-transform">
