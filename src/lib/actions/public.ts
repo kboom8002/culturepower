@@ -120,7 +120,7 @@ export async function getPublicAnswerById(id: string): Promise<PublicAnswer | nu
   const nowIso = new Date().toISOString()
   let { data, error } = await supabase
     .from('answers')
-    .select('*, experts(name, organization, role, profile_image_url), admin_users(name)')
+    .select('*')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .eq('id', id)
     .single()
