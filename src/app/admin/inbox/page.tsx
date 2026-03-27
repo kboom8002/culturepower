@@ -1,103 +1,124 @@
-import { Search, Inbox as InboxIcon, MessageCircle, AlertTriangle, PlusCircle, Check, ArrowRight } from "lucide-react"
+import { Inbox, MessageSquareWarning, Filter, MoreHorizontal, AlertCircle, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { getInboxItems } from "@/lib/actions/inbox"
+import { Chip } from "@/components/ui/chip"
 
-const MOCK_INBOX = [
-  { id: "IN-201", type: "Question", content: "로컬 크리에이터 창업 정책 지원금 상한선이 궁금합니다.", source: "Public Answer Form", user: "시민 A", date: "1 hour ago", status: "Unread" },
-  { id: "IN-200", type: "Suggestion", content: "K-건축 사례에 저희 지역의 한옥 마을 재생 프로젝트를 제보합니다.", source: "Email Inquiry", user: "지자체 담당자", date: "3 hours ago", status: "Read" },
-  { id: "IN-199", type: "Correction", content: "정답카드 A-123 당해년도 예산 수치가 잘못 기재되었습니다. (150억 -> 120억)", source: "Card Feedback", user: "Expert L", date: "1 day ago", status: "Read" },
-]
+export default async function AdminInboxPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const currentTab = (await searchParams).tab || 'Active'
+  const items = await getInboxItems(currentTab)
 
-export default function InboxDashboard() {
+  const TABS = [
+    { id: 'Active', label: '신규 및 분류됨 (Active)' },
+    { id: 'Processed', label: '자산 전환 중 (Processed)' },
+    { id: 'Closed', label: '완료됨 (Closed)' }
+  ]
+
   return (
-    <div className="flex flex-col gap-6 w-full pb-24">
+    <div className="flex flex-col gap-8 w-full pb-24">
+      {/* Page Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-[32px] font-bold text-neutral-900 capitalize tracking-tight flex items-center gap-3">
-          Inbox Hub 
-          <span className="bg-brand-900 text-white text-[13px] px-2.5 py-1 rounded-lg font-bold">1 Unread</span>
-        </h1>
+        <div className="flex items-center gap-3">
+           <h1 className="text-[32px] font-bold text-neutral-900 tracking-tight">Inbox Operations</h1>
+           <span className="px-2.5 py-1 bg-brand-100 text-brand-700 text-xs font-bold rounded-full">{items.length} 건</span>
+        </div>
         <p className="text-body text-neutral-600">
-          퍼블릭 웹사이트, 폼, 이메일을 통해 유입되는 질문(Question), 제안(Suggestion), 정정(Correction)을 수집하고 SSoT 지식화 워크플로우로 이관합니다.
+           사용자로부터 접수된 질문, 제안, 정정 요청을 확인하고 플랫폼의 지식 자산(SSoT)이나 결함 조치 티켓(Fix-It)으로 즉각 전환합니다.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6 mb-2">
-        <div className="bg-white p-6 rounded-2xl border border-line-default shadow-sm hover:border-brand-500 cursor-pointer transition-colors group">
-          <MessageCircle className="w-8 h-8 text-brand-600 mb-4 group-hover:scale-110 transition-transform" />
-          <h3 className="text-[18px] font-bold text-neutral-900">Questions</h3>
-          <p className="text-sm text-neutral-500 mt-1">Convert to AnswerCards</p>
-          <div className="mt-4 text-2xl font-bold text-neutral-900">42 <span className="text-sm font-medium text-neutral-400">new this week</span></div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl border border-line-default shadow-sm hover:border-brand-500 cursor-pointer transition-colors group">
-          <PlusCircle className="w-8 h-8 text-trust-text mb-4 group-hover:scale-110 transition-transform" />
-          <h3 className="text-[18px] font-bold text-neutral-900">Suggestions</h3>
-          <p className="text-sm text-neutral-500 mt-1">Story Ideas & Partnerships</p>
-          <div className="mt-4 text-2xl font-bold text-neutral-900">12 <span className="text-sm font-medium text-neutral-400">new this week</span></div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl border border-line-default shadow-sm hover:border-brand-500 cursor-pointer transition-colors group">
-          <AlertTriangle className="w-8 h-8 text-danger-text mb-4 group-hover:scale-110 transition-transform" />
-          <h3 className="text-[18px] font-bold text-neutral-900">Corrections</h3>
-          <p className="text-sm text-neutral-500 mt-1">Route to Fix-It Tickets</p>
-          <div className="mt-4 text-2xl font-bold text-neutral-900">3 <span className="text-sm font-medium text-neutral-400">needs review</span></div>
-        </div>
-      </div>
-
       <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
-        {/* Toolbar */}
-        <div className="p-4 border-b border-line-soft flex md:flex-row flex-col gap-4 items-center justify-between bg-neutral-50/50">
-          <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-            <input 
-              type="text" 
-              placeholder="Search message content..."
-              className="w-full pl-9 pr-4 py-2 border border-line-strong rounded-lg text-sm focus:outline-none focus:border-brand-500 transition-all"
-            />
+        {/* Table Tabs & Controls */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-line-default bg-neutral-50/50">
+          <div className="flex overflow-x-auto">
+            {TABS.map(tab => (
+              <Link
+                key={tab.id}
+                href={`/admin/inbox?tab=${tab.id}`}
+                className={`flex-none px-6 py-4 text-sm font-bold border-b-2 transition-colors ${
+                  currentTab === tab.id 
+                    ? 'border-brand-500 text-brand-600 bg-white' 
+                    : 'border-transparent text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'
+                }`}
+              >
+                {tab.label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 p-4 md:p-0 md:pr-4">
+             <Button variant="tool" size="sm" className="hidden lg:flex"><Filter className="w-4 h-4 mr-2" />필터</Button>
           </div>
         </div>
 
         {/* Data Table */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto min-h-[500px]">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-neutral-50 text-neutral-500 font-semibold border-b border-line-soft">
+            <thead className="bg-[#1C2127] text-white font-bold">
               <tr>
-                <th className="px-6 py-4 w-10">Status</th>
-                <th className="px-6 py-4">ID / Source</th>
-                <th className="px-6 py-4 w-1/3">Message Content</th>
-                <th className="px-6 py-4">Type</th>
-                <th className="px-6 py-4">User</th>
-                <th className="px-6 py-4">Received</th>
-                <th className="px-6 py-4 text-right">Route To</th>
+                <th className="px-6 py-4 w-12 text-center">ID</th>
+                <th className="px-6 py-4">유형 (Type)</th>
+                <th className="px-6 py-4">긴급도</th>
+                <th className="px-6 py-4">제목 (Subject) / 내용 요약</th>
+                <th className="px-6 py-4">접수자</th>
+                <th className="px-6 py-4">상태 (Status)</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft text-neutral-900">
-              {MOCK_INBOX.map((item) => (
-                <tr key={item.id} className={`hover:bg-neutral-50/50 transition-colors group ${item.status === 'Unread' ? 'bg-brand-050/30' : ''}`}>
-                  <td className="px-6 py-4">
-                    {item.status === "Unread" ? (
-                       <span className="w-2.5 h-2.5 bg-brand-600 flex rounded-full mx-auto shadow-[0_0_0_3px_rgba(20,68,245,0.2)]"></span>
-                    ) : (
-                      <Check className="w-4 h-4 text-neutral-300 mx-auto" />
-                    )}
+              {items.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-24 text-center">
+                     <div className="flex flex-col items-center justify-center gap-3 text-neutral-400">
+                        <Inbox className="w-12 h-12 stroke-1 text-neutral-300" />
+                        <span className="font-medium text-neutral-500">조건에 맞는 Inbox 항목이 없습니다.</span>
+                     </div>
+                  </td>
+                </tr>
+              ) : items.map((item) => (
+                <tr key={item.id} className="hover:bg-neutral-50 transition-colors group">
+                  <td className="px-6 py-4 font-mono text-[11px] text-neutral-400 text-center">
+                     {item.id.split('-')[1]}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="font-mono text-neutral-900 font-semibold">{item.id}</div>
-                    <div className="text-[11px] text-neutral-500 font-medium">{item.source}</div>
-                  </td>
-                  <td className="px-6 py-4 font-bold text-neutral-900 truncate max-w-sm whitespace-normal leading-relaxed">
-                    {item.content}
+                     <div className="flex items-center gap-2">
+                        {item.type === 'Question' || item.type === 'General' ? <MessageSquareWarning className="w-4 h-4 text-brand-500" /> : <AlertCircle className="w-4 h-4 text-warning-500" />}
+                        <span className="font-bold text-neutral-700">{item.type}</span>
+                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase
-                      ${item.type === 'Question' ? 'bg-brand-100 text-brand-800' : 
-                        item.type === 'Suggestion' ? 'bg-trust-bg border border-trust-200 text-trust-text' : 
-                        'bg-danger-bg border border-danger-200 text-danger-600'}`}>
-                      {item.type}
-                    </span>
+                     {item.priority === 'P0' && <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-danger-50 text-danger-600 border border-danger-100">P0 (Critical)</span>}
+                     {item.priority === 'P1' && <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-warning-50 text-warning-700 border border-warning-200">P1 (High)</span>}
+                     {item.priority === 'P2' && <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-neutral-100 text-neutral-500 border border-neutral-200">P2 (Low)</span>}
                   </td>
-                  <td className="px-6 py-4 text-neutral-600">{item.user}</td>
-                  <td className="px-6 py-4 text-neutral-500 font-medium">{item.date}</td>
+                  <td className="px-6 py-4 max-w-[300px]">
+                    <div className="flex flex-col gap-1 truncate">
+                       <Link href={`/admin/inbox/${item.id}`} className="font-bold text-neutral-900 hover:text-brand-600 truncate transition-colors">
+                          {item.subject}
+                       </Link>
+                       <span className="text-[12px] text-neutral-500 truncate" title={item.content}>
+                          {item.content.substring(0, 50)}...
+                       </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                     <div className="flex flex-col gap-0.5">
+                        <span className="font-medium text-neutral-800">{item.reporter_name || '익명'}</span>
+                        {item.reporter_email && <span className="text-[11px] text-neutral-400 font-mono">{item.reporter_email}</span>}
+                     </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    {item.status === 'New' && <Chip variant="issue">New</Chip>}
+                    {item.status === 'Triaged' && <Chip variant="primary">Triaged</Chip>}
+                    {item.status === 'Mapped' && <Chip variant="reviewed">Mapped</Chip>}
+                    {item.status === 'In Progress' && <Chip variant="success">In Progress</Chip>}
+                    {item.status === 'Closed' && <Chip variant="default">Closed</Chip>}
+                  </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="flex items-center ml-auto gap-1.5 px-3 py-1.5 bg-white border border-line-strong hover:bg-neutral-50 hover:border-brand-500 rounded-lg text-xs font-bold transition-all text-neutral-700">
-                      Draft Card <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                    <Link href={`/admin/inbox/${item.id}`}>
+                      <Button variant="secondary" size="sm" className="bg-white group-hover:bg-brand-50 group-hover:text-brand-700 transition-colors">
+                        검토 <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                      </Button>
+                    </Link>
                   </td>
                 </tr>
               ))}

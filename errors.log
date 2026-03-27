@@ -1,0 +1,4 @@
+.next/dev/types/validator.ts(251,39): error TS2307: Cannot find module '../../../src/app/admin/content/answers/new/page.js' or its corresponding type declarations.
+.next/dev/types/validator.ts(332,39): error TS2307: Cannot find module '../../../src/app/admin/content/stories/new/page.js' or its corresponding type declarations.
+.next/types/validator.ts(251,39): error TS2307: Cannot find module '../../src/app/admin/content/answers/new/page.js' or its corresponding type declarations.
+.next/types/validator.ts(332,39): error TS2307: Cannot find module '../../src/app/admin/content/stories/new/page.js' or its corresponding type declarations.
