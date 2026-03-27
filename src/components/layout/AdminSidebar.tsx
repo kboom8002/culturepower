@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { logout } from "@/app/(public)/login/actions"
 import { 
   LayoutDashboard, Inbox, FileText, Archive, Users, 
   CheckSquare, Rocket, Activity, Wrench, Settings, ChevronDown, ChevronRight
@@ -198,14 +199,19 @@ export function AdminSidebar() {
         ))}
       </nav>
       
-      <div className="mt-8 pt-4 border-t border-line-soft px-2 mb-4">
+      <div className="mt-8 pt-4 border-t border-line-soft px-2 mb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-xs uppercase">ED</div>
+          <div className="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-xs uppercase">AD</div>
           <div>
-            <div className="text-sm font-bold text-neutral-900 leading-tight">Editor Account</div>
-            <div className="text-[11px] text-neutral-500">Super Admin</div>
+            <div className="text-sm font-bold text-neutral-900 leading-tight">Admin</div>
+            <div className="text-[11px] text-neutral-500">SSoT Editor</div>
           </div>
         </div>
+        <form action={logout}>
+          <button type="submit" className="text-xs font-semibold text-neutral-500 hover:text-brand-600 transition-colors px-2 py-1 rounded-md hover:bg-brand-50">
+            Logout
+          </button>
+        </form>
       </div>
     </aside>
   )
