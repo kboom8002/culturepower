@@ -16,6 +16,9 @@ export async function createPublicClient() {
       getAll() { return cookieStore.getAll() },
       setAll() {}, // Public requests usually don't set auth cookies
     },
+    global: {
+      fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' })
+    }
   })
 }
 
