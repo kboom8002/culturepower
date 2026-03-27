@@ -1,4 +1,5 @@
 import { Search } from "lucide-react"
+import Link from "next/link"
 import { getReviewTasks } from "@/lib/actions/review"
 import { ReviewAssignBtn } from "@/components/domain/review/ReviewAssignBtn"
 
@@ -45,7 +46,9 @@ export default async function AdminReviewNeedsPage() {
                      </span>
                   </td>
                   <td className="px-6 py-4 font-bold text-neutral-900 truncate max-w-sm">
-                     {task.content_title || 'Unknown Title'}
+                     <Link href={`/admin/content/${task.content_type === 'Story' ? 'stories' : 'answers'}/${task.content_id}`} className="hover:text-brand-600 hover:underline transition-colors">
+                        {task.content_title || 'Unknown Title'}
+                     </Link>
                   </td>
                   <td className="px-6 py-4 text-xs font-mono text-neutral-500">
                      {new Date(task.created_at).toLocaleString()}

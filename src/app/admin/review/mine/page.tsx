@@ -1,4 +1,5 @@
 import { Search, Clock } from "lucide-react"
+import Link from "next/link"
 import { getReviewTasks } from "@/lib/actions/review"
 import { ReviewProcessBtn } from "@/components/domain/review/ReviewProcessBtn"
 
@@ -47,10 +48,12 @@ export default async function AdminMyReviewsPage() {
                         {task.content_type}
                      </span>
                   </td>
-                  <td className="px-6 py-4">
-                     <div className="flex flex-col">
-                        <span className="font-bold text-neutral-900 truncate max-w-sm">{task.content_title || 'Unknown Title'}</span>
-                        <span className="text-xs text-neutral-400 font-mono mt-0.5">Task ID: {task.id.split('-')[0]}</span>
+                  <td className="px-6 py-4 font-bold text-neutral-900 truncate max-w-sm">
+                     <div className="flex flex-col gap-1">
+                       <Link href={`/admin/content/${task.content_type === 'Story' ? 'stories' : 'answers'}/${task.content_id}`} className="hover:text-brand-600 hover:underline transition-colors">
+                          {task.content_title || 'Unknown Title'}
+                       </Link>
+                       <span className="text-xs text-neutral-500 font-mono">Task ID: {task.id.split('-')[0]}</span>
                      </div>
                   </td>
                   <td className="px-6 py-4 text-xs font-mono text-neutral-500">
