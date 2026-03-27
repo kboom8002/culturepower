@@ -17,7 +17,9 @@ export default async function AdminArchiveVideosPage() {
       <div className="bg-white rounded-2xl border border-line-default shadow-sm overflow-hidden flex flex-col">
         <div className="p-4 border-b border-line-soft flex gap-4 items-center justify-between bg-neutral-50/50">
            <div className="font-bold text-neutral-700 p-2">Showing {videos.length} videos</div>
-           <Button variant="primary" disabled><Plus className="w-4 h-4 mr-2" /> 새 영상 등록</Button>
+           <Link href="/admin/archive/videos/new">
+             <Button variant="primary"><Plus className="w-4 h-4 mr-2" /> 새 영상 등록</Button>
+           </Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
@@ -39,7 +41,11 @@ export default async function AdminArchiveVideosPage() {
                   <td className="px-6 py-4 text-brand-600 hover:underline cursor-pointer"><a href={item.source_url} target="_blank" rel="noreferrer">요청 열기</a></td>
                   <td className="px-6 py-4"><Chip variant="default">{item.status}</Chip></td>
                   <td className="px-6 py-4 font-mono text-xs">{item.related_event_id || "-"}</td>
-                  <td className="px-6 py-4 text-right"><Button variant="secondary" size="sm" className="px-3" disabled>Edit</Button></td>
+                  <td className="px-6 py-4 text-right">
+                    <Link href={`/admin/archive/videos/${item.id}`}>
+                      <Button variant="secondary" size="sm" className="px-3">Edit</Button>
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

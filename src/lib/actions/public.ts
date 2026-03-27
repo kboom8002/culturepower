@@ -35,10 +35,11 @@ export type PublicAnswer = Answer & {
  */
 export async function getPublicStories(): Promise<PublicStory[]> {
   const supabase = await createPublicClient()
+  const nowIso = new Date().toISOString()
   const { data, error } = await supabase
     .from('stories')
     .select('*, experts(name, organization, role)')
-    .eq('status', 'Public')
+    .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .order('published_at', { ascending: false })
   
   if (error || !data) return []
@@ -50,10 +51,11 @@ export async function getPublicStories(): Promise<PublicStory[]> {
  */
 export async function getPublicStoryById(id: string): Promise<PublicStory | null> {
   const supabase = await createPublicClient()
+  const nowIso = new Date().toISOString()
   const { data, error } = await supabase
     .from('stories')
     .select('*, experts(name, organization, role), admin_users(name)')
-    .eq('status', 'Public')
+    .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .eq('id', id)
     .single()
   
@@ -66,10 +68,11 @@ export async function getPublicStoryById(id: string): Promise<PublicStory | null
  */
 export async function getPublicAnswers(): Promise<PublicAnswer[]> {
   const supabase = await createPublicClient()
+  const nowIso = new Date().toISOString()
   const { data, error } = await supabase
     .from('answers')
     .select('*, topics(name, slug, description)')
-    .eq('status', 'Public')
+    .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .order('published_at', { ascending: false })
   
   if (error || !data) return []
@@ -81,13 +84,72 @@ export async function getPublicAnswers(): Promise<PublicAnswer[]> {
  */
 export async function getPublicAnswerById(id: string): Promise<PublicAnswer | null> {
   const supabase = await createPublicClient()
+  const nowIso = new Date().toISOString()
   const { data, error } = await supabase
     .from('answers')
     .select('*, topics(name, slug, description), experts(name, organization, role, profile_image_url), admin_users(name)')
-    .eq('status', 'Public')
+    .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .eq('id', id)
     .single()
   
   if (error || !data) return null
   return data as PublicAnswer
+}
+
+export type PublicEvent = {
+  id: string
+  title: string
+  venue: string | null
+  start_date: string | null
+  end_date: string | null
+  thumbnail_url: string | null
+  status: string
+  videos?: { id: string, title: string, source_url: string, duration_seconds: number, embed_url: string | null, thumbnail_url: string | null }[]
+  documents?: { id: string, title: string, file_url: string, document_type: string, summary: string | null }[]
+  galleries?: { id: string, title: string, photo_count: number, caption_summary: string | null }[]
+}
+
+export async function getPublicEvents(): Promise<PublicEvent[]> {
+  const supabase = await createPublicClient()
+  const nowIso = new Date().toISOString()
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    // Or whatever the active status is, events use 'Upcoming', 'Ongoing', 'Closed'
+    // For Events, 'status' does not use Public/Scheduled mechanism directly like Stories/Answers, 
+    // it uses 'Upcoming', 'Ongoing', 'Closed'. 
+    // So we don't need the Scheduled fallback here.
+    .in('status', ['Upcoming', 'Ongoing', 'Closed'])
+    .order('start_date', { ascending: false })
+  
+  if (error || !data) return []
+  return data as PublicEvent[]
+}
+
+export async function getPublicEventById(id: string): Promise<PublicEvent | null> {
+  const supabase = await createPublicClient()
+  
+  // First fetch event
+  const { data: eventData, error: eventError } = await supabase
+    .from('events')
+    .select('*')
+    .eq('id', id)
+    .single()
+    
+  if (eventError || !eventData) return null
+  
+  const nowIso = new Date().toISOString()
+  // Then fetch related public media
+  const [videosDb, docsDb, galleriesDb] = await Promise.all([
+    supabase.from('videos').select('*').eq('related_event_id', id).or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`),
+    supabase.from('documents').select('*').eq('related_event_id', id).or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`),
+    supabase.from('galleries').select('*').eq('related_event_id', id).or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
+  ])
+  
+  return {
+    ...eventData,
+    videos: videosDb.data || [],
+    documents: docsDb.data || [],
+    galleries: galleriesDb.data || []
+  } as PublicEvent
 }

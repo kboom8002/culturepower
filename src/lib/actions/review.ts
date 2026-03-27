@@ -156,5 +156,6 @@ export async function processReviewTask(taskId: string, action: 'Approve' | 'Ret
   revalidatePath('/admin/review/mine')
   revalidatePath('/admin/review/returned')
   revalidatePath('/admin/review/approved')
+  revalidatePath('/admin/publishing/queue')
   return { success: !syncErr, error: syncErr?.message }
 }

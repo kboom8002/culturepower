@@ -72,22 +72,34 @@ export default async function AdminArchiveCompletionBoardPage() {
                     
                     {/* Documents Board Cell */}
                     <td className="px-5 py-4 text-center">
-                      <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full border-2 ${docsCount > 0 ? 'bg-success-50 border-success-200 text-success-600' : 'bg-danger-50 border-danger-200 text-danger-500 group-hover:bg-danger-100 transition-colors'}`}>
-                         {docsCount > 0 ? <span className="font-bold text-xs">{docsCount}</span> : <AlertCircle className="w-4 h-4" />}
+                      <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full border-2 ${docsCount > 0 ? 'bg-success-50 border-success-200 text-success-600' : 'bg-danger-50 border-danger-200 text-danger-500 hover:bg-danger-100 transition-colors'}`}>
+                         {docsCount > 0 ? <span className="font-bold text-xs">{docsCount}</span> : (
+                           <Link href={`/admin/archive/documents/new?event_id=${event.id}`} title="Add Document">
+                             <AlertCircle className="w-4 h-4" />
+                           </Link>
+                         )}
                       </div>
                     </td>
 
                     {/* Videos Board Cell */}
                     <td className="px-5 py-4 text-center">
-                      <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full border-2 ${videosCount > 0 ? 'bg-success-50 border-success-200 text-success-600' : 'bg-danger-50 border-danger-200 text-danger-500 group-hover:bg-danger-100 transition-colors'}`}>
-                         {videosCount > 0 ? <span className="font-bold text-xs">{videosCount}</span> : <AlertCircle className="w-4 h-4" />}
+                      <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full border-2 ${videosCount > 0 ? 'bg-success-50 border-success-200 text-success-600' : 'bg-danger-50 border-danger-200 text-danger-500 hover:bg-danger-100 transition-colors'}`}>
+                         {videosCount > 0 ? <span className="font-bold text-xs">{videosCount}</span> : (
+                           <Link href={`/admin/archive/videos/new?event_id=${event.id}`} title="Add Video">
+                             <AlertCircle className="w-4 h-4" />
+                           </Link>
+                         )}
                       </div>
                     </td>
 
                     {/* Galleries Board Cell */}
                     <td className="px-5 py-4 text-center">
-                      <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full border-2 ${galleriesCount > 0 ? 'bg-success-50 border-success-200 text-success-600' : 'bg-danger-50 border-danger-200 text-danger-500 group-hover:bg-danger-100 transition-colors'}`}>
-                         {galleriesCount > 0 ? <span className="font-bold text-xs">{galleriesCount}</span> : <AlertCircle className="w-4 h-4" />}
+                      <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full border-2 ${galleriesCount > 0 ? 'bg-success-50 border-success-200 text-success-600' : 'bg-danger-50 border-danger-200 text-danger-500 hover:bg-danger-100 transition-colors'}`}>
+                         {galleriesCount > 0 ? <span className="font-bold text-xs">{galleriesCount}</span> : (
+                           <Link href={`/admin/archive/galleries/new?event_id=${event.id}`} title="Add Gallery">
+                             <AlertCircle className="w-4 h-4" />
+                           </Link>
+                         )}
                       </div>
                     </td>
 

@@ -1,3 +1,1 @@
-src/components/domain/publishing/FeaturedManager.tsx(178,37): error TS2322: Type '"outline"' is not assignable to type '"primary" | "secondary" | "tertiary" | "tool" | undefined'.
-src/components/domain/publishing/FeaturedManager.tsx(185,51): error TS2322: Type '"outline"' is not assignable to type '"primary" | "secondary" | "tertiary" | "tool" | undefined'.
-src/components/domain/publishing/PublishActionBtn.tsx(5,10): error TS2305: Module '"@/lib/actions/publishing"' has no exported member 'publishItemNow'.
+src/app/admin/publishing/sitemap/page.tsx(30,22): error TS2322: Type '"outline"' is not assignable to type '"primary" | "secondary" | "tertiary" | "tool" | undefined'.

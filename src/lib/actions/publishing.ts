@@ -89,6 +89,13 @@ export async function publishImmediately(id: string, contentType: 'Story' | 'Ans
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/publishing/queue')
   revalidatePath('/admin/publishing/scheduled')
+  
+  // 무효화 (Clear Data Cache for Public Viewers)
+  revalidatePath('/')
+  revalidatePath('/webzine/stories')
+  revalidatePath('/answers')
+  revalidatePath('/archive/events')
+  
   return { success: true }
 }
 
@@ -102,6 +109,13 @@ export async function schedulePublish(id: string, contentType: 'Story' | 'Answer
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/publishing/queue')
   revalidatePath('/admin/publishing/scheduled')
+  
+  // 무효화 (Clear Data Cache for Public Viewers)
+  revalidatePath('/')
+  revalidatePath('/webzine/stories')
+  revalidatePath('/answers')
+  revalidatePath('/archive/events')
+  
   return { success: true }
 }
 

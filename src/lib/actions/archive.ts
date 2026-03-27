@@ -189,13 +189,83 @@ export async function getVideos(): Promise<ArchiveVideo[]> {
   return (data || []) as ArchiveVideo[]
 }
 
+export async function getVideoById(id: string): Promise<ArchiveVideo | null> {
+  if (!isSupabaseConfigured()) return null
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('videos').select('*').eq('id', id).single()
+  if (error) { console.error(`Error fetching video ${id}:`, error); return null }
+  return data as ArchiveVideo
+}
+
+export async function createVideo(payload: Partial<ArchiveVideo>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id: "mock-vid", ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('videos').insert([payload]).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/videos')
+  return { success: true, data }
+}
+
+export async function updateVideo(id: string, payload: Partial<ArchiveVideo>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id, ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('videos').update(payload).eq('id', id).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/videos')
+  revalidatePath(`/admin/archive/videos/${id}`)
+  return { success: true, data }
+}
+
+export async function deleteVideo(id: string) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createArchiveClient()
+  const { error } = await supabase.from('videos').delete().eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/videos')
+  return { success: true }
+}
+
 export async function getDocuments(): Promise<ArchiveDocument[]> {
-  if (!isSupabaseConfigured()) return [
-    { id: "DOC-1", title: "[Mock] 기조연설문", file_url: "#", document_type: "PDF", summary: null, source_label: null, status: "Public", related_event_id: "EVT-001", created_at: "", updated_at: "" }
-  ]
+  if (!isSupabaseConfigured()) return []
   const supabase = await createArchiveClient()
   const { data } = await supabase.from('documents').select('*').order('created_at', { ascending: false })
   return (data || []) as ArchiveDocument[]
+}
+
+export async function getDocumentById(id: string): Promise<ArchiveDocument | null> {
+  if (!isSupabaseConfigured()) return null
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('documents').select('*').eq('id', id).single()
+  if (error) { console.error(`Error fetching document ${id}:`, error); return null }
+  return data as ArchiveDocument
+}
+
+export async function createDocument(payload: Partial<ArchiveDocument>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id: "mock-doc", ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('documents').insert([payload]).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/documents')
+  return { success: true, data }
+}
+
+export async function updateDocument(id: string, payload: Partial<ArchiveDocument>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id, ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('documents').update(payload).eq('id', id).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/documents')
+  revalidatePath(`/admin/archive/documents/${id}`)
+  return { success: true, data }
+}
+
+export async function deleteDocument(id: string) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createArchiveClient()
+  const { error } = await supabase.from('documents').delete().eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/documents')
+  return { success: true }
 }
 
 export async function getGalleries(): Promise<ArchiveGallery[]> {
@@ -203,4 +273,40 @@ export async function getGalleries(): Promise<ArchiveGallery[]> {
   const supabase = await createArchiveClient()
   const { data } = await supabase.from('galleries').select('*').order('created_at', { ascending: false })
   return (data || []) as ArchiveGallery[]
+}
+
+export async function getGalleryById(id: string): Promise<ArchiveGallery | null> {
+  if (!isSupabaseConfigured()) return null
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('galleries').select('*').eq('id', id).single()
+  if (error) { console.error(`Error fetching gallery ${id}:`, error); return null }
+  return data as ArchiveGallery
+}
+
+export async function createGallery(payload: Partial<ArchiveGallery>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id: "mock-gal", ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('galleries').insert([payload]).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/galleries')
+  return { success: true, data }
+}
+
+export async function updateGallery(id: string, payload: Partial<ArchiveGallery>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id, ...payload } }
+  const supabase = await createArchiveClient()
+  const { data, error } = await supabase.from('galleries').update(payload).eq('id', id).select().single()
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/galleries')
+  revalidatePath(`/admin/archive/galleries/${id}`)
+  return { success: true, data }
+}
+
+export async function deleteGallery(id: string) {
+  if (!isSupabaseConfigured()) return { success: true }
+  const supabase = await createArchiveClient()
+  const { error } = await supabase.from('galleries').delete().eq('id', id)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/admin/archive/galleries')
+  return { success: true }
 }
