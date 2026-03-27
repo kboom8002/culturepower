@@ -51,14 +51,17 @@ export async function getPublishQueue(): Promise<PublishQueueItem[]> {
   
   // We fetch items that are ready for publishing (status = 'Review')
   // For robustness, returning Drafts as well if they want to bypass review in small teams
-  const { data: storiesData } = await supabase.from('stories').select('id, title, status, author_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
-  const stories = (storiesData || []).map(s => ({ ...s, content_type: 'Story' as const }))
+  const { data: storiesData, error: sErr } = await supabase.from('stories').select('id, title, status, creator_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
+  if (sErr) console.error("Publish Queue Stories Error:", sErr);
+  const stories = (storiesData || []).map(s => ({ ...s, author_id: s.creator_id, content_type: 'Story' as const }))
   
-  const { data: answersData } = await supabase.from('answers').select('id, title, status, author_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
-  const answers = (answersData || []).map(a => ({ ...a, content_type: 'Answer' as const }))
+  const { data: answersData, error: aErr } = await supabase.from('answers').select('id, title, status, creator_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
+  if (aErr) console.error("Publish Queue Answers Error:", aErr);
+  const answers = (answersData || []).map(a => ({ ...a, author_id: a.creator_id, content_type: 'Answer' as const }))
 
-  const { data: eventsData } = await supabase.from('events').select('id, title:name, status, author_id, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
-  const events = (eventsData || []).map(e => ({ ...e, content_type: 'Event' as const }))
+  const { data: eventsData, error: eErr } = await supabase.from('events').select('id, title, status, created_at, published_at').in('status', ['Review']).order('created_at', { ascending: false })
+  if (eErr) console.error("Publish Queue Events Error:", eErr);
+  const events = (eventsData || []).map(e => ({ ...e, author_id: null, content_type: 'Event' as const }))
 
   return [...stories, ...answers, ...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 }
@@ -67,14 +70,14 @@ export async function getScheduledItems(): Promise<PublishQueueItem[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createPublishingClient()
   
-  const { data: storiesData } = await supabase.from('stories').select('id, title, status, author_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
-  const stories = (storiesData || []).map(s => ({ ...s, content_type: 'Story' as const }))
+  const { data: storiesData } = await supabase.from('stories').select('id, title, status, creator_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
+  const stories = (storiesData || []).map(s => ({ ...s, author_id: s.creator_id, content_type: 'Story' as const }))
   
-  const { data: answersData } = await supabase.from('answers').select('id, title, status, author_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
-  const answers = (answersData || []).map(a => ({ ...a, content_type: 'Answer' as const }))
+  const { data: answersData } = await supabase.from('answers').select('id, title, status, creator_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
+  const answers = (answersData || []).map(a => ({ ...a, author_id: a.creator_id, content_type: 'Answer' as const }))
 
-  const { data: eventsData } = await supabase.from('events').select('id, title:name, status, author_id, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
-  const events = (eventsData || []).map(e => ({ ...e, content_type: 'Event' as const }))
+  const { data: eventsData } = await supabase.from('events').select('id, title, status, created_at, published_at').eq('status', 'Scheduled').order('published_at', { ascending: true })
+  const events = (eventsData || []).map(e => ({ ...e, author_id: null, content_type: 'Event' as const }))
 
   return [...stories, ...answers, ...events].sort((a: any, b: any) => new Date(a.published_at || "").getTime() - new Date(b.published_at || "").getTime())
 }
