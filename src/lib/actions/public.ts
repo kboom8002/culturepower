@@ -65,7 +65,7 @@ export async function getPublicStoryById(id: string): Promise<PublicStory | null
   const nowIso = new Date().toISOString()
   let { data, error } = await supabase
     .from('stories')
-    .select('*, experts(name, organization, role), admin_users(name)')
+    .select('*, experts(name, organization, role)')
     .or(`status.eq.Public,and(status.eq.Scheduled,published_at.lte.${nowIso})`)
     .eq('id', id)
     .single()
