@@ -3,8 +3,30 @@
 import { useEditor, EditorContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
 import Image from "@tiptap/extension-image"
+import { mergeAttributes } from "@tiptap/core"
 import { Bold, Italic, Heading2, Heading3, ImageIcon, List, ListOrdered, Quote, Undo, Redo } from "lucide-react"
 import { compressImage } from "@/lib/utils/image"
+
+const CustomImage = Image.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      caption: { default: null }
+    }
+  },
+  renderHTML({ HTMLAttributes }) {
+    if (HTMLAttributes.caption) {
+      const { caption, ...imgAttrs } = HTMLAttributes;
+      return [
+        'figure', 
+        { class: 'flex flex-col items-center my-6 max-w-full' }, 
+        ['img', mergeAttributes(this.options.HTMLAttributes, imgAttrs, { class: 'rounded-2xl border border-line-default w-full mb-3' })], 
+        ['figcaption', { class: 'text-[14px] text-neutral-500 font-medium text-center bg-surface-soft px-4 py-1 rounded-full' }, caption]
+      ]
+    }
+    return ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { class: 'rounded-2xl border border-line-default w-full my-6' })]
+  }
+})
 
 export interface RichTextEditorProps {
   value: string
@@ -16,13 +38,10 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Image.configure({
-        HTMLAttributes: {
-          class: 'rounded-2xl border border-line-default w-full my-6',
-        },
-      }),
+      CustomImage,
     ],
     content: value,
+    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML())
     },
@@ -37,7 +56,13 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             const file = item.getAsFile()
             if (file) {
               compressImage(file).then((compressedBase64) => {
-                editor.chain().focus().setImage({ src: compressedBase64 }).run()
+                const caption = window.prompt("붙여넣은 이미지의 설명(캡션)을 입력하세요: (없으면 공란)")
+                // During init, editor might be considered possibly null by TS
+                import("@tiptap/core").then(() => {
+                   if (editor) {
+                     editor.chain().focus().setImage({ src: compressedBase64, caption: caption || null } as any).run()
+                   }
+                })
               })
               return true
             }
@@ -55,7 +80,8 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
   const addImage = () => {
     const url = window.prompt("이미지 URL을 입력하세요:")
     if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
+      const caption = window.prompt("이미지의 설명(캡션)을 입력하세요: (없으면 공란)")
+      editor?.chain().focus().setImage({ src: url, caption: caption || null } as any).run()
     }
   }
 

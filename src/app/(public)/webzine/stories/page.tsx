@@ -24,7 +24,7 @@ export default async function StoriesIndexPage({ searchParams }: { searchParams:
   
   // Topic 기준 필터링 (Global 메타데이터)
   if (topicSlug) {
-    currentTopic = topics.find(t => t.slug === topicSlug) || null
+    currentTopic = topics.find(t => t.slug === topicSlug || t.slug.includes(topicSlug.toLowerCase())) || null
     if (currentTopic) {
       const topicId = currentTopic.id
       // @ts-ignore : story schema will be mapped to global topics

@@ -77,16 +77,16 @@ export default async function AdminStoriesIndexPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="mr-2">
-                       {item.status === 'Draft' && <Chip variant="default">Draft</Chip>}
-                       {item.status === 'Review' && <Chip variant="reviewed">Review</Chip>}
-                       {item.status === 'Public' && <Chip variant="success">Public</Chip>}
+                       {item.status === 'DRAFT' && <Chip variant="default">Draft</Chip>}
+                       {item.status === 'REVIEW' && <Chip variant="reviewed">Review</Chip>}
+                       {item.status === 'PUBLISHED' && <Chip variant="success">Public</Chip>}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-neutral-600">
                     {item.experts && item.experts.length > 0 ? item.experts.map((e: any) => e.name).join(", ") : "-"}
                   </td>
                   <td className="px-6 py-4 text-neutral-500 flex items-center gap-1.5 font-medium min-h-[56px] text-xs">
-                     {item.status === 'Public' ? <CheckCircle2 className="w-3.5 h-3.5 text-success-500" /> : <Clock className="w-3.5 h-3.5" />}
+                     {item.status === 'PUBLISHED' ? <CheckCircle2 className="w-3.5 h-3.5 text-success-500" /> : <Clock className="w-3.5 h-3.5" />}
                     {new Date(item.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 text-right">

@@ -2,27 +2,30 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { Calendar, MapPin, Tag, Download, Video, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
+import { getPublicEventDetail } from "@/lib/actions/public"
+import { notFound } from "next/navigation"
+
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   
-  // Dummy data representing an Event or VOD Detail
-  // We infer it's a video if the ID suggests it, or just mock a rich layout that handles both.
-  const isVideo = id.includes('4') || id.includes('6') // Mock logic for VOD
+  const rawEvent = await getPublicEventDetail(id)
+  if (!rawEvent) {
+    return notFound()
+  }
+
+  const isVideo = (rawEvent.title || '').includes("VOD") || (rawEvent.title || '').includes("영상") || (rawEvent.videos && rawEvent.videos.length > 0)
+  const seriesObj = rawEvent.event_series?.[0]?.series
   
   const data = {
-    id,
+    id: rawEvent.id,
     type: isVideo ? "명사 영상" : "현장 행사",
-    title: isVideo 
-      ? "[VOD] 존스홉킨스 석학 초청 강연: K-아키텍처의 세계화" 
-      : "예산 구조 Reform 현장 대토론회",
-    date: "2026-03-20(금) 14:00 - 16:00",
-    location: isVideo ? "온라인 스트리밍 (종료됨)" : "서울 한국프레스센터 20층",
-    description: "관행적인 예산 낭비를 막고 자생적인 문화 생태계를 구축하기 위한 근본적인 구조 개혁 과제에 대해 각계 전문가들이 모여 열띤 토론을 벌인 기록입니다.",
-    videoUrl: isVideo ? "https://www.youtube.com/embed/dQw4w9WgXcQ" : null, // Embedded Player URL
-    materials: [
-      { id: "m-1", name: "[현장 발제문] K-건축과 로컬의 미래.pdf", size: "3.2MB" },
-      { id: "m-2", name: "[토론 요약] 질의응답 기록.docx", size: "1.5MB" }
-    ]
+    title: rawEvent.title,
+    date: rawEvent.start_at ? new Date(rawEvent.start_at).toLocaleString("ko-KR") : "KST 미정",
+    location: rawEvent.location_name || "장소 미정 (온라인/오프라인)",
+    description: rawEvent.summary || rawEvent.body_text || "내용이 등록되지 않았습니다.",
+    videoUrl: null as string | null, // To be integrated with real videos if they exist
+    materials: [] as any[], // To be integrated with real documents if they exist
+    seriesName: seriesObj ? seriesObj.name_ko : null
   }
 
   return (
@@ -44,6 +47,11 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <span className="inline-block px-3 py-1 bg-brand-50 text-brand-700 text-sm font-bold rounded-lg border border-brand-100">
               {data.type}
             </span>
+            {data.seriesName && (
+              <span className="inline-block px-3 py-1 bg-neutral-100 text-neutral-600 text-sm font-bold rounded-lg border border-neutral-200">
+                {data.seriesName}
+              </span>
+            )}
           </div>
           
           <h1 className="text-h2 md:text-[36px] text-neutral-900 mb-8 leading-snug tracking-tight text-balance">

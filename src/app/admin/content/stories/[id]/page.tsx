@@ -10,7 +10,7 @@ import Image from "next/image"
 import { getStoryById, updateStory, deleteStory, createStory } from "@/lib/actions/story"
 import { submitToReview } from "@/lib/actions/review"
 import { getTopics, getExperts, getAnswers, getSections, getCategories, getSeries, getTags, ContentTopic, Expert, Answer, TaxonomyItem } from "@/lib/actions/content"
-import { compressImage } from "@/lib/utils/image"
+import { ImageUploader } from "@/components/domain/publishing/ImageUploader"
 
 export default function AdminEditStoryPage() {
   const params = useParams()
@@ -43,7 +43,6 @@ export default function AdminEditStoryPage() {
   const [tagIds, setTagIds] = useState<string[]>([])
 
   // Image Upload State
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null)
 
   // SSoT Links State
@@ -92,13 +91,7 @@ export default function AdminEditStoryPage() {
     loadData()
   }, [isNew, storyId])
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const compressedObjectUrl = await compressImage(file)
-      setThumbnailPreview(compressedObjectUrl)
-    }
-  }
+
 
   const handleRemoveExpert = (id: string) => {
     setExpertIds(expertIds.filter(e => e !== id))
@@ -302,9 +295,9 @@ export default function AdminEditStoryPage() {
                 value={topicId}
                 onChange={(e) => setTopicId(e.target.value)}
               >
-                {topics.length === 0 ? <option value="">토픽 데이터가 없습니다</option> : null}
+                {topics.length === 0 ? <option value="">토픽 데이터가 없습니다</option> : <option value="" disabled>대주제를 선택하세요</option>}
                 {topics.map(t => (
-                  <option key={t.id} value={t.id}>{t.name_ko}</option>
+                  <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
               </select>
             </div>
@@ -425,45 +418,17 @@ export default function AdminEditStoryPage() {
             </div>
             
             {/* Thumbnail Upload */}
-            <div className="flex flex-col gap-2 pt-2 border-t border-line-soft">
+            <div className="flex flex-col gap-3 pt-4 border-t border-line-soft">
               <label className="text-sm font-bold text-neutral-700 flex justify-between items-center">
                 <span>대표 썸네일 (Cover Image)</span>
-                {thumbnailPreview && (
-                   <button onClick={() => setThumbnailPreview(null)} className="text-[11px] text-danger-500 hover:text-danger-600 font-medium z-10">제거</button>
-                )}
               </label>
               
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleImageUpload}
-                accept="image/png, image/jpeg, image/webp"
-                className="hidden" 
+              <ImageUploader 
+                 value={thumbnailPreview}
+                 onChange={setThumbnailPreview}
+                 bucket="curation_assets"
+                 className="w-full aspect-[4/3] rounded-xl overflow-hidden"
               />
-              
-              <div 
-                onClick={() => fileInputRef.current?.click()}
-                className={`w-full aspect-[4/3] rounded-xl border flex flex-col items-center justify-center gap-2 cursor-pointer transition-all overflow-hidden relative group shadow-sm ${thumbnailPreview ? 'border-line-soft bg-black' : 'border-line-strong border-dashed bg-neutral-50 hover:bg-neutral-100 hover:border-brand-300'}`}
-              >
-                {thumbnailPreview ? (
-                  <>
-                    <Image src={thumbnailPreview} alt="Thumbnail preview" fill className="object-cover opacity-90 group-hover:opacity-75 transition-opacity" />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                       <span className="bg-black/60 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-2 backdrop-blur-sm">
-                         <ImageIcon className="w-3.5 h-3.5" /> 이미지 호체
-                       </span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center border border-line-soft text-brand-500 group-hover:scale-110 transition-transform">
-                      <ImageIcon className="w-5 h-5" />
-                    </div>
-                    <span className="text-xs font-bold text-neutral-600 mt-1">클릭하여 이미지 업로드</span>
-                    <span className="text-[10px] text-neutral-400">권장 비율 4:3 (JPEG, PNG, WEBP)</span>
-                  </>
-                )}
-              </div>
             </div>
 
             {/* SSoT Linking */}

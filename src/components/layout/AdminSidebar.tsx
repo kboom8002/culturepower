@@ -11,113 +11,114 @@ import {
 
 const ADMIN_MENUS = [
   {
-    title: "Dashboard",
+    title: "대시보드",
     icon: LayoutDashboard,
     href: "/admin/dashboard",
     submenus: []
   },
   {
-    title: "Inbox",
+    title: "수신함",
     icon: Inbox,
     href: "/admin/inbox",
     submenus: []
   },
   {
-    title: "Content",
+    title: "콘텐츠 관리",
     icon: FileText,
     href: "/admin/content",
     submenus: [
-      { label: "Topics", href: "/admin/content/topics" },
-      { label: "Answers", href: "/admin/content/answers" },
-      { label: "Stories", href: "/admin/content/stories" },
-      { label: "Experts", href: "/admin/content/experts" },
-      { label: "Partners", href: "/admin/content/partners" },
-      { label: "Resources", href: "/admin/content/resources" }
+      { label: "주제 (Topics)", href: "/admin/content/topics" },
+      { label: "핵심 질문 (Answers)", href: "/admin/content/answers" },
+      { label: "기사/스토리 (Stories)", href: "/admin/content/stories" },
+      { label: "브리프 (Briefs)", href: "/admin/content/briefs" },
+      { label: "전문가 풀 (Experts)", href: "/admin/content/experts" },
+      { label: "자료실 (Resources)", href: "/admin/content/resources" }
     ]
   },
   {
-    title: "Archive",
+    title: "아카이브",
     icon: Archive,
     href: "/admin/archive",
     submenus: [
-      { label: "Events", href: "/admin/archive/events" },
-      { label: "Videos", href: "/admin/archive/videos" },
-      { label: "Documents", href: "/admin/archive/documents" },
-      { label: "Galleries", href: "/admin/archive/galleries" },
-      { label: "Completion Board", href: "/admin/archive/completion" }
+      { label: "행사·토론회", href: "/admin/archive/events" },
+      { label: "영상 기록", href: "/admin/archive/videos" },
+      { label: "발간 문서", href: "/admin/archive/documents" },
+      { label: "사진 갤러리", href: "/admin/archive/galleries" },
+      { label: "완결 보드", href: "/admin/archive/completion" }
     ]
   },
   {
-    title: "Participation",
+    title: "참여 관리",
     icon: Users,
     href: "/admin/participation",
     submenus: [
-      { label: "Member Apps", href: "/admin/participation/members" },
-      { label: "Newsletter", href: "/admin/participation/newsletter" },
-      { label: "Event Regs", href: "/admin/participation/events" },
-      { label: "Partnerships", href: "/admin/participation/partnerships" },
-      { label: "Segments", href: "/admin/participation/segments" }
+      { label: "회원 가입 관리", href: "/admin/participation/members" },
+      { label: "뉴스레터 발송", href: "/admin/participation/newsletter" },
+      { label: "행사 참가 접수", href: "/admin/participation/events" },
+      { label: "제휴 문의", href: "/admin/participation/partnerships" },
+      { label: "세그먼트 타겟팅", href: "/admin/participation/segments" }
     ]
   },
   {
-    title: "Review",
+    title: "발행 검수",
     icon: CheckSquare,
     href: "/admin/review",
     submenus: [
-      { label: "Needs Review", href: "/admin/review/needs" },
-      { label: "My Reviews", href: "/admin/review/mine" },
-      { label: "Returned", href: "/admin/review/returned" },
-      { label: "Approved", href: "/admin/review/approved" }
+      { label: "검수 대기함", href: "/admin/review/needs" },
+      { label: "나의 검수건", href: "/admin/review/mine" },
+      { label: "반려 됨", href: "/admin/review/returned" },
+      { label: "승인 완료", href: "/admin/review/approved" }
     ]
   },
   {
-    title: "Publishing",
+    title: "콘텐츠 노출/발행",
     icon: Rocket,
     href: "/admin/publishing",
     submenus: [
-      { label: "Publish Queue", href: "/admin/publishing/queue" },
-      { label: "Scheduled", href: "/admin/publishing/scheduled" },
-      { label: "Featured Control", href: "/admin/publishing/featured" },
-      { label: "Feed Status", href: "/admin/publishing/feed" },
-      { label: "Sitemap Status", href: "/admin/publishing/sitemap" },
-      { label: "Link Check", href: "/admin/publishing/links" }
+      { label: "발행 대기열 (Queue)", href: "/admin/publishing/queue" },
+      { label: "예약 발행", href: "/admin/publishing/scheduled" },
+      { label: "🖥 페이지 노출 관리", href: "/admin/publishing/featured" },
+      { label: "피드 (RSS) 상태", href: "/admin/publishing/feed" },
+      { label: "사이트맵 제어", href: "/admin/publishing/sitemap" },
+      { label: "설계/링크 점검", href: "/admin/publishing/links" }
     ]
   },
   {
-    title: "Observatory",
+    title: "운영 지표 (Observatory)",
     icon: Activity,
     href: "/admin/observatory",
     submenus: [
-      { label: "KPI Overview", href: "/admin/observatory/kpi" },
-      { label: "Object Health", href: "/admin/observatory/health" },
-      { label: "Question Coverage", href: "/admin/observatory/coverage" },
-      { label: "Trust Health", href: "/admin/observatory/trust" },
-      { label: "Conversion Health", href: "/admin/observatory/conversion" }
+      { label: "KPI 요약", href: "/admin/observatory/kpi" },
+      { label: "콘텐츠 건전성", href: "/admin/observatory/health" },
+      { label: "질문 커버리지", href: "/admin/observatory/coverage" },
+      { label: "신뢰 지표 (Trust)", href: "/admin/observatory/trust" },
+      { label: "전환 지표 (Conversion)", href: "/admin/observatory/conversion" }
     ]
   },
   {
-    title: "Fix-It",
+    title: "유지보수 (Fix-It)",
     icon: Wrench,
     href: "/admin/fixit",
     submenus: [
-      { label: "P0", href: "/admin/fixit/p0" },
-      { label: "P1", href: "/admin/fixit/p1" },
-      { label: "P2", href: "/admin/fixit/p2" },
-      { label: "Root Cause Board", href: "/admin/fixit/rootcause" },
-      { label: "Release Log", href: "/admin/fixit/release" }
+      { label: "P0 (긴급 장애)", href: "/admin/fixit/p0" },
+      { label: "P1 (주요 이슈)", href: "/admin/fixit/p1" },
+      { label: "P2 (일반 개선)", href: "/admin/fixit/p2" },
+      { label: "근본 원인 분석(Root Cause)", href: "/admin/fixit/rootcause" },
+      { label: "릴리즈 노트", href: "/admin/fixit/release" }
     ]
   },
   {
-    title: "Settings",
+    title: "환경 설정",
     icon: Settings,
     href: "/admin/settings",
     submenus: [
-      { label: "Site Menus", href: "/admin/settings/menus" },
-      { label: "Users & Roles", href: "/admin/settings/users" },
-      { label: "Workflow Rules", href: "/admin/settings/workflow" },
-      { label: "Taxonomies", href: "/admin/settings/taxonomies" },
-      { label: "Integrations", href: "/admin/settings/integrations" },
-      { label: "Audit Log", href: "/admin/settings/audit" }
+      { label: "기본 사이트 정보", href: "/admin/settings/site" },
+      { label: "메뉴(GNB/LNB) 편집", href: "/admin/settings/menus" },
+      { label: "분류 체계 (Taxonomies)", href: "/admin/settings/taxonomies" },
+      { label: "사용자 및 권한 설정", href: "/admin/settings/users" },
+      { label: "워크플로우 규칙", href: "/admin/settings/workflow" },
+      { label: "외부 시스템 연동", href: "/admin/settings/integrations" },
+      { label: "관리자 활동 로그", href: "/admin/settings/audit" }
     ]
   }
 ]

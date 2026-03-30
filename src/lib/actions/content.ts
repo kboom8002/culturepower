@@ -62,14 +62,19 @@ export type Partner = {
   created_at: string
 }
 
-export type ContentResource = {
+export type MediaAsset = {
   id: string
-  title: string
-  file_type: string | null
-  file_url: string
-  file_size_bytes: number | null
-  description: string | null
+  public_url: string
+  title: string | null
+  alt_text: string | null
+  bytes: number | null
+  width: number | null
+  height: number | null
   created_at: string
+  asset_type?: {
+    slug: string
+    name: string
+  } | null
 }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -248,13 +253,14 @@ export async function upsertAnswer(id: string, partialPayload: Partial<Answer>) 
 // ----------------------------------------------------
 
 async function mapDbToExpert(row: any): Promise<Expert> {
+  const profile_image_url = row.media_assets ? row.media_assets.public_url : null;
   return {
     id: row.id,
     name: row.name,
     organization: row.name_en || null,
     role: row.headline || null,
     bio: row.bio_short || null,
-    profile_image_url: null,
+    profile_image_url,
     is_active: row.status === 'active',
     created_at: row.created_at,
     contact_email: null,
@@ -262,7 +268,7 @@ async function mapDbToExpert(row: any): Promise<Expert> {
   }
 }
 
-async function mapExpertToDb(data: Partial<Expert & {contact_email?: string, social_links?: any}>) {
+async function mapExpertToDb(supabase: any, data: Partial<Expert & {contact_email?: string, social_links?: any}>) {
   const payload: any = {}
   if (data.name !== undefined) payload.name = data.name
   if (data.organization !== undefined) payload.name_en = data.organization
@@ -277,13 +283,31 @@ async function mapExpertToDb(data: Partial<Expert & {contact_email?: string, soc
     payload.slug = `person-${Date.now()}-${Math.floor(Math.random() * 1000)}`
   }
   
+  // Handle profile image
+  if (data.profile_image_url !== undefined) {
+    if (data.profile_image_url) {
+      // Find portrait asset type
+      const { data: assetType } = await supabase.from('media_asset_types').select('id').eq('slug', 'portrait').maybeSingle()
+      if (assetType) {
+         const { data: asset } = await supabase.from('media_assets').insert({
+             public_url: data.profile_image_url,
+             asset_type_id: assetType.id,
+             title: `${payload.name || 'Expert'} Profile Image`
+         }).select('id').single()
+         if (asset) payload.profile_image_asset_id = asset.id
+      }
+    } else {
+      payload.profile_image_asset_id = null
+    }
+  }
+  
   return payload
 }
 
 export async function getExperts(): Promise<Expert[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createContentClient()
-  const { data } = await supabase.from('people').select('*').order('name', { ascending: true })
+  const { data } = await supabase.from('people').select('*, media_assets!profile_image_asset_id(public_url)').order('name', { ascending: true })
   if (!data) return []
   return Promise.all(data.map(mapDbToExpert))
 }
@@ -291,7 +315,7 @@ export async function getExperts(): Promise<Expert[]> {
 export async function getExpertById(id: string): Promise<Expert | null> {
   if (!isSupabaseConfigured() || id === 'new') return null
   const supabase = await createContentClient()
-  const { data, error } = await supabase.from('people').select('*').eq('id', id).single()
+  const { data, error } = await supabase.from('people').select('*, media_assets!profile_image_asset_id(public_url)').eq('id', id).single()
   if (error || !data) return null
   return mapDbToExpert(data)
 }
@@ -299,7 +323,7 @@ export async function getExpertById(id: string): Promise<Expert | null> {
 export async function upsertExpert(id: string, partialPayload: Partial<Expert & {contact_email?: string, social_links?: any}>) {
   if (!isSupabaseConfigured()) return { success: true, id: id === 'new' ? 'mock-id' : id }
   const supabase = await createContentClient()
-  const payload = await mapExpertToDb(partialPayload)
+  const payload = await mapExpertToDb(supabase, partialPayload)
   if (!payload) return { success: false, error: "Invalid payload (Name required)" }
   
   if (id === 'new') {
@@ -327,18 +351,31 @@ export async function deleteExpert(id: string) {
 export async function getTopics(): Promise<ContentTopic[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createContentClient()
-  const { data } = await supabase.from('topics').select('*').order('name_ko', { ascending: true })
+  const { data } = await supabase.from('topics').select('id, name_ko, slug, description, status').order('sort_order', { ascending: true })
   return (data || []).map((t: any) => ({
-    ...t,
+    id: t.id,
     name: t.name_ko,
-    is_active: true
-  })) as ContentTopic[]
+    slug: t.slug,
+    description: t.description,
+    is_active: t.status === 'active',
+    created_at: new Date().toISOString()
+  }))
 }
 
 export async function createTopic(payload: { name: string, slug: string, description?: string }) {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createContentClient()
-  const { error } = await supabase.from('content_topics').insert([payload])
+  // Mapping to public.topics
+  const insertPayload = {
+    name_ko: payload.name,
+    name_en: payload.name,
+    slug: payload.slug,
+    description: payload.description || '',
+    status: 'active',
+    level: 1,
+    sort_order: 99
+  }
+  const { error } = await supabase.from('topics').insert([insertPayload])
   if (error) return { success: false, error: error.message }
   return { success: true }
 }
@@ -350,11 +387,51 @@ export async function getPartners(): Promise<Partner[]> {
   return (data || []) as Partner[]
 }
 
-export async function getResources(): Promise<ContentResource[]> {
+export async function getMediaAssets(): Promise<MediaAsset[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createContentClient()
-  const { data } = await supabase.from('content_resources').select('*').order('created_at', { ascending: false })
-  return (data || []) as ContentResource[]
+  const { data } = await supabase.from('media_assets')
+    .select('id, public_url, title, alt_text, bytes, width, height, created_at, media_asset_types(slug, name)')
+    .order('created_at', { ascending: false })
+  
+  return (data || []).map((m: any) => ({
+    ...m,
+    asset_type: m.media_asset_types
+  })) as MediaAsset[]
+}
+
+export async function uploadMediaAssetDb(payload: Partial<MediaAsset> & { asset_type_slug?: string }) {
+  if (!isSupabaseConfigured()) return { success: false, error: 'DB Connect Error' }
+  const supabase = await createContentClient()
+  
+  // Find asset type
+  let typeId = null
+  if (payload.asset_type_slug) {
+     const { data: t } = await supabase.from('media_asset_types').select('id').eq('slug', payload.asset_type_slug).maybeSingle()
+     if (t) typeId = t.id
+  }
+  
+  const insertPayload = {
+    public_url: payload.public_url,
+    title: payload.title,
+    alt_text: payload.alt_text,
+    bytes: payload.bytes,
+    width: payload.width,
+    height: payload.height,
+    asset_type_id: typeId
+  }
+  
+  const { data, error } = await supabase.from('media_assets').insert([insertPayload]).select().single()
+  if (error) return { success: false, error: error.message }
+  return { success: true, data }
+}
+
+export async function deleteMediaAssetDb(id: string) {
+  if (!isSupabaseConfigured()) return { success: false, error: 'DB Connect Error' }
+  const supabase = await createContentClient()
+  const { error } = await supabase.from('media_assets').delete().eq('id', id)
+  if (error) return { success: false, error: error.message }
+  return { success: true }
 }
 
 export async function getSections(): Promise<TaxonomyItem[]> {

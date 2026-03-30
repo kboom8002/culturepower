@@ -25,7 +25,7 @@ export default async function EventsIndexPage({
   let currentTopic: { id: string, name: string, description: string | null } | null = null
   
   if (topicSlug) {
-    currentTopic = topics.find(t => t.slug === topicSlug) || null
+    currentTopic = topics.find(t => t.slug === topicSlug || t.slug.includes(topicSlug.toLowerCase())) || null
     if (currentTopic) {
       // @ts-ignore : MVP 단계에서 event 스키마에 topic_id가 직접 매핑되지 않았을 수 있으므로 하위 호환
       filteredEvents = events.filter(e => true) 
@@ -53,8 +53,8 @@ export default async function EventsIndexPage({
       <DynamicSectionHero 
         topic={currentTopic ? { name: currentTopic.name, description: currentTopic.description } : undefined}
         heroItem={heroItem}
-        defaultTitle={categorySlug === 'video' ? "명사 영상" : "기록과 행사"}
-        defaultDescription="네트워크가 주최하는 주요 정책 포럼과 명사 강연, 발제문 아카이브를 한 곳에 모았습니다."
+        defaultTitle={categorySlug === 'video' ? "행사 영상" : "행사·토론회"}
+        defaultDescription="문화강국네트워크가 이어온 정책토론회, 지역문화대전환 순회토론회, 특별 행사와 전시를 한곳에서 탐색할 수 있는 공식 아카이브입니다."
       />
       <div className="container mx-auto py-12 px-4 md:px-6 pb-24">
         <Suspense fallback={<div className="py-24 text-center">행사 일정을 불러오는 중입니다...</div>}>

@@ -159,7 +159,7 @@ async function mapDbToStory(supabase: any, row: any): Promise<Story> {
     tag_ids: tagsData ? tagsData.map((t: any) => t.tag_id) : [],
     experts: edgeData ? edgeData.map((e: any) => ({ name: e.people?.name, id: e.person_id })) : [],
     related_answers_meta: linkData ? linkData.map((l: any) => ({ title: l.answers?.title, id: l.target_content_id })) : [],
-    og_image_url: null,
+    og_image_url: (row as any).media_assets?.public_url || null,
     content_topics: row.topics ? { name: row.topics.name_ko } as any : null,
     section_name: row.sections?.name_ko || null,
     category_name: row.categories?.name_ko || null,
@@ -178,6 +178,28 @@ async function mapStoryToDb(supabase: any, data: Partial<Story>) {
   if (data.category_id !== undefined) payload.category_id = data.category_id || null
   if (data.series_id !== undefined) payload.primary_series_id = data.series_id || null
   if (data.why_this_matters !== undefined) payload.summary = data.why_this_matters
+
+  if (data.og_image_url !== undefined) {
+    if (!data.og_image_url) {
+      payload.featured_image_asset_id = null
+    } else {
+      const { data: existingAsset, error: existingErr } = await supabase.from('media_assets').select('id').eq('public_url', data.og_image_url).maybeSingle()
+      if (existingErr) console.error("DEBUG existingAsset err:", existingErr)
+      if (existingAsset) {
+        payload.featured_image_asset_id = existingAsset.id
+      } else {
+        const { data: assetType, error: typeErr } = await supabase.from('media_asset_types').select('id').eq('slug', 'featured-image').maybeSingle()
+        if (typeErr) console.error("DEBUG typeErr:", typeErr)
+        if (assetType) {
+          const { data: newAsset, error: insertErr } = await supabase.from('media_assets')
+            .insert([{ public_url: data.og_image_url, asset_type_id: assetType.id, title: 'Story Cover' }])
+            .select().single()
+          if (insertErr) console.error("DEBUG insertErr media_assets:", insertErr)
+          if (newAsset) payload.featured_image_asset_id = newAsset.id
+        }
+      }
+    }
+  }
 
   if (data.status) {
     const stId = await fetchStatusId(supabase, data.status)
@@ -205,7 +227,7 @@ async function mapStoryToDb(supabase: any, data: Partial<Story>) {
 export async function getStories(): Promise<Story[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createClient()
-  const { data, error } = await supabase.from('stories').select('*, topics!primary_topic_id(name_ko), sections!section_id(name_ko), categories!category_id(name_ko), series!primary_series_id(name_ko)').order('created_at', { ascending: false })
+  const { data, error } = await supabase.from('stories').select('*, topics!primary_topic_id(name_ko), sections!section_id(name_ko), categories!category_id(name_ko), series!primary_series_id(name_ko), media_assets!featured_image_asset_id(public_url)').order('created_at', { ascending: false })
   if (error || !data) return []
   
   const results = await Promise.all(data.map((d: any) => mapDbToStory(supabase, d)))
@@ -215,7 +237,7 @@ export async function getStories(): Promise<Story[]> {
 export async function getStoryById(id: string): Promise<Story | null> {
   if (!isSupabaseConfigured()) return null
   const supabase = await createClient()
-  const { data, error } = await supabase.from('stories').select('*, topics!primary_topic_id(name_ko), sections!section_id(name_ko), categories!category_id(name_ko), series!primary_series_id(name_ko)').eq('id', id).single()
+  const { data, error } = await supabase.from('stories').select('*, topics!primary_topic_id(name_ko), sections!section_id(name_ko), categories!category_id(name_ko), series!primary_series_id(name_ko), media_assets!featured_image_asset_id(public_url)').eq('id', id).single()
   if (error || !data) return null
   return mapDbToStory(supabase, data)
 }

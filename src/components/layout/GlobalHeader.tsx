@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, Search, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -19,10 +20,17 @@ export function GlobalHeader({ menus }: { menus: MainMenuWithItems[] }) {
         {/* Logo */}
         <Link
           href="/"
-          className="font-bold text-[18px] md:text-[20px] text-brand-900 flex items-center gap-2 relative z-50 shrink-0"
+          className="relative z-50 shrink-0 flex items-center"
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          문화강국네트워크
+          <Image
+            src="/images/logo.png"
+            alt="문화강국네트워크 로고"
+            width={400}
+            height={85}
+            className="w-48 md:w-64 h-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop Nav */}
@@ -39,17 +47,19 @@ export function GlobalHeader({ menus }: { menus: MainMenuWithItems[] }) {
                 {gnb.label}
               </Link>
 
-              {/* Desktop Dropdown */}
-              <div className="absolute top-[72px] left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-white border border-line-default shadow-xl rounded-xl py-3 min-w-[200px] z-50">
-                {gnb.items.map((lnb) => (
-                  <Link
-                    key={lnb.label}
-                    href={lnb.href}
-                    className="px-5 py-2.5 text-sm font-medium text-neutral-600 hover:text-brand-700 hover:bg-brand-050 transition-colors whitespace-nowrap"
-                  >
-                    {lnb.label}
-                  </Link>
-                ))}
+              {/* Desktop Dropdown Wrapper (pt-4 acts as invisible hover bridge) */}
+              <div className="absolute top-full mt-[-8px] pt-[8px] left-1/2 -translate-x-1/2 hidden group-hover:block z-50">
+                <div className="flex flex-col bg-white border border-line-default shadow-xl rounded-xl py-3 min-w-[200px]">
+                  {gnb.items.map((lnb) => (
+                    <Link
+                      key={lnb.label}
+                      href={lnb.href}
+                      className="px-5 py-2.5 text-sm font-medium text-neutral-600 hover:text-brand-700 hover:bg-brand-50 transition-colors whitespace-nowrap"
+                    >
+                      {lnb.label}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           ))}

@@ -67,6 +67,10 @@ export type PublicEvent = {
   end_date: string | null
   thumbnail_url: string | null
   status: string 
+  series_name?: string | null
+  summary?: string | null
+  has_result_assets?: boolean
+  round_no?: number | null
   videos?: any[]
   documents?: any[]
   galleries?: any[]
@@ -177,7 +181,13 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
   const supabase = await createPublicClient()
   const pubId = await getPublishedStatusId(supabase)
   
-  let query = supabase.from('events').select('*, topics!primary_topic_id(name_ko, slug, description)').order('start_at', { ascending: false })
+  let query = supabase.from('events').select(`
+    *, 
+    topics!primary_topic_id(name_ko, slug, description),
+    featured_image_asset:media_assets!featured_image_asset_id(public_url),
+    event_series(series(id, name_ko, slug))
+  `).order('start_at', { ascending: false })
+  
   if (pubId) query = query.eq('workflow_status_id', pubId)
 
   const { data, error } = await query
@@ -187,9 +197,24 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
   const nowTime = new Date().getTime()
   return data.map((e: any) => {
     let evtStatus = 'Upcoming'
-    const evTime = new Date(e.start_at || 0).getTime()
-    if (evTime < nowTime) evtStatus = 'Closed'
-    if (evTime === nowTime) evtStatus = 'Ongoing' // simplified
+    if (e.event_status) {
+      if (e.event_status === 'upcoming') evtStatus = 'Upcoming'
+      if (e.event_status === 'ongoing') evtStatus = 'Ongoing'
+      if (e.event_status === 'ended' || e.event_status === 'archived') evtStatus = 'Closed'
+    } else {
+      const evTime = new Date(e.start_at || 0).getTime()
+      if (evTime < nowTime) evtStatus = 'Closed'
+      if (evTime === nowTime) evtStatus = 'Ongoing' // simplified
+    }
+    
+    // Add Archived (Material Released) badge if has result assets and ended
+    if (evtStatus === 'Closed' && e.has_result_assets) {
+      evtStatus = 'Archived'
+    }
+
+    const defaultThumbnail = e.featured_image_asset ? e.featured_image_asset.public_url : null
+    const seriesObj = e.event_series?.[0]?.series
+    const seriesName = seriesObj ? seriesObj.name_ko : null
     
     return {
       id: e.id,
@@ -197,10 +222,28 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
       venue: e.location_name || null,
       start_date: e.start_at || null,
       end_date: e.end_at || null,
-      thumbnail_url: null, // Should fetch from media_assets in real impl
-      status: evtStatus
+      thumbnail_url: defaultThumbnail,
+      status: evtStatus,
+      series_name: seriesName,
+      summary: e.summary || null,
+      has_result_assets: e.has_result_assets || false,
+      round_no: e.round_no || null
     }
   })
+}
+
+export async function getPublicEventDetail(id: string) {
+  const supabase = await createPublicClient()
+  let query = supabase.from('events').select(`
+    *, 
+    topics!primary_topic_id(name_ko, slug, description),
+    featured_image_asset:media_assets!featured_image_asset_id(public_url),
+    event_series(series(id, name_ko, slug))
+  `).eq('id', id).maybeSingle()
+  
+  const { data, error } = await query
+  if (error || !data) return null
+  return data
 }
 
 export async function getPublicEventById(id: string): Promise<PublicEvent | null> {
@@ -241,4 +284,90 @@ export async function getPublicExperts(): Promise<PublicExpert[]> {
     bio: p.bio_short,
     profile_image_url: p.media_assets ? p.media_assets.public_url : null
   }))
+}
+
+// ----------------------------------------------------------------------
+// Global Search
+// ----------------------------------------------------------------------
+
+export async function searchAllContent(q: string) {
+  const supabase = await createPublicClient()
+  const pubId = await getPublishedStatusId(supabase)
+
+  if (!q) return { answers: [], stories: [], events: [] }
+
+  const qStr = `%${q}%`
+  
+  // Answers (SSoT 정답카드)
+  let ansQuery = supabase.from('answers')
+    .select('*, topics!primary_topic_id(name_ko, slug, description)')
+    .or(`title.ilike.${qStr},summary.ilike.${qStr}`)
+    .order('published_at', { ascending: false })
+    .limit(10)
+  if (pubId) ansQuery = ansQuery.eq('workflow_status_id', pubId)
+
+  // Stories (문강 RIO 스토리)
+  let stoQuery = supabase.from('stories')
+    .select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text)')
+    .or(`title.ilike.${qStr},summary.ilike.${qStr},subtitle.ilike.${qStr}`)
+    .order('published_at', { ascending: false })
+    .limit(10)
+  if (pubId) stoQuery = stoQuery.eq('workflow_status_id', pubId)
+
+  // Events (행사·영상 아카이브: 데이터·자료 역할 겸용)
+  let evtQuery = supabase.from('events')
+    .select(`
+      *, 
+      topics!primary_topic_id(name_ko, slug, description),
+      featured_image_asset:media_assets!featured_image_asset_id(public_url),
+      event_series(series(id, name_ko, slug))
+    `)
+    .or(`title.ilike.${qStr},summary.ilike.${qStr}`)
+    .order('start_at', { ascending: false })
+    .limit(10)
+  if (pubId) evtQuery = evtQuery.eq('workflow_status_id', pubId)
+
+  const [ansRes, stoRes, evtRes] = await Promise.all([ansQuery, stoQuery, evtQuery])
+
+  const answers = (ansRes.data || []).map(mapAnswer)
+  const stories = (stoRes.data || []).map(mapStory)
+  
+  const nowTime = new Date().getTime()
+  const events = (evtRes.data || []).map((e: any) => {
+    let evtStatus = 'Upcoming'
+    if (e.event_status) {
+      if (e.event_status === 'upcoming') evtStatus = 'Upcoming'
+      if (e.event_status === 'ongoing') evtStatus = 'Ongoing'
+      if (e.event_status === 'ended' || e.event_status === 'archived') evtStatus = 'Closed'
+    } else {
+      const evTime = new Date(e.start_at || 0).getTime()
+      if (evTime < nowTime) evtStatus = 'Closed'
+      if (evTime === nowTime) evtStatus = 'Ongoing' // simplified
+    }
+    
+    // Add Archived (Material Released) badge if has result assets and ended
+    if (evtStatus === 'Closed' && e.has_result_assets) {
+      evtStatus = 'Archived'
+    }
+
+    const defaultThumbnail = e.featured_image_asset ? e.featured_image_asset.public_url : null
+    const seriesObj = e.event_series?.[0]?.series
+    const seriesName = seriesObj ? seriesObj.name_ko : null
+    
+    return {
+      id: e.id,
+      title: e.title,
+      venue: e.location_name || null,
+      start_date: e.start_at || null,
+      end_date: e.end_at || null,
+      thumbnail_url: defaultThumbnail,
+      status: evtStatus,
+      series_name: seriesName,
+      summary: e.summary || null,
+      has_result_assets: e.has_result_assets || false,
+      round_no: e.round_no || null
+    }
+  })
+
+  return { answers, stories, events }
 }

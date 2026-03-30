@@ -94,10 +94,12 @@ export default async function AdminPublishingQueuePage({ searchParams }: { searc
                      <div className="text-neutral-500 text-[11px] font-mono mt-0.5">{item.id}</div>
                   </td>
                   <td className="px-6 py-4">
-                     {item.status === 'Draft' && <Chip variant="default">Draft</Chip>}
-                     {item.status === 'Review' && <Chip variant="reviewed">Review</Chip>}
-                     {item.status === 'Public' && <Chip variant="primary">Published</Chip>}
-                     {item.status === 'Archived' && <Chip variant="default">Archived</Chip>}
+                     {(item.status === 'Draft' || item.status === 'draft') && <Chip variant="default">Draft</Chip>}
+                     {(item.status === 'Review' || item.status === 'in-review') && <Chip variant="reviewed">In Review</Chip>}
+                     {item.status === 'approved' && <Chip variant="reviewed">Approved</Chip>}
+                     {item.status === 'scheduled' && <Chip variant="default">Scheduled</Chip>}
+                     {(item.status === 'Public' || item.status === 'published') && <Chip variant="primary">Published</Chip>}
+                     {(item.status === 'Archived' || item.status === 'archived') && <Chip variant="default">Archived</Chip>}
                   </td>
                   <td className="px-6 py-4 font-mono text-xs text-neutral-500 min-h-[56px]">
                      {new Date(isHistory ? (item.published_at || item.created_at) : item.created_at).toLocaleString()}

@@ -1,6 +1,7 @@
 import { Plus, UserCircle2, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getExperts } from "@/lib/actions/content"
+import { ExpertEditorModal } from "./ExpertEditorModal"
 
 export default async function AdminExpertsPage() {
   const experts = await getExperts()
@@ -14,7 +15,9 @@ export default async function AdminExpertsPage() {
 
       <div className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-line-default">
          <div className="text-sm font-bold text-neutral-600">Total {experts.length} Experts</div>
-         <Button variant="primary" size="sm"><Plus className="w-4 h-4 mr-1" /> Add Expert</Button>
+         <ExpertEditorModal>
+           <Button variant="primary" size="sm"><Plus className="w-4 h-4 mr-1" /> Add Expert</Button>
+         </ExpertEditorModal>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -42,8 +45,10 @@ export default async function AdminExpertsPage() {
                   </p>
                   
                   <div className="mt-5 w-full flex gap-2">
-                     <Button variant="secondary" size="sm" className="flex-1 h-8 text-xs">Edit</Button>
-                     <Button variant="tool" size="sm" className="h-8 w-8 p-0 text-danger-500 border border-danger-100 hover:bg-danger-50">✕</Button>
+                     <ExpertEditorModal expert={expert}>
+                       <Button variant="secondary" size="sm" className="w-full text-xs pointer-events-none">Edit</Button>
+                     </ExpertEditorModal>
+                     <Button variant="tool" size="sm" className="h-[32px] w-[32px] p-0 shrink-0 text-danger-500 border border-danger-100 hover:bg-danger-50 flex items-center justify-center">✕</Button>
                   </div>
                </div>
             </div>

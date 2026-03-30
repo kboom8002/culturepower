@@ -1,4 +1,5 @@
-import Link from "next/link"
+import Link from "next/link";
+import Image from "next/image";
 
 export function GlobalFooter() {
   return (
@@ -6,7 +7,15 @@ export function GlobalFooter() {
       <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between gap-8">
         
         <div className="flex flex-col gap-4 max-w-sm">
-          <span className="font-bold text-[18px] text-brand-900">문화강국네트워크</span>
+          <div className="flex items-center gap-2">
+            <Image
+              src="/images/logo.png"
+              alt="문화강국네트워크 로고"
+              width={400}
+              height={85}
+              className="w-48 md:w-64 h-auto object-contain mix-blend-multiply"
+            />
+          </div>
           <p className="text-body-sm text-neutral-600">
             질문을 시작하고, 검증된 답변을 나누는 공공형 해설 플랫폼입니다. K-문명과 문화강국의 비전을 구체적인 근거와 함께 차분하게 기록합니다.
           </p>

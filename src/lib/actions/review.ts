@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 
 export type ReviewTask = {
   id: string
-  content_type: 'Story' | 'Answer'
+  content_type: 'Story' | 'Answer' | 'Brief' | 'Event' | 'Page'
   content_id: string
   reviewer_id: string | null
   status: 'Pending' | 'In Review' | 'Returned' | 'Approved'
@@ -107,7 +107,7 @@ export async function assignReviewTask(taskId: string) {
   }
 }
 
-export async function submitToReview(contentType: 'Story' | 'Answer', contentId: string) {
+export async function submitToReview(contentType: 'Story' | 'Answer' | 'Brief' | 'Event' | 'Page', contentId: string) {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createReviewClient()
 
@@ -148,10 +148,22 @@ export async function processReviewTask(taskId: string, action: 'Approve' | 'Ret
   if (revErr) return { success: false, error: revErr.message }
 
   // Sync with original content table
-  const targetTable = task.content_type === 'Story' ? 'stories' : 'answers'
-  const contentStatus = action === 'Approve' ? 'Review' : 'Draft' // Return back to draft if rejected, or push to Publishing Queue (Review)
+  let targetTable = 'stories'
+  if (task.content_type === 'Answer') targetTable = 'answers'
+  else if (task.content_type === 'Brief') targetTable = 'briefs'
+  else if (task.content_type === 'Event') targetTable = 'events'
+  else if (task.content_type === 'Page') targetTable = 'pages'
   
-  const { error: syncErr } = await supabase.from(targetTable).update({ status: contentStatus }).eq('id', task.content_id)
+  const contentStatusSlug = action === 'Approve' ? 'approved' : 'draft'
+  const { data: statusData } = await supabase.from('workflow_statuses').select('id').eq('slug', contentStatusSlug).maybeSingle()
+  
+  let syncErr = null
+  if (statusData?.id) {
+    const { error } = await supabase.from(targetTable).update({ workflow_status_id: statusData.id }).eq('id', task.content_id)
+    syncErr = error
+  } else {
+    syncErr = { message: `Workflow status '${contentStatusSlug}' not found in DB` }
+  }
   
   revalidatePath('/admin/review/mine')
   revalidatePath('/admin/review/returned')

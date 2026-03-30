@@ -22,7 +22,7 @@ export default async function AnswersIndexPage({ searchParams }: { searchParams:
   let currentTopic: { id: string, name: string, description: string | null } | null = null
   
   if (topicSlug) {
-    currentTopic = topics.find(t => t.slug === topicSlug) || null
+    currentTopic = topics.find(t => t.slug === topicSlug || t.slug.includes(topicSlug.toLowerCase())) || null
     if (currentTopic) {
       const topicId = currentTopic.id
       filteredAnswers = answers.filter(a => a.topic_id === topicId)

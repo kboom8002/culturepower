@@ -23,6 +23,12 @@ export type ArchiveEvent = {
   topic_id: string | null
   owner_user_id: string | null
   reviewer_id: string | null
+  
+  series_id?: string | null
+  round_no?: number | null
+  has_result_assets?: boolean
+  featured_image_url?: string | null
+  event_status?: string | null
 }
 
 export type ArchiveVideo = {
@@ -108,6 +114,21 @@ async function fetchStatusSlug(supabase: any, dbStatusId: string): Promise<strin
   return data?.slug ? data.slug.charAt(0).toUpperCase() + data.slug.slice(1) : 'Draft'
 }
 
+async function ensureMediaAsset(supabase: any, url: string) {
+  if (!url) return null;
+  const { data } = await supabase.from('media_assets').select('id').eq('public_url', url).maybeSingle()
+  if (data) return data.id;
+  
+  const { data: newData, error } = await supabase.from('media_assets').insert({
+    public_url: url,
+    asset_type: 'image',
+    filename: url.split('/').pop() || 'uploaded.jpg'
+  }).select('id').single()
+  
+  if (error) console.error("Error creating media asset:", error)
+  return newData?.id || null
+}
+
 async function mapDbToEvent(supabase: any, row: any): Promise<ArchiveEvent> {
   return {
     id: row.id,
@@ -126,7 +147,12 @@ async function mapDbToEvent(supabase: any, row: any): Promise<ArchiveEvent> {
     program_json: row.custom_fields || null,
     topic_id: row.primary_topic_id || null,
     owner_user_id: null,
-    reviewer_id: null
+    reviewer_id: null,
+    round_no: row.round_no || null,
+    has_result_assets: row.has_result_assets || false,
+    event_status: row.event_status || null,
+    featured_image_url: row.media_assets?.public_url || null,
+    series_id: row.event_series?.[0]?.series_id || null,
   }
 }
 
@@ -140,10 +166,27 @@ async function mapEventToDb(supabase: any, data: Partial<ArchiveEvent>) {
   if (data.location !== undefined) payload.location = data.location
   if (data.registration_link !== undefined) payload.registration_link = data.registration_link
   if (data.topic_id !== undefined) payload.primary_topic_id = data.topic_id || null
+  if (data.round_no !== undefined) payload.round_no = data.round_no
+  if (data.has_result_assets !== undefined) payload.has_result_assets = data.has_result_assets
+  if (data.event_status !== undefined) payload.event_status = data.event_status
+
+  if (data.featured_image_url !== undefined) {
+    if (data.featured_image_url) {
+      payload.featured_image_asset_id = await ensureMediaAsset(supabase, data.featured_image_url)
+    } else {
+      payload.featured_image_asset_id = null
+    }
+  }
 
   if (data.status) {
-    const stId = await fetchStatusId(supabase, data.status)
+    // If user saves as Public, map it immediately to 'published' skip queue
+    const targetStatus = data.status === 'Public' ? 'published' : data.status
+    const stId = await fetchStatusId(supabase, targetStatus)
     if (stId) payload.workflow_status_id = stId
+    
+    if (data.status === 'Public' && !data.id) {
+       payload.published_at = new Date().toISOString()
+    }
   }
 
   if (!payload.workflow_status_id && !data.id) {
@@ -161,7 +204,7 @@ async function mapEventToDb(supabase: any, data: Partial<ArchiveEvent>) {
 export async function getEvents(): Promise<ArchiveEvent[]> {
   if (!isSupabaseConfigured()) return MOCK_EVENTS
   const supabase = await createArchiveClient()
-  const { data, error } = await supabase.from('events').select('*').order('start_date', { ascending: false })
+  const { data, error } = await supabase.from('events').select('*, media_assets!featured_image_asset_id(public_url), event_series(series_id)').order('start_date', { ascending: false })
   if (error || !data) { console.error("Error fetching events:", error); return [] }
   const results = await Promise.all(data.map(d => mapDbToEvent(supabase, d)))
   return results
@@ -170,7 +213,7 @@ export async function getEvents(): Promise<ArchiveEvent[]> {
 export async function getEventById(id: string): Promise<ArchiveEvent | null> {
   if (!isSupabaseConfigured()) return MOCK_EVENTS.find(e => e.id === id) || MOCK_EVENTS[0]
   const supabase = await createArchiveClient()
-  const { data, error } = await supabase.from('events').select('*').eq('id', id).single()
+  const { data, error } = await supabase.from('events').select('*, media_assets!featured_image_asset_id(public_url), event_series(series_id)').eq('id', id).single()
   if (error || !data) { console.error(`Error fetching event ${id}:`, error); return null }
   return mapDbToEvent(supabase, data)
 }
@@ -178,9 +221,16 @@ export async function getEventById(id: string): Promise<ArchiveEvent | null> {
 export async function createEvent(partialPayload: Partial<ArchiveEvent>) {
   if (!isSupabaseConfigured()) return { success: true, data: { id: "mock-evt", ...partialPayload } }
   const supabase = await createArchiveClient()
-  const payload = await mapEventToDb(supabase, partialPayload)
+  const { series_id, ...restPayload } = partialPayload
+  const payload = await mapEventToDb(supabase, restPayload)
+  
   const { data, error } = await supabase.from('events').insert([payload]).select().single()
   if (error) return { success: false, error: error.message }
+  
+  if (series_id) {
+     await supabase.from('event_series').insert([{ event_id: data.id, series_id }])
+  }
+  
   revalidatePath('/admin/archive/events')
   return { success: true, data }
 }
@@ -188,12 +238,28 @@ export async function createEvent(partialPayload: Partial<ArchiveEvent>) {
 export async function updateEvent(id: string, partialPayload: Partial<ArchiveEvent>) {
   if (!isSupabaseConfigured()) return { success: true, data: { id, ...partialPayload } }
   const supabase = await createArchiveClient()
-  const payload = await mapEventToDb(supabase, partialPayload)
+  const { series_id, ...restPayload } = partialPayload
+  const payload = await mapEventToDb(supabase, restPayload)
+  
   const { data, error } = await supabase.from('events').update(payload).eq('id', id).select().single()
   if (error) return { success: false, error: error.message }
+  
+  if (series_id !== undefined) {
+     await supabase.from('event_series').delete().eq('event_id', id)
+     if (series_id) {
+        await supabase.from('event_series').insert([{ event_id: id, series_id }])
+     }
+  }
+
   revalidatePath('/admin/archive/events')
   revalidatePath(`/admin/archive/events/${id}`)
   return { success: true, data }
+}
+
+export async function getSeriesList() {
+  const supabase = await createArchiveClient()
+  const { data } = await supabase.from('series').select('*').order('name_ko', { ascending: true })
+  return data || []
 }
 
 export async function deleteEvent(id: string) {
