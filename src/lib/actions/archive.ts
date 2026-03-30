@@ -93,34 +93,102 @@ const MOCK_EVENTS: ArchiveEvent[] = [
   }
 ]
 
+// ----------------------------------------------------
+// Database Mappings for Events
+// ----------------------------------------------------
+
+async function fetchStatusId(supabase: any, frontendStatus: string): Promise<string | null> {
+  const slug = frontendStatus.toLowerCase()
+  const { data } = await supabase.from('workflow_statuses').select('id').eq('slug', slug).maybeSingle()
+  return data?.id || null
+}
+
+async function fetchStatusSlug(supabase: any, dbStatusId: string): Promise<string> {
+  const { data } = await supabase.from('workflow_statuses').select('slug').eq('id', dbStatusId).maybeSingle()
+  return data?.slug ? data.slug.charAt(0).toUpperCase() + data.slug.slice(1) : 'Draft'
+}
+
+async function mapDbToEvent(supabase: any, row: any): Promise<ArchiveEvent> {
+  return {
+    id: row.id,
+    title: row.title || '',
+    summary: row.summary || null,
+    event_type: row.event_type || 'Conference',
+    status: (await fetchStatusSlug(supabase, row.workflow_status_id)) as any,
+    start_date: row.start_date || null,
+    end_date: row.end_date || null,
+    location: row.location || null,
+    registration_link: row.registration_link || null,
+    slug: row.slug || null,
+    published_at: row.published_at,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    program_json: row.custom_fields || null,
+    topic_id: row.primary_topic_id || null,
+    owner_user_id: null,
+    reviewer_id: null
+  }
+}
+
+async function mapEventToDb(supabase: any, data: Partial<ArchiveEvent>) {
+  const payload: any = {}
+  if (data.title !== undefined) payload.title = data.title
+  if (data.summary !== undefined) payload.summary = data.summary
+  if (data.event_type !== undefined) payload.event_type = data.event_type
+  if (data.start_date !== undefined) payload.start_date = data.start_date
+  if (data.end_date !== undefined) payload.end_date = data.end_date
+  if (data.location !== undefined) payload.location = data.location
+  if (data.registration_link !== undefined) payload.registration_link = data.registration_link
+  if (data.topic_id !== undefined) payload.primary_topic_id = data.topic_id || null
+
+  if (data.status) {
+    const stId = await fetchStatusId(supabase, data.status)
+    if (stId) payload.workflow_status_id = stId
+  }
+
+  if (!payload.workflow_status_id && !data.id) {
+     const draftId = await fetchStatusId(supabase, 'draft')
+     payload.workflow_status_id = draftId
+  }
+
+  if (!data.id && data.title) {
+    payload.slug = `event-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  }
+
+  return payload
+}
+
 export async function getEvents(): Promise<ArchiveEvent[]> {
   if (!isSupabaseConfigured()) return MOCK_EVENTS
   const supabase = await createArchiveClient()
   const { data, error } = await supabase.from('events').select('*').order('start_date', { ascending: false })
-  if (error) { console.error("Error fetching events:", error); return [] }
-  return data as ArchiveEvent[]
+  if (error || !data) { console.error("Error fetching events:", error); return [] }
+  const results = await Promise.all(data.map(d => mapDbToEvent(supabase, d)))
+  return results
 }
 
 export async function getEventById(id: string): Promise<ArchiveEvent | null> {
   if (!isSupabaseConfigured()) return MOCK_EVENTS.find(e => e.id === id) || MOCK_EVENTS[0]
   const supabase = await createArchiveClient()
   const { data, error } = await supabase.from('events').select('*').eq('id', id).single()
-  if (error) { console.error(`Error fetching event ${id}:`, error); return null }
-  return data as ArchiveEvent
+  if (error || !data) { console.error(`Error fetching event ${id}:`, error); return null }
+  return mapDbToEvent(supabase, data)
 }
 
-export async function createEvent(payload: Partial<ArchiveEvent>) {
-  if (!isSupabaseConfigured()) return { success: true, data: { id: "mock-evt", ...payload } }
+export async function createEvent(partialPayload: Partial<ArchiveEvent>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id: "mock-evt", ...partialPayload } }
   const supabase = await createArchiveClient()
+  const payload = await mapEventToDb(supabase, partialPayload)
   const { data, error } = await supabase.from('events').insert([payload]).select().single()
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/events')
   return { success: true, data }
 }
 
-export async function updateEvent(id: string, payload: Partial<ArchiveEvent>) {
-  if (!isSupabaseConfigured()) return { success: true, data: { id, ...payload } }
+export async function updateEvent(id: string, partialPayload: Partial<ArchiveEvent>) {
+  if (!isSupabaseConfigured()) return { success: true, data: { id, ...partialPayload } }
   const supabase = await createArchiveClient()
+  const payload = await mapEventToDb(supabase, partialPayload)
   const { data, error } = await supabase.from('events').update(payload).eq('id', id).select().single()
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/archive/events')

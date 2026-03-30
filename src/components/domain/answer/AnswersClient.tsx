@@ -80,7 +80,7 @@ export function AnswersClient({ initialAnswers }: { initialAnswers: PublicAnswer
                 snippet={ans.summary || ans.content_body || ""}
                 updatedAt={ans.published_at || ans.updated_at}
                 isReviewed={true}
-                href={`/answers/${ans.id}`}
+                href={`/answers/${ans.slug}`}
               />
             )
           })}

@@ -6,6 +6,7 @@ import { ArrowLeft, Save, FileCheck, Loader2, Video, FileText, Image as ImageIco
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { getEventById, updateEvent, createEvent, deleteEvent } from "@/lib/actions/archive"
+import { getTopics, ContentTopic } from "@/lib/actions/content"
 
 export default function AdminEditEventPage() {
   const params = useParams()
@@ -18,10 +19,17 @@ export default function AdminEditEventPage() {
   const [summary, setSummary] = useState("")
   const [startDate, setStartDate] = useState("")
   const [location, setLocation] = useState("")
+  const [topicId, setTopicId] = useState("")
+  const [topics, setTopics] = useState<ContentTopic[]>([])
   const [isLoadingData, setIsLoadingData] = useState(!isNew)
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
+    getTopics().then(fetchedTopics => {
+      setTopics(fetchedTopics)
+      if (isNew && fetchedTopics.length > 0) setTopicId(fetchedTopics[0].id)
+    })
+
     if (!isNew) {
       getEventById(eventId).then(evt => {
         if (evt) {
@@ -30,16 +38,19 @@ export default function AdminEditEventPage() {
            setEventType(evt.event_type || "Conference")
            setStartDate(evt.start_date ? evt.start_date.substring(0, 10) : "")
            setLocation(evt.location || "")
+           if (evt.topic_id) setTopicId(evt.topic_id)
         }
         setIsLoadingData(false)
       })
+    } else {
+      setIsLoadingData(false)
     }
   }, [isNew, eventId])
 
   const handleSave = async (status: 'Draft' | 'Public' | 'Closed') => {
     if (!title) return alert("제목은 필수입니다.")
     setIsSaving(true)
-    const payload = { title, summary, event_type: eventType, start_date: startDate ? new Date(startDate).toISOString() : null, location, status }
+    const payload = { title, summary, event_type: eventType, start_date: startDate ? new Date(startDate).toISOString() : null, location, status, topic_id: topicId || null }
     
     if (isNew) {
       const res = await createEvent(payload)
@@ -101,6 +112,15 @@ export default function AdminEditEventPage() {
           <div className="border-b border-line-soft -mx-8" />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-neutral-700">대주제 (Topic)</label>
+              <select className="p-2.5 border rounded-xl bg-white" value={topicId} onChange={e => setTopicId(e.target.value)}>
+                {topics.length === 0 && <option value="">대주제 정보 없음</option>}
+                {topics.map(t => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
             <div className="flex flex-col gap-2">
               <label className="text-sm font-bold text-neutral-700">행사 분류</label>
               <select className="p-2.5 border rounded-xl" value={eventType} onChange={e => setEventType(e.target.value)}>

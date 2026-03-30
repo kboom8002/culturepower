@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Save, Eye, ArrowLeft, PenTool, Loader2 } from "lucide-react"
+import { Save, Eye, ArrowLeft, PenTool, Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { getAnswerById, upsertAnswer, getExperts, getTopics, Expert, ContentTopic } from "@/lib/actions/content"
+import { getAnswerById, upsertAnswer, getExperts, getTopics, getCategories, getTags, Expert, ContentTopic, TaxonomyItem } from "@/lib/actions/content"
 import { submitToReview } from "@/lib/actions/review"
 import { RichTextEditor } from "@/components/ui/RichTextEditor"
 
@@ -18,25 +18,35 @@ export default function AdminAnswerEditorPage() {
   const [title, setTitle] = useState("")
   const [summary, setSummary] = useState("")
   const [bodyHtml, setBodyHtml] = useState("")
-  const [expertId, setExpertId] = useState("")
+  const [expertIds, setExpertIds] = useState<string[]>([])
   const [topicId, setTopicId] = useState("")
+  const [categoryId, setCategoryId] = useState("")
+  const [tagIds, setTagIds] = useState<string[]>([])
   const [status, setStatus] = useState<'Draft' | 'Review' | 'Scheduled' | 'Public' | 'Archived'>('Draft')
   
   const [experts, setExperts] = useState<Expert[]>([])
   const [topics, setTopics] = useState<ContentTopic[]>([])
+  const [categories, setCategories] = useState<TaxonomyItem[]>([])
+  const [tags, setTags] = useState<TaxonomyItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     async function init() {
-      const [fetchedExperts, fetchedTopics] = await Promise.all([
+      const [fetchedExperts, fetchedTopics, fetchedCategories, fetchedTags] = await Promise.all([
         getExperts(),
-        getTopics()
+        getTopics(),
+        getCategories(),
+        getTags()
       ])
       setExperts(fetchedExperts)
       setTopics(fetchedTopics)
-      if (fetchedExperts.length > 0) setExpertId(fetchedExperts[0].id)
-      if (fetchedTopics.length > 0) setTopicId(fetchedTopics[0].id)
+      setCategories(fetchedCategories)
+      setTags(fetchedTags)
+      if (isNew) {
+        if (fetchedTopics.length > 0) setTopicId(fetchedTopics[0].id)
+        if (fetchedCategories.length > 0) setCategoryId(fetchedCategories[0].id)
+      }
 
       if (!isNew) {
         const ans = await getAnswerById(answerId)
@@ -44,8 +54,10 @@ export default function AdminAnswerEditorPage() {
           setTitle(ans.title || "")
           setSummary(ans.summary || "")
           setBodyHtml(ans.content_body || "")
-          if (ans.expert_id) setExpertId(ans.expert_id)
           if (ans.topic_id) setTopicId(ans.topic_id)
+          if (ans.category_id) setCategoryId(ans.category_id)
+          if (ans.expert_ids) setExpertIds(ans.expert_ids)
+          if (ans.tag_ids) setTagIds(ans.tag_ids)
           setStatus(ans.status)
         }
       }
@@ -64,8 +76,10 @@ export default function AdminAnswerEditorPage() {
        title,
        summary,
        content_body: bodyHtml,
-       expert_id: expertId || null,
+       expert_ids: expertIds,
        topic_id: topicId || null,
+       category_id: categoryId || null,
+       tag_ids: tagIds,
        status: targetStatus
     }
     
@@ -156,19 +170,39 @@ export default function AdminAnswerEditorPage() {
           <div className="w-full lg:w-[320px] shrink-0 flex flex-col gap-6">
              {/* Expert Assignment */}
              <div className="bg-white rounded-2xl border border-line-default p-5 shadow-sm">
-                <h3 className="text-[13px] font-bold text-neutral-900 uppercase tracking-widest mb-4 flex items-center gap-2">
-                   담당 전문가
+                <h3 className="text-[13px] font-bold text-neutral-900 uppercase tracking-widest mb-4 flex items-center justify-between">
+                   <span>담당 전문가 (Author / Expert)</span>
                 </h3>
-                <div className="relative">
+                <div className="flex flex-col gap-2">
+                   <div className="flex flex-wrap gap-2 mb-2">
+                     {expertIds.map(eid => {
+                       const ex = experts.find(e => e.id === eid)
+                       if (!ex) return null
+                       return (
+                         <div key={eid} className="bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                           {ex.name}
+                           <button onClick={() => setExpertIds(expertIds.filter(id => id !== eid))} className="text-brand-400 hover:text-brand-900 focus:outline-none">
+                             <X className="w-3 h-3" />
+                           </button>
+                         </div>
+                       )
+                     })}
+                   </div>
+                   
                    <select 
-                     value={expertId}
-                     onChange={(e) => setExpertId(e.target.value)}
+                     value=""
+                     onChange={(e) => {
+                       const id = e.target.value
+                       if (id && !expertIds.includes(id)) {
+                         setExpertIds([...expertIds, id])
+                       }
+                     }}
                      className="w-full bg-neutral-50 border border-line-strong rounded-lg px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:border-brand-500 appearance-none"
                    >
-                      {experts.length === 0 && <option value="">전문가를 등록해야 합니다</option>}
-                      {experts.map(e => (
-                         <option key={e.id} value={e.id}>{e.name} {e.organization ? `(${e.organization})` : ''}</option>
-                      ))}
+                     <option value="">+ (다중 선택) 전문가 명단 추가...</option>
+                     {experts.map(e => (
+                       <option key={e.id} value={e.id}>{e.name} {e.organization ? `(${e.organization})` : ''}</option>
+                     ))}
                    </select>
                 </div>
              </div>
@@ -189,6 +223,63 @@ export default function AdminAnswerEditorPage() {
                          <option key={t.id} value={t.id}>{t.name}</option>
                       ))}
                    </select>
+                </div>
+             </div>
+
+             {/* Category Field */}
+             <div className="bg-white rounded-2xl border border-line-default p-5 shadow-sm mt-6">
+                <h3 className="text-[13px] font-bold text-neutral-900 uppercase tracking-widest mb-4">
+                   카테고리 (Category)
+                </h3>
+                <div className="flex flex-col gap-2">
+                  <select 
+                    value={categoryId}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    className="w-full bg-neutral-50 border border-line-strong rounded-lg px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:border-brand-500 appearance-none"
+                  >
+                     <option value="">선택 안함</option>
+                     {categories.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                     ))}
+                  </select>
+                </div>
+             </div>
+
+             {/* Tags Field */}
+             <div className="bg-white rounded-2xl border border-line-default p-5 shadow-sm mt-6">
+                <h3 className="text-[13px] font-bold text-neutral-900 uppercase tracking-widest mb-4">
+                   단어 태그 (Tags)
+                </h3>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {tagIds.map(tid => {
+                      const tagItem = tags.find(t => t.id === tid)
+                      if (!tagItem) return null
+                      return (
+                        <div key={tid} className="bg-neutral-100 text-neutral-700 border border-neutral-200 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                          #{tagItem.name}
+                          <button onClick={() => setTagIds(tagIds.filter(id => id !== tid))} className="text-neutral-400 hover:text-neutral-900 focus:outline-none">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  <select 
+                    className="w-full bg-neutral-50 border border-line-strong rounded-lg px-3 py-2 text-sm text-neutral-900 focus:outline-none focus:border-brand-500 appearance-none"
+                    defaultValue=""
+                    onChange={(e) => {
+                      const id = e.target.value
+                      if (id && !tagIds.includes(id)) setTagIds([...tagIds, id])
+                      e.target.value = ""
+                    }}
+                  >
+                    <option value="">+ (다중 선택) 기존 태그 추가...</option>
+                    {tags.map(t => (
+                       <option key={t.id} value={t.id}>{t.name}</option>
+                    ))}
+                  </select>
                 </div>
              </div>
           </div>

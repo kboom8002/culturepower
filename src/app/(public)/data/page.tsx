@@ -37,7 +37,7 @@ export default async function DataHubPage() {
               <span className="ml-auto bg-neutral-100 text-neutral-600 text-xs font-bold px-2 py-1 rounded-full">{resources.documents.length}</span>
             </div>
             {resources.documents.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center bg-white rounded-xl border border-line-soft">등록된 문서가 없습니다.</p>}
-            {resources.documents.map(doc => (
+            {resources.documents.map((doc: any) => (
               <div key={doc.id} className="bg-white rounded-xl p-5 border border-line-soft shadow-sm hover:border-brand-300 transition-colors">
                 <div className="text-xs font-bold text-blue-600 mb-2">{doc.document_type || "일반 문서"}</div>
                 <h3 className="font-bold text-neutral-900 mb-2 leading-snug">{doc.title}</h3>
@@ -64,7 +64,7 @@ export default async function DataHubPage() {
               <span className="ml-auto bg-neutral-100 text-neutral-600 text-xs font-bold px-2 py-1 rounded-full">{resources.videos.length}</span>
             </div>
             {resources.videos.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center bg-white rounded-xl border border-line-soft">등록된 영상이 없습니다.</p>}
-            {resources.videos.map(vid => (
+            {resources.videos.map((vid: any) => (
               <div key={vid.id} className="bg-white rounded-xl overflow-hidden border border-line-soft shadow-sm hover:border-brand-300 transition-colors">
                 {vid.thumbnail_url ? (
                   <div className="w-full aspect-video bg-neutral-100 relative">
@@ -101,7 +101,7 @@ export default async function DataHubPage() {
               <span className="ml-auto bg-neutral-100 text-neutral-600 text-xs font-bold px-2 py-1 rounded-full">{resources.galleries.length}</span>
             </div>
             {resources.galleries.length === 0 && <p className="text-sm text-neutral-500 py-8 text-center bg-white rounded-xl border border-line-soft">등록된 갤러리가 없습니다.</p>}
-            {resources.galleries.map(gal => (
+            {resources.galleries.map((gal: any) => (
               <div key={gal.id} className="bg-white rounded-xl p-5 border border-line-soft shadow-sm hover:border-brand-300 transition-colors">
                 <h3 className="font-bold text-neutral-900 mb-2 leading-snug">{gal.title}</h3>
                 <p className="text-xs text-neutral-500 line-clamp-2 mb-4">{gal.caption_summary}</p>

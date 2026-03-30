@@ -69,7 +69,7 @@ export default async function AdminAnswersPage() {
                   </td>
                   <td className="px-6 py-4">
                      <div className="flex flex-col">
-                        <span className="font-medium text-neutral-800">{item.experts?.name || '담당 전문가 없음'}</span>
+                        <span className="font-medium text-neutral-800">{item.experts && item.experts.length > 0 ? item.experts.map((e: any) => e.name).join(", ") : '담당 전문가 없음'}</span>
                         <span className="text-[12px] text-neutral-500 truncate max-w-[120px]">{item.content_topics?.name || '미분류'}</span>
                      </div>
                   </td>

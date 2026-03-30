@@ -1,5 +1,5 @@
-﻿src/lib/actions/observatory.ts(52,32): error TS2322: Type '({ id: string; severity: string; module: string; message: string; error_code: string; is_resolved: boolean; resolved_by: null; resolved_at: null; created_at: string; updated_at: string; } | { id: string; ... 8 more ...; updated_at: string; })[]' is not assignable to type 'SystemAlert[]'.
-  Type '{ id: string; severity: string; module: string; message: string; error_code: string; is_resolved: boolean; resolved_by: null; resolved_at: null; created_at: string; updated_at: string; } | { id: string; ... 8 more ...; updated_at: string; }' is not assignable to type 'SystemAlert'.
-    Type '{ id: string; severity: string; module: string; message: string; error_code: string; is_resolved: boolean; resolved_by: null; resolved_at: null; created_at: string; updated_at: string; }' is not assignable to type 'SystemAlert'.
-      Types of property 'severity' are incompatible.
-        Type 'string' is not assignable to type '"Critical" | "Warning" | "Info"'.
+﻿src/app/(public)/data/page.tsx(40,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
+src/app/(public)/data/page.tsx(67,35): error TS7006: Parameter 'vid' implicitly has an 'any' type.
+src/app/(public)/data/page.tsx(104,38): error TS7006: Parameter 'gal' implicitly has an 'any' type.
+src/app/(public)/webzine/stories/page.tsx(65,26): error TS2322: Type 'PublicStory[]' is not assignable to type 'Story[]'.
+  Type 'PublicStory' is missing the following properties from type 'Story': status, creator_id, author_expert_id, reviewer_id, and 4 more.

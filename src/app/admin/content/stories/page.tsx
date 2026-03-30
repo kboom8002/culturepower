@@ -73,7 +73,7 @@ export default async function AdminStoriesIndexPage() {
                     </Link>
                   </td>
                   <td className="px-6 py-4 text-neutral-600 font-medium">
-                    {item.section || "-"}
+                    {item.section_name || "-"}
                   </td>
                   <td className="px-6 py-4">
                     <span className="mr-2">
@@ -83,7 +83,7 @@ export default async function AdminStoriesIndexPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-neutral-600">
-                    {item.author_expert_id || "-"}
+                    {item.experts && item.experts.length > 0 ? item.experts.map((e: any) => e.name).join(", ") : "-"}
                   </td>
                   <td className="px-6 py-4 text-neutral-500 flex items-center gap-1.5 font-medium min-h-[56px] text-xs">
                      {item.status === 'Public' ? <CheckCircle2 className="w-3.5 h-3.5 text-success-500" /> : <Clock className="w-3.5 h-3.5" />}

@@ -14,21 +14,31 @@ export function ExpertsClient({ experts, initialRole }: ExpertsClientProps) {
   // 역할(Role) 중복 제거하여 상단 탭 동적 생성
   const distinctRoles = Array.from(new Set(experts.map(e => e.role).filter(Boolean)))
   
-  // URL에서 role=editor 로 넘어올 경우, MVP 특성상 '전문위원'을 대표로 매핑
-  const mappedInitialRole = initialRole === 'editor' ? '전문위원' : initialRole
-  
+  // URL 파라미터(initialRole) 매핑
   const TABS = [
     { value: "all", label: "전체 풀(Pool)" },
-    ...distinctRoles.map(r => ({ value: r as string, label: r as string }))
+    { value: "author", label: "참여 필진" },
+    { value: "guest", label: "인터뷰·대담 참여자" },
+    { value: "editor", label: "문강 편집데스크" },
+    { value: "reviewer", label: "전문 검수위원" },
+    // DB에 있는 기타 헤드라인들 중 위 4개에 속하지 않는 것들
+    ...distinctRoles
+      .filter(r => !['author', 'guest', 'editor', 'reviewer'].includes(r as string) && !(r as string)?.includes('편집') && !(r as string)?.includes('검수'))
+      .map(r => ({ value: r as string, label: r as string }))
   ]
 
-  const [activeTab, setActiveTab] = useState(
-    mappedInitialRole && TABS.some(t => t.value === mappedInitialRole) ? mappedInitialRole : "all"
-  )
+  const [activeTab, setActiveTab] = useState(initialRole || "all")
 
   const filteredExperts = activeTab === "all" 
     ? experts 
-    : experts.filter(e => e.role === activeTab)
+    : experts.filter(e => {
+        const headline = e.role || '';
+        if (activeTab === 'editor') return headline.includes('편집') || headline.includes('editor');
+        if (activeTab === 'reviewer') return headline.includes('검수') || headline.includes('평가') || headline.includes('reviewer');
+        if (activeTab === 'guest') return headline.includes('인터뷰') || headline.includes('대담') || headline.includes('참여');
+        if (activeTab === 'author') return headline.includes('필진') || headline.includes('연구원') || headline.includes('작가');
+        return e.role === activeTab;
+      })
 
   return (
     <div className="w-full flex flex-col animate-in fade-in duration-500">

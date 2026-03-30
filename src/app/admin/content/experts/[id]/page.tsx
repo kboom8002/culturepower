@@ -2,22 +2,50 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Save, FileCheck, ArrowLeft, Camera, Plus, X, Trash2 } from "lucide-react"
+import { Save, FileCheck, ArrowLeft, Camera, Plus, X, Trash2, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
+import { getExpertById, upsertExpert, deleteExpert } from "@/lib/actions/content"
 
 export default function AdminEditExpertPage() {
   const params = useParams()
+  const router = useRouter()
   const expertId = params.id as string
+  const isNew = expertId === 'new'
 
-  // Mock prepopulated data based on edit mode
-  const [name, setName] = useState("김에디터")
-  const [affiliation, setAffiliation] = useState("문화강국네트워크")
-  const [title, setTitle] = useState("수석 연구위원")
-  const [email, setEmail] = useState("editor@culture.network")
-  const [bio, setBio] = useState("한국문화예술위원회 위원 역임, 문화 정책 연구 10년...")
+  const [name, setName] = useState("")
+  const [affiliation, setAffiliation] = useState("")
+  const [title, setTitle] = useState("")
+  const [email, setEmail] = useState("")
+  const [bio, setBio] = useState("")
   const [expertiseInput, setExpertiseInput] = useState("")
-  const [expertise, setExpertise] = useState<string[]>(["K-문명", "정책연구"])
+  const [expertise, setExpertise] = useState<string[]>([])
+  const [isActive, setIsActive] = useState(true)
+
+  const [isLoading, setIsLoading] = useState(!isNew)
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    if (!isNew) {
+      getExpertById(expertId).then(exp => {
+        if (exp) {
+          setName(exp.name || "")
+          setAffiliation(exp.organization || "")
+          setTitle(exp.role || "")
+          setEmail(exp.contact_email || "")
+          setBio(exp.bio || "")
+          
+          if (exp.social_links && Array.isArray(exp.social_links)) {
+             setExpertise(exp.social_links)
+          } else {
+             setExpertise([])
+          }
+          setIsActive(exp.is_active ?? true)
+        }
+        setIsLoading(false)
+      })
+    }
+  }, [expertId, isNew])
 
   const handleAddExpertise = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && expertiseInput.trim() !== '') {
@@ -33,25 +61,51 @@ export default function AdminEditExpertPage() {
     setExpertise(expertise.filter(e => e !== tag))
   }
 
-  const handleSaveDraft = () => {
-    alert("변경사항이 임시저장 되었습니다 (Demo)")
-  }
-
-  const handlePublish = () => {
+  const handleSave = async () => {
     if (!name || !affiliation) {
       alert("이름과 소속은 필수입니다.")
       return
     }
-    alert("수정 완료: 전문가 프로필이 업데이트 되었습니다.")
-  }
+    
+    setIsSaving(true)
+    const payload = {
+      name,
+      organization: affiliation,
+      role: title,
+      contact_email: email,
+      bio,
+      social_links: expertise, // mapping expertise tags into social_links json for now
+      is_active: isActive
+    }
 
-  const handleDelete = () => {
-    if(confirm("정말로 이 전문가 객체를 삭제하시겠습니까? 연결된 SSoT 기록이 있다면 주의해야 합니다.")) {
-       alert("전문가가 삭제되었습니다.")
-       // redirect back
-       window.location.href = '/admin/content/experts'
+    try {
+      const res = await upsertExpert(expertId, payload)
+      if (res.success) {
+        alert(isNew ? "전문가 정보가 생성되었습니다." : "전문가 프로필이 업데이트 되었습니다.")
+        router.push("/admin/content/experts")
+      } else {
+        alert("저장 실패: " + res.error)
+      }
+    } catch (err: any) {
+      alert("에러 발생: " + err.message)
+    } finally {
+      setIsSaving(false)
     }
   }
+
+  const handleDelete = async () => {
+    if(confirm("정말로 이 전문가 객체를 삭제하시겠습니까? 연결된 SSoT 기록이 있다면 주의해야 합니다.")) {
+       const res = await deleteExpert(expertId)
+       if (res.success) {
+         alert("전문가가 삭제되었습니다.")
+         router.push('/admin/content/experts')
+       } else {
+         alert("삭제 실패: " + res.error)
+       }
+    }
+  }
+
+  if (isLoading) return <div className="p-24 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-brand-500" /></div>
 
   return (
     <div className="flex flex-col w-full bg-surface-page min-h-screen pb-24">
@@ -62,22 +116,19 @@ export default function AdminEditExpertPage() {
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div className="flex items-center gap-3">
-               <h1 className="text-[20px] font-bold text-neutral-900">전문가 프로필 수정</h1>
-               <span className="px-2 py-1 bg-neutral-100 text-neutral-500 rounded text-xs font-mono font-bold">{expertId}</span>
+               <h1 className="text-[20px] font-bold text-neutral-900">{isNew ? "전문가 신규 등록" : "전문가 프로필 수정"}</h1>
+               {!isNew && <span className="px-2 py-1 bg-neutral-100 text-neutral-500 rounded text-xs font-mono font-bold">{expertId.split('-')[0]}...</span>}
             </div>
           </div>
           <div className="flex items-center gap-3">
-             <Button variant="tertiary" size="sm" onClick={handleDelete} className="text-danger-600 hover:text-danger-700 hover:bg-danger-50">
-              <Trash2 className="w-4 h-4 mr-2" />
-              전문가 삭제
-            </Button>
-            <Button variant="tertiary" size="sm" onClick={handleSaveDraft}>
-              <Save className="w-4 h-4 mr-2" />
-              수정사항 임시저장
-            </Button>
-            <Button variant="primary" size="sm" onClick={handlePublish}>
-              <FileCheck className="w-4 h-4 mr-2" />
-              완료 및 반영
+             {!isNew && (
+               <Button variant="tertiary" size="sm" onClick={handleDelete} className="text-danger-600 hover:text-danger-700 hover:bg-danger-50">
+                <Trash2 className="w-4 h-4 mr-2" /> 전문가 삭제
+               </Button>
+             )}
+            <Button variant="primary" size="sm" onClick={handleSave} disabled={isSaving}>
+              {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              {isNew ? "등록 완료" : "저장 및 반영"}
             </Button>
           </div>
         </div>
@@ -173,6 +224,11 @@ export default function AdminEditExpertPage() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
               />
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="isActive" checked={isActive} onChange={e => setIsActive(e.target.checked)} className="w-4 h-4 text-brand-500 rounded focus:ring-brand-500" />
+              <label htmlFor="isActive" className="text-sm font-medium text-neutral-800">공개 프로필 활성화 (사용자 페이지 노출)</label>
             </div>
           </div>
           

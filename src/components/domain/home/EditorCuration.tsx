@@ -31,30 +31,37 @@ export async function EditorCuration() {
           {stories.map((story: any) => (
             <Link 
               key={story.id} 
-              href={`/webzine/stories/${story.id}`}
-              className="group flex flex-col items-start bg-surface-soft p-8 rounded-2xl border border-line-default hover:border-brand-600 hover:shadow-md transition-all"
+              href={`/webzine/stories/${story.slug}`}
+              className="group flex flex-col items-start bg-surface-soft rounded-2xl border border-line-default hover:border-brand-600 hover:shadow-md transition-all overflow-hidden"
             >
-              <div className="flex items-center gap-2 mb-4">
-                <Chip variant="default" className="h-7 text-xs px-3">{story.section || "기사"}</Chip>
-                <span className="text-caption font-medium border border-line-default rounded-sm px-2 py-0.5">{story.story_type || "웹진"}</span>
-              </div>
-              <h3 className="text-[24px] leading-[1.38] font-bold text-neutral-900 mb-4 group-hover:text-brand-700 transition-colors">
-                {story.title}
-              </h3>
-              <p className="text-[16px] leading-[1.6] text-neutral-600 mb-6">
-                {story.deck}
-              </p>
-              
-              <div className="mt-auto flex items-center justify-between w-full pt-4 border-t border-line-default">
-                <div className="flex items-center gap-3 text-caption text-neutral-500">
-                  <span className="font-medium text-neutral-700">{story.experts?.name || "편집부"}</span>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{new Date(story.published_at || story.created_at).toLocaleDateString("ko-KR")}</span>
-                  </div>
+              {story.featured_image?.url && (
+                <div className="w-full h-56 overflow-hidden bg-neutral-100 flex-shrink-0 border-b border-line-default">
+                  <img src={story.featured_image.url} alt={story.featured_image.alt || story.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
-                <div className="flex items-center text-sm font-medium text-brand-700 group-hover:translate-x-1 transition-transform">
-                  기사 읽기 <ArrowRight className="w-4 h-4 ml-1" />
+              )}
+              <div className="flex flex-col flex-1 p-8 w-full">
+                <div className="flex items-center gap-2 mb-4">
+                  <Chip variant="default" className="h-7 text-xs px-3">{story.section || "기사"}</Chip>
+                  <span className="text-caption font-medium border border-line-default rounded-sm px-2 py-0.5">{story.story_type || "웹진"}</span>
+                </div>
+                <h3 className="text-[24px] leading-[1.38] font-bold text-neutral-900 mb-4 group-hover:text-brand-700 transition-colors">
+                  {story.title}
+                </h3>
+                <p className="text-[16px] leading-[1.6] text-neutral-600 mb-6">
+                  {story.deck}
+                </p>
+                
+                <div className="mt-auto flex items-center justify-between w-full pt-4 border-t border-line-default">
+                  <div className="flex items-center gap-3 text-caption text-neutral-500">
+                    <span className="font-medium text-neutral-700">{story.experts?.name || "편집부"}</span>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>{new Date(story.published_at || story.created_at).toLocaleDateString("ko-KR")}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-sm font-medium text-brand-700 group-hover:translate-x-1 transition-transform">
+                    기사 읽기 <ArrowRight className="w-4 h-4 ml-1" />
+                  </div>
                 </div>
               </div>
             </Link>

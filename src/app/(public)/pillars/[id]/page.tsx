@@ -17,31 +17,34 @@ const PILLAR_DATA: Record<string, any> = {
     title: "1. Reform",
     description: "관행적 예산 낭비를 막고 자생적인 문화 생태계를 구축하기 위한 근본적인 구조 개혁 과제입니다.",
     answers: [
-      { id: 'ans-1', topic: '문화정책', pillar: 'Reform', title: '예산 분배 구조 혁신 방안은?', query: '기존의 하향식 예산 지급이 아닌...', snippet: '자생력을 갖춘 로컬 크리에이터 중심의 예산 펀딩 SSoT입니다.', updatedAt: '2026-03-20', isReviewed: true, href: '/answers/1' },
-      { id: 'ans-2', topic: '지역문화', pillar: 'Reform', title: '지역 소멸 위기에 대응하는 거점 사업은?', query: '수도권 편중을 해소할...', snippet: '메가시티 기반 4대 거점 문화 인프라 확충.', updatedAt: '2026-03-21', isReviewed: false, href: '/answers/2' }
+      { id: 'ans-1', topic: '문화정책', pillar: 'Reform', title: '왜 문화정책의 구조개혁이 필요한가?', query: '기존의 하향식 예산 지급이 아닌...', snippet: '자생력을 갖춘 생태계 중심의 예산 펀딩 개편입니다.', updatedAt: '2026-03-20', isReviewed: true, href: '/answers/why-cultural-policy-structural-reform' },
+      { id: 'ans-2', topic: '지역문화', pillar: 'Reform', title: '지역문화대전환은 무엇을 의미하는가?', query: '수도권 편중을 해소할...', snippet: '생활 구역 기반 문화 거점 인프라 확충.', updatedAt: '2026-03-21', isReviewed: false, href: '/answers/what-does-regional-culture-transition-mean' }
     ],
     stories: [
-      { id: 'st-1', section: 'Policy Insight', title: '보조금 체계, 이제는 성과 바탕으로 개편해야', href: '/webzine/stories/1' }
+      { id: 'st-1', section: 'Policy Insight', title: '[제언] 문화정책, 왜 구조개혁이 필요한가?', href: '/webzine/stories/why-cultural-policy-structural-reform-is-needed' }
     ]
   },
   implementation: {
     title: "2. Implementation",
     description: "기획된 아젠다를 현실의 문화 현장과 지자체 행정에 적용하는 구체적인 실행 방법론입니다.",
     answers: [
-      { id: 'ans-3', topic: 'K-문명', pillar: 'Implementation', title: '글로벌 진출을 위한 산학연 협의체', query: '어떻게 시너지를 낼 것인가?', snippet: '기업과 학계, 창작자가 연계된 SSoT 네트워크를 구성합니다.', updatedAt: '2026-03-22', isReviewed: true, href: '/answers/3' }
+      { id: 'ans-3', topic: '문화현장', pillar: 'Implementation', title: '예술인 복지 및 창작 환경 개선의 핵심 과제는?', query: '지속 가능한 창작을 위해...', snippet: '기업과 학계, 창작자가 연계된 SSoT 네트워크를 구성합니다.', updatedAt: '2026-03-22', isReviewed: true, href: '/answers/what-are-core-tasks-for-artist-welfare' },
+      { id: 'ans-5', topic: '실무도구', pillar: 'Implementation', title: 'Data Lab은 어떤 실무적 유용함을 제공하는가?', query: '데이터 기반 정책 실행...', snippet: '지역별 자원과 재원 분포 현황을 제공합니다.', updatedAt: '2026-03-23', isReviewed: true, href: '/answers/what-does-data-lab-provide' }
     ],
     stories: [
-      { id: 'st-2', section: '현장 인터뷰', title: '지역 크리에이터가 말하는 실전 행정 가이드', href: '/webzine/stories/2' }
+      { id: 'st-2', section: '현장 인터뷰', title: '[현장] 지역문화대전환, 어떻게 정책이 되는가?', href: '/webzine/stories/how-regional-culture-transition-becomes-policy' }
     ]
   },
   outcomes: {
     title: "3. Outcomes",
     description: "개혁과 실행을 통해 창출된 사회적/경제적 파급 효과와 K-문명의 글로벌 확산 성과를 기록합니다.",
     answers: [
-      { id: 'ans-4', topic: '문화강국', pillar: 'Outcomes', title: 'K-콘텐츠 산업 GDP 기여도 변화', query: '지난 3년 간의 경제 효과 측정', snippet: '수출 증가폭과 일자리 창출 효과를 종합한 지표가 마련되었습니다.', updatedAt: '2026-03-25', isReviewed: true, href: '/answers/4' }
+      { id: 'ans-4', topic: '문화강국', pillar: 'Outcomes', title: "우리가 말하는 '문화강국'이란 무엇인가?", query: '소프트파워를 넘어서...', snippet: '세계적 철학 담론을 이끌어가는 보편적 기준입니다.', updatedAt: '2026-03-25', isReviewed: true, href: '/answers/what-is-cultural-power' },
+      { id: 'ans-6', topic: 'K-문명', pillar: 'Outcomes', title: 'K-문명이란 무엇인가?', query: '동특이성을 가진 보편...', snippet: '서구 문명의 한계를 극복하는 새로운 문명적 대안.', updatedAt: '2026-03-26', isReviewed: true, href: '/answers/what-is-k-civilization' }
     ],
     stories: [
-      { id: 'st-3', section: 'Culture Power Report', title: '2026 대한민국 문화영향평가 결과 보고', href: '/webzine/stories/3' }
+      { id: 'st-3', section: 'Culture Power Report', title: '[대담] K-문명의 가능성과 문화국가 시스템', href: '/webzine/stories/k-civilization-possibility-culture-state-system' },
+      { id: 'st-4', section: 'Culture Power Report', title: '[특별대담] BTS, 음악철학, 그리고 K-Culture의 향방', href: '/webzine/stories/bts-music-philosophy-k-culture-special-dialogue' }
     ]
   }
 }

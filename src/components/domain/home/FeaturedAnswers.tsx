@@ -45,7 +45,7 @@ export async function FeaturedAnswers() {
           {/* Hero Card (Left 70%) */}
           <div className="lg:w-[70%]">
             <Link 
-              href={`/answers/${heroAns.id}`} 
+              href={`/answers/${heroAns.slug}`} 
               className="group relative flex flex-col justify-end bg-[#1C2127] border border-line-strong rounded-2xl p-8 md:p-12 min-h-[460px] h-full shadow-lg hover:shadow-2xl overflow-hidden transition-all duration-300"
             >
               {/* Background gradient/decoration */}
@@ -85,7 +85,7 @@ export async function FeaturedAnswers() {
                 snippet={(ans.summary || "").substring(0, 100) + "..."}
                 updatedAt={ans.published_at || ans.updated_at}
                 isReviewed={true}
-                href={`/answers/${ans.id}`}
+                href={`/answers/${ans.slug}`}
               />
             ))}
           </div>

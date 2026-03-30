@@ -1,0 +1,10 @@
+﻿src/app/(public)/answers/page.tsx(25,5): error TS2322: Type 'ContentTopic | null' is not assignable to type '{ id: string; name: string; description: string | null; } | null'.
+  Property 'name' is missing in type 'ContentTopic' but required in type '{ id: string; name: string; description: string | null; }'.
+src/app/(public)/events/page.tsx(28,5): error TS2322: Type 'ContentTopic | null' is not assignable to type '{ id: string; name: string; description: string | null; } | null'.
+  Property 'name' is missing in type 'ContentTopic' but required in type '{ id: string; name: string; description: string | null; }'.
+src/app/(public)/webzine/stories/page.tsx(27,5): error TS2322: Type 'ContentTopic | null' is not assignable to type '{ id: string; name: string; description: string | null; } | null'.
+  Property 'name' is missing in type 'ContentTopic' but required in type '{ id: string; name: string; description: string | null; }'.
+src/app/admin/content/answers/[id]/page.tsx(189,61): error TS2339: Property 'name' does not exist on type 'ContentTopic'.
+src/app/admin/content/answers/page.tsx(73,117): error TS2339: Property 'name' does not exist on type 'ContentTopic'.
+src/app/admin/content/topics/page.tsx(43,153): error TS2339: Property 'name' does not exist on type 'ContentTopic'.
+src/app/admin/content/topics/page.tsx(48,29): error TS2339: Property 'is_active' does not exist on type 'ContentTopic'.

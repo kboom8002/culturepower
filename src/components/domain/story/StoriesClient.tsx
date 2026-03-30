@@ -5,7 +5,7 @@ import { FilterBar } from "@/components/layout/FilterBar"
 import { Chip } from "@/components/ui/chip"
 import { Clock } from "lucide-react"
 import Link from "next/link"
-import { Story } from "@/lib/actions/story"
+import { PublicStory } from "@/lib/actions/public"
 
 // 하위 호환성을 위한 기본 내부 필터 (점진적 공개를 위해 5개로 제한)
 const STORY_FILTERS = [
@@ -16,7 +16,7 @@ const STORY_FILTERS = [
   { value: "report", label: "심층 리포트" }
 ]
 
-export function StoriesClient({ initialStories }: { initialStories: Story[] }) {
+export function StoriesClient({ initialStories }: { initialStories: PublicStory[] | any[] }) {
   const [activeFilter, setActiveFilter] = useState("all")
   const [showAdvanced, setShowAdvanced] = useState(false)
   
@@ -66,28 +66,35 @@ export function StoriesClient({ initialStories }: { initialStories: Story[] }) {
       {filteredStories.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {filteredStories.map((story) => (
-             <Link 
+              <Link 
               key={story.id} 
-              href={`/webzine/stories/${story.id}`}
-              className="group flex flex-col items-start bg-white p-6 sm:p-8 rounded-2xl border border-line-default shadow-sm hover:border-brand-500 hover:shadow-lg transition-all"
+              href={`/webzine/stories/${story.slug}`}
+              className="group flex flex-col items-start bg-white rounded-2xl border border-line-default shadow-sm hover:border-brand-500 hover:shadow-lg transition-all overflow-hidden"
             >
-              <div className="flex items-center gap-2 mb-4">
-                <Chip variant="default" className="h-6 text-[11px] px-2 bg-brand-50 text-brand-700">{story.section || '기사'}</Chip>
-              </div>
-              <h3 className="text-[20px] sm:text-[22px] leading-[1.38] font-bold text-neutral-900 mb-3 group-hover:text-brand-700 transition-colors line-clamp-2">
-                {story.title}
-              </h3>
-              <p className="text-body-sm text-neutral-500 mb-6 line-clamp-3 overflow-hidden text-ellipsis leading-relaxed">
-                {story.meta_description || story.deck || '이 기사를 클릭하여 전체 내용을 확인해 보세요.'}
-              </p>
-              <div className="mt-auto flex items-center justify-between w-full pt-4 border-t border-line-default">
-                <div className="flex items-center gap-1.5 text-caption text-neutral-400 font-medium">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{new Date(story.published_at || story.created_at).toLocaleDateString("ko-KR")}</span>
+              {story.featured_image?.url && (
+                <div className="w-full h-48 overflow-hidden bg-neutral-100 flex-shrink-0 border-b border-line-default">
+                  <img src={story.featured_image.url} alt={story.featured_image.alt || story.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
-                <span className="text-xs font-bold text-brand-600 group-hover:underline decoration-2 underline-offset-4 opacity-0 group-hover:opacity-100 transition-all">
-                  자세히 읽기 →
-                </span>
+              )}
+              <div className="flex flex-col flex-1 p-6 sm:p-8 w-full">
+                <div className="flex items-center gap-2 mb-4">
+                  <Chip variant="default" className="h-6 text-[11px] px-2 bg-brand-50 text-brand-700">{story.section || '기사'}</Chip>
+                </div>
+                <h3 className="text-[20px] sm:text-[22px] leading-[1.38] font-bold text-neutral-900 mb-3 group-hover:text-brand-700 transition-colors line-clamp-2">
+                  {story.title}
+                </h3>
+                <p className="text-body-sm text-neutral-500 mb-6 line-clamp-3 overflow-hidden text-ellipsis leading-relaxed">
+                  {story.meta_description || story.deck || '이 기사를 클릭하여 전체 내용을 확인해 보세요.'}
+                </p>
+                <div className="mt-auto flex items-center justify-between w-full pt-4 border-t border-line-default">
+                  <div className="flex items-center gap-1.5 text-caption text-neutral-400 font-medium">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{new Date(story.published_at || story.created_at).toLocaleDateString("ko-KR")}</span>
+                  </div>
+                  <span className="text-xs font-bold text-brand-600 group-hover:underline decoration-2 underline-offset-4 opacity-0 group-hover:opacity-100 transition-all">
+                    자세히 읽기 →
+                  </span>
+                </div>
               </div>
             </Link>
           ))}

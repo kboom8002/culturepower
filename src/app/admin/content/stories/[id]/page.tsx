@@ -9,18 +9,8 @@ import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { getStoryById, updateStory, deleteStory, createStory } from "@/lib/actions/story"
 import { submitToReview } from "@/lib/actions/review"
-import { getExperts, getAnswers, Expert, Answer } from "@/lib/actions/content"
+import { getTopics, getExperts, getAnswers, getSections, getCategories, getSeries, getTags, ContentTopic, Expert, Answer, TaxonomyItem } from "@/lib/actions/content"
 import { compressImage } from "@/lib/utils/image"
-
-const STORY_CATEGORIES = [
-  { value: "editorial", label: "창간사" },
-  { value: "interview", label: "스페셜 인터뷰" },
-  { value: "insight", label: "Policy Insight" },
-  { value: "report", label: "Culture Power Report" },
-  { value: "local", label: "지역이 문화가 되다" },
-  { value: "people", label: "Culture People" },
-  { value: "global", label: "Global & Trend" },
-]
 
 export default function AdminEditStoryPage() {
   const params = useParams()
@@ -31,14 +21,26 @@ export default function AdminEditStoryPage() {
   // Data States
   const [title, setTitle] = useState("")
   const [deck, setDeck] = useState("")
-  const [category, setCategory] = useState("insight")
-  const [authorId, setAuthorId] = useState("")
+  const [sectionId, setSectionId] = useState("")
+  const [categoryId, setCategoryId] = useState("")
+  const [seriesId, setSeriesId] = useState("")
+  const [topicId, setTopicId] = useState("")
+  const [expertIds, setExpertIds] = useState<string[]>([])
+  const [relatedAnswerIds, setRelatedAnswerIds] = useState<string[]>([])
   const [bodyHtml, setBodyHtml] = useState("")
   const [isLoadingData, setIsLoadingData] = useState(true)
 
   // DB States
+  const [topics, setTopics] = useState<ContentTopic[]>([])
   const [experts, setExperts] = useState<Expert[]>([])
-  const [allAnswers, setAllAnswers] = useState<Answer[]>([])
+  const [availableAnswers, setAvailableAnswers] = useState<Answer[]>([])
+  const [sections, setSections] = useState<TaxonomyItem[]>([])
+  const [categories, setCategories] = useState<TaxonomyItem[]>([])
+  const [seriesList, setSeriesList] = useState<TaxonomyItem[]>([])
+  const [tags, setTags] = useState<TaxonomyItem[]>([])
+
+  // Multi select tag tracking
+  const [tagIds, setTagIds] = useState<string[]>([])
 
   // Image Upload State
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -54,14 +56,19 @@ export default function AdminEditStoryPage() {
 
   useEffect(() => {
     async function loadData() {
-      const [fetchedExperts, fetchedAnswers] = await Promise.all([
-        getExperts(),
-        getAnswers()
-      ])
+      const [fetchedTopics, fetchedExperts, fetchedAnswers, fetchedSections, fetchedCategories, fetchedSeries, fetchedTags] = await Promise.all([getTopics(), getExperts(), getAnswers(), getSections(), getCategories(), getSeries(), getTags()])
+      setTopics(fetchedTopics)
       setExperts(fetchedExperts)
-      setAllAnswers(fetchedAnswers)
-      if (isNew && fetchedExperts.length > 0) {
-        setAuthorId(fetchedExperts[0].id)
+      setAvailableAnswers(fetchedAnswers)
+      setSections(fetchedSections)
+      setCategories(fetchedCategories)
+      setSeriesList(fetchedSeries)
+      setTags(fetchedTags)
+      
+      if (isNew) {
+        if (fetchedTopics.length > 0) setTopicId(fetchedTopics[0].id)
+        if (fetchedSections.length > 0) setSectionId(fetchedSections[0].id)
+        if (fetchedCategories.length > 0) setCategoryId(fetchedCategories[0].id)
       }
 
       if (!isNew) {
@@ -70,16 +77,14 @@ export default function AdminEditStoryPage() {
            setTitle(story.title || "")
            setDeck(story.deck || "")
            setBodyHtml(story.body || "")
-           setCategory(story.section || "insight")
-           if (story.author_expert_id) setAuthorId(story.author_expert_id)
+           if (story.topic_id) setTopicId(story.topic_id)
+           if (story.section_id) setSectionId(story.section_id)
+           if (story.category_id) setCategoryId(story.category_id)
+           if (story.series_id) setSeriesId(story.series_id)
+           if (story.author_expert_ids) setExpertIds(story.author_expert_ids)
+           if (story.related_answer_ids) setRelatedAnswerIds(story.related_answer_ids)
+           if (story.tag_ids) setTagIds(story.tag_ids)
            if (story.og_image_url) setThumbnailPreview(story.og_image_url)
-           if (story.related_answers_meta) {
-               try {
-                  setSsotLinks(typeof story.related_answers_meta === 'string' ? JSON.parse(story.related_answers_meta) : story.related_answers_meta)
-               } catch (e) {
-                  console.error("Failed to parse related_answers_meta", e)
-               }
-           }
         }
       }
       setIsLoadingData(false)
@@ -95,27 +100,36 @@ export default function AdminEditStoryPage() {
     }
   }
 
-  const handleSsotSelect = (answer: Answer) => {
-    if (!ssotLinks.find(link => link.id === answer.id)) {
-      setSsotLinks([...ssotLinks, { id: answer.id, question: answer.title }])
-    }
-    setShowSsotDropdown(false)
+  const handleRemoveExpert = (id: string) => {
+    setExpertIds(expertIds.filter(e => e !== id))
   }
 
-  const handleRemoveSsot = (id: string) => {
-    setSsotLinks(ssotLinks.filter(link => link.id !== id))
+  const handleAddRelatedAnswer = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = e.target.value
+    if (id && !relatedAnswerIds.includes(id)) {
+      setRelatedAnswerIds([...relatedAnswerIds, id])
+    }
+    e.target.value = "" // reset select
+  }
+
+  const handleRemoveRelatedAnswer = (id: string) => {
+    setRelatedAnswerIds(relatedAnswerIds.filter(a => a !== id))
   }
 
   const buildPayload = (status: 'Draft' | 'Review') => {
     return { 
       title, 
       deck, 
-      section: category, 
+      section_id: sectionId || null,
+      category_id: categoryId || null,
+      series_id: seriesId || null,
       body: bodyHtml, 
-      author_expert_id: authorId || null, 
+      topic_id: topicId || null, 
+      author_expert_ids: expertIds,
+      related_answer_ids: relatedAnswerIds,
+      tag_ids: tagIds,
       status, 
-      og_image_url: thumbnailPreview,
-      related_answers_meta: ssotLinks 
+      og_image_url: thumbnailPreview
     }
   }
 
@@ -280,31 +294,132 @@ export default function AdminEditStoryPage() {
           <div className="bg-white p-6 rounded-3xl border border-line-default shadow-sm flex flex-col gap-6">
             <h3 className="font-bold text-[16px] text-neutral-900 tracking-tight border-b border-line-soft pb-4 border-dashed">문서 속성 및 발행 설정</h3>
             
-            {/* Author Field */}
+            {/* Topic Field */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-neutral-700">작성자 (Author)</label>
+              <label className="text-sm font-bold text-neutral-700">대주제 (Primary Topic) *</label>
               <select 
                 className="w-full p-2.5 bg-white border border-line-strong rounded-xl text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-500 shadow-sm appearance-none"
-                value={authorId}
-                onChange={(e) => setAuthorId(e.target.value)}
+                value={topicId}
+                onChange={(e) => setTopicId(e.target.value)}
               >
-                {experts.length === 0 ? <option value="">전문가 풀이 비어있습니다</option> : null}
-                {experts.map(a => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
+                {topics.length === 0 ? <option value="">토픽 데이터가 없습니다</option> : null}
+                {topics.map(t => (
+                  <option key={t.id} value={t.id}>{t.name_ko}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Expert Field */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-neutral-700">담당 전문가 (Author / Expert)</label>
+              
+              <div className="flex flex-wrap gap-2 mb-2">
+                {expertIds.map(eid => {
+                  const ex = experts.find(e => e.id === eid)
+                  if (!ex) return null
+                  return (
+                    <div key={eid} className="bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                      {ex.name}
+                      <button onClick={() => handleRemoveExpert(eid)} className="text-brand-400 hover:text-brand-900 focus:outline-none">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <select 
+                className="w-full p-2.5 bg-white border border-line-strong rounded-xl text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-500 shadow-sm appearance-none"
+                defaultValue=""
+                onChange={(e) => {
+                  const id = e.target.value
+                  if (id && !expertIds.includes(id)) setExpertIds([...expertIds, id])
+                  e.target.value = ""
+                }}
+              >
+                <option value="">+ (다중 선택) 전문가 명단 추가...</option>
+                {experts.map(e => (
+                   <option key={e.id} value={e.id}>{e.name} {e.organization ? `(${e.organization})` : ''}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Section Field */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-neutral-700">LNB 섹션 (Section) *</label>
+              <select 
+                className="w-full p-2.5 bg-white border border-line-strong rounded-xl text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-500 shadow-sm appearance-none"
+                value={sectionId}
+                onChange={(e) => setSectionId(e.target.value)}
+              >
+                <option value="">선택 안함</option>
+                {sections.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
 
             {/* Category Field */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-neutral-700">카테고리 (LNB 섹션)</label>
+              <label className="text-sm font-bold text-neutral-700">기사 카테고리 (Category) *</label>
               <select 
                 className="w-full p-2.5 bg-white border border-line-strong rounded-xl text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-500 shadow-sm appearance-none"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
               >
-                {STORY_CATEGORIES.map(c => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
+                <option value="">선택 안함</option>
+                {categories.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Series Field */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-neutral-700">기획 연재 (Series)</label>
+              <select 
+                className="w-full p-2.5 bg-white border border-line-strong rounded-xl text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-500 shadow-sm appearance-none"
+                value={seriesId}
+                onChange={(e) => setSeriesId(e.target.value)}
+              >
+                <option value="">기획 연재에 속하지 않음</option>
+                {seriesList.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Tags Field */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-neutral-700">단어 태그 (Tags)</label>
+              
+              <div className="flex flex-wrap gap-2 mb-2">
+                {tagIds.map(tid => {
+                  const tagItem = tags.find(t => t.id === tid)
+                  if (!tagItem) return null
+                  return (
+                    <div key={tid} className="bg-neutral-100 text-neutral-700 border border-neutral-200 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                      #{tagItem.name}
+                      <button onClick={() => setTagIds(tagIds.filter(id => id !== tid))} className="text-neutral-400 hover:text-neutral-900 focus:outline-none">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <select 
+                className="w-full p-2.5 bg-white border border-line-strong rounded-xl text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-500 shadow-sm appearance-none"
+                defaultValue=""
+                onChange={(e) => {
+                  const id = e.target.value
+                  if (id && !tagIds.includes(id)) setTagIds([...tagIds, id])
+                  e.target.value = ""
+                }}
+              >
+                <option value="">+ (다중 선택) 기존 태그 추가...</option>
+                {tags.map(t => (
+                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
               </select>
             </div>
@@ -352,68 +467,39 @@ export default function AdminEditStoryPage() {
             </div>
 
             {/* SSoT Linking */}
-            <div className="flex flex-col gap-3 pt-4 border-t border-line-soft relative">
+            <div className="flex flex-col gap-3 pt-4 border-t border-line-soft">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-bold text-neutral-700">SSoT 연결 근거 (정답카드)</label>
-                <span className="text-[10px] bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">신뢰성 +1</span>
               </div>
               
-              {/* Selected Links */}
               <div className="flex flex-col gap-2">
-                {ssotLinks.map(link => (
-                  <div key={link.id} className="flex items-center justify-between p-2.5 bg-neutral-50 border border-line-soft rounded-lg group">
-                    <div className="flex flex-col overflow-hidden mr-2">
-                       <span className="text-[10px] font-mono font-bold text-neutral-400 mb-0.5 truncate">{link.id}</span>
-                       <span className="text-xs font-medium text-neutral-800 truncate" title={link.question}>{link.question}</span>
+                {relatedAnswerIds.map(aid => {
+                  const ans = availableAnswers.find(a => a.id === aid)
+                  if (!ans) return null
+                  return (
+                    <div key={aid} className="bg-neutral-50 border border-line-strong rounded-lg p-2 flex items-start justify-between gap-2 shadow-sm relative pr-8">
+                       <span className="text-[13px] font-bold text-neutral-800 leading-tight block">{ans.title}</span>
+                       <button onClick={() => handleRemoveRelatedAnswer(aid)} className="absolute right-2 top-2 p-1 text-neutral-400 hover:text-danger-500 hover:bg-neutral-200 rounded">
+                         <X className="w-3.5 h-3.5" />
+                       </button>
                     </div>
-                    <button onClick={() => handleRemoveSsot(link.id)} className="p-1.5 text-neutral-400 hover:text-danger-500 hover:bg-danger-50 rounded-md transition-colors shrink-0">
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))}
-                {ssotLinks.length === 0 && (
-                  <div className="text-xs text-neutral-400 italic text-center py-2">
-                    연결된 근거 카드가 없습니다.
-                  </div>
-                )}
+                  )
+                })}
               </div>
 
-              {/* Add SSoT Button */}
-              <div className="relative">
-                <Button 
-                  variant="tertiary" 
-                  size="sm" 
-                  onClick={() => setShowSsotDropdown(!showSsotDropdown)}
-                  className="w-full justify-center text-brand-600 font-bold border border-brand-100 bg-brand-50 hover:bg-brand-100 mt-1"
-                >
-                  <Plus className="w-4 h-4 mr-1.5" />
-                  근거 카드 검색 및 추가
-                </Button>
-                
-                {/* SSoT Dropdown */}
-                {showSsotDropdown && (
-                  <div className="absolute top-full left-0 w-full mt-2 bg-white border border-line-strong rounded-xl shadow-lg z-50 flex flex-col max-h-[240px] overflow-y-auto p-1 animate-in fade-in slide-in-from-top-2 duration-150">
-                    <div className="p-2 border-b border-line-soft mb-1 flex justify-between items-center sticky top-0 bg-white">
-                      <span className="text-[10px] font-bold text-neutral-500">정답카드 목록 ({allAnswers.length}건)</span>
-                      <button onClick={() => setShowSsotDropdown(false)} className="text-neutral-400 hover:text-neutral-700"><X className="w-4 h-4"/></button>
-                    </div>
-                    {allAnswers.length === 0 && <span className="p-4 text-xs text-neutral-400 text-center">등록된 정답카드가 없습니다.</span>}
-                    {allAnswers.map(ans => {
-                      const isSelected = ssotLinks.some(l => l.id === ans.id)
-                      return (
-                        <button 
-                          key={ans.id} 
-                          onClick={() => handleSsotSelect(ans)}
-                          disabled={isSelected}
-                          className={`text-left p-2 rounded-md text-xs flex flex-col gap-0.5 transition-colors ${isSelected ? 'opacity-50 bg-neutral-50 cursor-not-allowed' : 'hover:bg-neutral-100 text-neutral-800'}`}
-                        >
-                          <span className="font-mono text-[9px] text-brand-600 font-bold">{ans.topic_id || 'GENERAL'} • {new Date(ans.created_at).toLocaleDateString()}</span>
-                          <span className="font-medium truncate max-w-full">{ans.title}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                )}
+              <select 
+                className="w-full mt-1 p-2.5 bg-neutral-50 hover:bg-white border border-line-strong rounded-xl text-[13px] font-medium text-neutral-800 focus:outline-none focus:border-brand-500 shadow-sm appearance-none"
+                defaultValue=""
+                onChange={handleAddRelatedAnswer}
+              >
+                 <option value="">+ (다중 선택) 연관 정답카드 찾기...</option>
+                 {availableAnswers.map(ans => (
+                    <option key={ans.id} value={ans.id}>{ans.title.slice(0, 40)}{ans.title.length > 40 ? '...' : ''}</option>
+                 ))}
+              </select>
+
+              <div className="text-[11px] text-neutral-400 italic">
+                다수의 정답카드를 팩트체크 근거로 연결할 수 있습니다.
               </div>
             </div>
 
