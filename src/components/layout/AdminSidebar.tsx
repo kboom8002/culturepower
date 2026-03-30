@@ -112,6 +112,7 @@ const ADMIN_MENUS = [
     icon: Settings,
     href: "/admin/settings",
     submenus: [
+      { label: "Site Menus", href: "/admin/settings/menus" },
       { label: "Users & Roles", href: "/admin/settings/users" },
       { label: "Workflow Rules", href: "/admin/settings/workflow" },
       { label: "Taxonomies", href: "/admin/settings/taxonomies" },
