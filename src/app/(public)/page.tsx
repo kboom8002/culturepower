@@ -13,9 +13,9 @@ export default function HomePage() {
   return (
     <div className="w-full flex-col flex">
       <HeroSearch />
+      <HomeTrustBlock />
       <FeaturedAnswers />
       <EditorCuration />
-      <HomeTrustBlock />
       <JoinCtaBlock />
     </div>
   )

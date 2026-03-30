@@ -38,12 +38,18 @@ export function HeroSearch() {
         </div>
       </form>
       
-      {/* Quick Suggestions */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <span className="text-caption mr-2 font-medium">많이 찾는 질문 :</span>
-        <Link href="/search?q=K건축" className="text-caption text-brand-700 bg-brand-050 hover:bg-brand-100 px-3 py-1 rounded-full transition-colors">#K건축</Link>
-        <Link href="/search?q=문화예산" className="text-caption text-brand-700 bg-brand-050 hover:bg-brand-100 px-3 py-1 rounded-full transition-colors">#문화예산</Link>
-        <Link href="/search?q=K-문명 사례" className="text-caption text-brand-700 bg-brand-050 hover:bg-brand-100 px-3 py-1 rounded-full transition-colors">#K-문명 사례</Link>
+      {/* Quick Suggestions (Hick's Law 적용: 명확한 길잡이) */}
+      <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+        <span className="text-sm mr-1 font-bold text-neutral-500 hidden sm:inline-block">실시간 트렌드:</span>
+        <Link href="/answers?topic=policy" className="flex items-center gap-1.5 text-sm font-bold text-neutral-700 bg-white border border-line-strong hover:border-brand-500 hover:text-brand-600 shadow-sm px-4 py-1.5 rounded-full transition-all hover:-translate-y-0.5">
+           🔥 청년문화 상생
+        </Link>
+        <Link href="/answers?topic=k-civ" className="flex items-center gap-1.5 text-sm font-bold text-neutral-700 bg-white border border-line-strong hover:border-brand-500 hover:text-brand-600 shadow-sm px-4 py-1.5 rounded-full transition-all hover:-translate-y-0.5">
+           🌏 K-문명 글로벌화
+        </Link>
+        <Link href="/answers?topic=local" className="flex items-center gap-1.5 text-sm font-bold text-neutral-700 bg-white border border-line-strong hover:border-brand-500 hover:text-brand-600 shadow-sm px-4 py-1.5 rounded-full transition-all hover:-translate-y-0.5">
+           🏘️ 지역문화 네트워크
+        </Link>
       </div>
     </section>
   )
