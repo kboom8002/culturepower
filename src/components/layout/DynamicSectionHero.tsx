@@ -11,7 +11,7 @@ interface DynamicSectionHeroProps {
     id: string
     title: string
     summary: string | null
-    type: 'answers' | 'stories'
+    type: 'answers' | 'stories' | 'events'
     tagName?: string
   }
   defaultTitle: string

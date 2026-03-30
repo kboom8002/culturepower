@@ -43,46 +43,35 @@ BEGIN
     INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m1, '문강 RIO', '/webzine/stories', 10);
     INSERT INTO public.site_menus (parent_id, label, href, display_order) VALUES
         (m1, '문강 RIO 소개', '/webzine/about', 10),
-        (m1, '창간사', '/webzine/stories?category=editorial', 20),
-        (m1, '발간 목적', '/webzine/about#purpose', 30),
-        (m1, '스페셜 인터뷰', '/webzine/stories?category=interview', 40),
-        (m1, 'Policy Insight', '/webzine/stories?category=insight', 50),
-        (m1, 'Culture Power Report', '/webzine/stories?category=report', 60),
-        (m1, '지역이 문화가 되다', '/webzine/stories?category=local', 70),
-        (m1, 'Culture People', '/webzine/stories?category=people', 80),
-        (m1, 'Global & Trend', '/webzine/stories?category=global', 90),
-        (m1, '지원사업 캘린더', '/webzine/calendar', 100),
-        (m1, '전체 Story', '/webzine/stories', 110);
+        (m1, '문화정책', '/webzine/stories?topic=policy', 20),
+        (m1, 'K-문명', '/webzine/stories?topic=k-civ', 30),
+        (m1, '지역문화', '/webzine/stories?topic=local', 40),
+        (m1, '행사/기록', '/webzine/stories?topic=event', 50);
 
     -- 2. 정답카드
     INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m2, '정답카드', '/answers', 20);
     INSERT INTO public.site_menus (parent_id, label, href, display_order) VALUES
-        (m2, '전체 정답카드', '/answers', 10),
-        (m2, '문화강국', '/answers?topic=culture', 20),
+        (m2, '정답카드 소개', '/answers/about', 10),
+        (m2, '문화정책', '/answers?topic=policy', 20),
         (m2, 'K-문명', '/answers?topic=k-civ', 30),
         (m2, '지역문화', '/answers?topic=local', 40),
-        (m2, '문화정책', '/answers?topic=policy', 50),
-        (m2, '행사/기록', '/answers?topic=event', 60),
-        (m2, '참여/회원', '/answers?topic=join', 70),
-        (m2, '최신 업데이트', '/answers?sort=latest', 80);
+        (m2, '행사/기록', '/answers?topic=event', 50);
 
-    -- 3. 3 Pillars
-    INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m3, '3 Pillars', '/pillars/topics', 30);
+    -- 3. 전문가 위원단
+    INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m3, '전문가 위원단', '/experts', 30);
     INSERT INTO public.site_menus (parent_id, label, href, display_order) VALUES
-        (m3, 'Reform', '/pillars/reform', 10),
-        (m3, 'Implementation', '/pillars/implementation', 20),
-        (m3, 'Outcomes', '/pillars/outcomes', 30),
-        (m3, 'Pillar 전체 보기', '/pillars/topics', 40);
+        (m3, '전문가 위원단 소개', '/experts/about', 10),
+        (m3, '편집위원회', '/experts?role=editor', 20),
+        (m3, '분야별 전문가 풀', '/experts', 30);
 
     -- 4. 행사·영상
     INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m4, '행사·영상', '/events', 40);
     INSERT INTO public.site_menus (parent_id, label, href, display_order) VALUES
-        (m4, '행사 일정', '/events?tab=schedule', 10),
-        (m4, '지난 행사', '/events?tab=past', 20),
-        (m4, '토론회 아카이브', '/events?tab=forum', 30),
-        (m4, '명사 영상', '/events?tab=video', 40),
-        (m4, '발제문/자료집', '/events?tab=materials', 50),
-        (m4, '사진 아카이브', '/events?tab=photo', 60);
+        (m4, '행사·영상 안내', '/events/about', 10),
+        (m4, '문화정책', '/events?topic=policy', 20),
+        (m4, 'K-문명', '/events?topic=k-civ', 30),
+        (m4, '지역문화', '/events?topic=local', 40),
+        (m4, '명사 영상', '/events?category=video', 50);
 
     -- 5. 데이터·자료
     INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m5, '데이터·자료', '/data', 50);
@@ -95,16 +84,14 @@ BEGIN
         (m5, '데이터 노트', '/data?category=note', 60),
         (m5, 'One-Pager / Brief', '/data?category=brief', 70);
 
-    -- 6. 네트워크
-    INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m6, '네트워크', '/network', 60);
+    -- 6. 사단법인 소개
+    INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m6, '사단법인 소개', '/network', 60);
     INSERT INTO public.site_menus (parent_id, label, href, display_order) VALUES
-        (m6, '네트워크 소개', '/network/about', 10),
-        (m6, '이사장 인사말', '/network/greeting', 20),
-        (m6, '비전 & 미션', '/network/vision', 30),
-        (m6, '조직구성', '/network/organization', 40),
-        (m6, '협력기관', '/network/partners', 50),
-        (m6, '주요 연혁', '/network/history', 60),
-        (m6, '주요 활동 내역', '/network/activities', 70);
+        (m6, '설립 개요', '/network#about', 10),
+        (m6, '이사장 인사말', '/network#greeting', 20),
+        (m6, '비전 & 미션', '/network#vision', 30),
+        (m6, '조직구성', '/network#organization', 40),
+        (m6, '주요 연혁 및 협력기관', '/network#history', 50);
 
     -- 7. 참여·회원
     INSERT INTO public.site_menus (id, label, href, display_order) VALUES (m7, '참여·회원', '/join', 70);

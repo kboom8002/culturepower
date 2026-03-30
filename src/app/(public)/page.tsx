@@ -3,6 +3,7 @@ import { FeaturedAnswers } from "@/components/domain/home/FeaturedAnswers"
 import { EditorCuration } from "@/components/domain/home/EditorCuration"
 import { HomeTrustBlock } from "@/components/domain/home/HomeTrustBlock"
 import { JoinCtaBlock } from "@/components/domain/home/JoinCtaBlock"
+import { FloatingPillarsMenu } from "@/components/domain/home/FloatingPillarsMenu"
 
 export const metadata = {
   title: "문화강국네트워크 - 공식 질문형 문화 플랫폼",
@@ -12,6 +13,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <div className="w-full flex-col flex">
+      <FloatingPillarsMenu />
       <HeroSearch />
       <HomeTrustBlock />
       <FeaturedAnswers />

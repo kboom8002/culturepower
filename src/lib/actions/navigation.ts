@@ -31,7 +31,7 @@ export async function createNavigationClient() {
       setAll() {},
     },
     global: {
-      fetch: (url, options) => fetch(url, { ...options, cache: 'force-cache', next: { tags: ['menus'] } })
+      fetch: (url, options) => fetch(url, { ...options, cache: 'no-store', next: { tags: ['menus'] } })
     }
   })
 }

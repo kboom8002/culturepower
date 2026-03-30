@@ -217,3 +217,24 @@ export async function getPublicResources() {
     galleries: gals.data || []
   }
 }
+
+export type PublicExpert = {
+  id: string
+  name: string
+  organization: string | null
+  role: string | null
+  bio: string | null
+  profile_image_url: string | null
+  created_at: string
+}
+
+export async function getPublicExperts(): Promise<PublicExpert[]> {
+  const supabase = await createPublicClient()
+  const { data, error } = await supabase
+    .from('experts')
+    .select('*')
+    .order('name', { ascending: true })
+  
+  if (error || !data) return []
+  return data as PublicExpert[]
+}
