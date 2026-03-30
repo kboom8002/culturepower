@@ -82,7 +82,7 @@ export function SiteMenuManager({ initialMenus }: { initialMenus: MainMenuWithIt
 
     // Swap their display_orders. If they happen to be equal, we enforce a difference.
     let newCurrentOrder = targetMenu.display_order
-    let newTargetOrder = currentMenu.display_order
+    const newTargetOrder = currentMenu.display_order
     
     if (newCurrentOrder === newTargetOrder) {
       newCurrentOrder = targetMenu.display_order + (direction === 'up' ? -10 : 10)

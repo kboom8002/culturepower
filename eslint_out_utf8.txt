@@ -1,0 +1,537 @@
+﻿
+> temp_app@0.1.0 lint
+> eslint
+
+
+C:\Users\User\culturepower\fixClient.js
+  1:12  error    A `require()` style import is forbidden    @typescript-eslint/no-require-imports
+  2:7   warning  'path' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  2:14  error    A `require()` style import is forbidden    @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\src\app\(public)\archive\events\[id]\page.tsx
+  64:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\(public)\archive\events\page.tsx
+  26:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\(public)\data\page.tsx
+    5:47  warning  'Calendar' is defined but never used      @typescript-eslint/no-unused-vars
+   40:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   67:41  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\(public)\events\[id]\page.tsx
+   2:43  warning  'Video' is defined but never used         @typescript-eslint/no-unused-vars
+   3:8   warning  'Link' is defined but never used          @typescript-eslint/no-unused-vars
+  27:22  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\(public)\events\about\page.tsx
+    2:53  warning  'Video' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+    4:8   warning  'Image' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   38:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  102:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\(public)\events\page.tsx
+  30:7   error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+  31:38  warning  'e' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\(public)\experts\page.tsx
+  2:10  warning  'DynamicSectionHero' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\(public)\join\[slug]\page.tsx
+  8:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\(public)\network\[slug]\page.tsx
+    2:10  warning  'Users' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+    2:65  warning  'FileText' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  162:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\(public)\network\page.tsx
+  7:3  warning  'Mic2' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\(public)\pillars\[id]\page.tsx
+  15:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  77:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  91:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\(public)\search\page.tsx
+    1:10  warning  'PageHeader' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+    2:44  warning  'MapPin' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+    2:52  warning  'Download' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   57:90  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+   57:98  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+   63:63  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+   63:71  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  103:28  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\(public)\webzine\about\page.tsx
+    2:3   warning  'Building2' is defined but never used                            @typescript-eslint/no-unused-vars
+    3:3   warning  'MessageCircle' is defined but never used                        @typescript-eslint/no-unused-vars
+    7:3   warning  'Sparkles' is defined but never used                             @typescript-eslint/no-unused-vars
+  120:47  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  120:54  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  253:77  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  253:91  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  420:47  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  420:56  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  513:24  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  513:33  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  586:82  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\culturepower\src\app\(public)\webzine\calendar\page.tsx
+  4:44  warning  'MapPin' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\(public)\webzine\stories\[slug]\page.tsx
+  30:55  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  73:64  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-explicit-any
+  74:26  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\User\culturepower\src\app\(public)\webzine\stories\[slug]\page.tsx:74:26
+  72 |         {basedOnAnswers && basedOnAnswers.length > 0 && (
+  73 |            <BasedOnAnswersList answers={basedOnAnswers.map((a: any) => ({
+> 74 |              id: a.id || Math.random().toString(),
+     |                          ^^^^^^^^^^^^^ Cannot call impure function
+  75 |              title: a.title || "愿??吏???뺣떟移대뱶",
+  76 |              href: `/answers/${a.id}`
+  77 |            }))} />  react-hooks/purity
+
+C:\Users\User\culturepower\src\app\(public)\webzine\stories\page.tsx
+  30:7  error  Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+
+C:\Users\User\culturepower\src\app\admin\archive\completion\page.tsx
+  1:18  warning  'Plus' is defined but never used          @typescript-eslint/no-unused-vars
+  1:24  warning  'Filter' is defined but never used        @typescript-eslint/no-unused-vars
+  1:32  warning  'CalendarDays' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'Chip' is defined but never used          @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\archive\documents\[id]\page.tsx
+   6:8   warning  'Link' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  23:10  warning  'status' is assigned a value but never used                                                                      @typescript-eslint/no-unused-vars
+  52:6   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\User\culturepower\src\app\admin\archive\documents\page.tsx
+  1:10  warning  'Search' is defined but never used    @typescript-eslint/no-unused-vars
+  1:24  warning  'FileText' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\archive\events\[id]\page.tsx
+    5:21  warning  'Save' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+    5:27  warning  'FileCheck' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+    5:73  warning  'ImageIcon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+    6:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   28:48  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+   62:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\User\culturepower\src\app\admin\archive\events\[id]\page.tsx:62:7
+  60 |       })
+  61 |     } else {
+> 62 |       setIsLoadingData(false)
+     |       ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  63 |     }
+  64 |   }, [isNew, eventId])
+  65 |  react-hooks/set-state-in-effect
+  216:72  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react/no-unescaped-entities
+  216:84  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react/no-unescaped-entities
+
+C:\Users\User\culturepower\src\app\admin\archive\events\page.tsx
+  1:46  warning  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+  1:60  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\archive\galleries\[id]\page.tsx
+   6:8   warning  'Link' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  21:10  warning  'status' is assigned a value but never used                                                                      @typescript-eslint/no-unused-vars
+  48:6   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\User\culturepower\src\app\admin\archive\galleries\page.tsx
+  1:10  warning  'Search' is defined but never used     @typescript-eslint/no-unused-vars
+  1:33  warning  'ImageIcon' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\archive\videos\[id]\page.tsx
+   6:8   warning  'Link' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+  24:10  warning  'status' is assigned a value but never used                                                                      @typescript-eslint/no-unused-vars
+  55:6   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\User\culturepower\src\app\admin\archive\videos\page.tsx
+  1:10  warning  'Search' is defined but never used      @typescript-eslint/no-unused-vars
+  1:24  warning  'Filter' is defined but never used      @typescript-eslint/no-unused-vars
+  1:32  warning  'Video' is defined but never used       @typescript-eslint/no-unused-vars
+  1:39  warning  'PlayCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\content\answers\[id]\page.tsx
+   4:16  warning  'Eye' is defined but never used           @typescript-eslint/no-unused-vars
+  97:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\admin\content\answers\page.tsx
+  72:136  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\admin\content\briefs\[id]\page.tsx
+  6:47  warning  'FileText' is defined but never used     @typescript-eslint/no-unused-vars
+  9:37  warning  'deleteBrief' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\content\briefs\page.tsx
+  3:24  warning  'Filter' is defined but never used        @typescript-eslint/no-unused-vars
+  3:32  warning  'FileText' is defined but never used      @typescript-eslint/no-unused-vars
+  3:42  warning  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+  3:56  warning  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\content\experts\ExpertEditorModal.tsx
+  4:10  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\content\experts\[id]\page.tsx
+   5:16  warning  'FileCheck' is defined but never used     @typescript-eslint/no-unused-vars
+   5:46  warning  'Plus' is defined but never used          @typescript-eslint/no-unused-vars
+  89:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\admin\content\experts\new\page.tsx
+  5:46  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\content\experts\page.tsx
+  32:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\admin\content\partners\page.tsx
+  43:45  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\admin\content\resources\UploadMediaModal.tsx
+  4:28  warning  'UploadCloud' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\content\resources\page.tsx
+   1:10  warning  'Plus' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   1:46  warning  'Download' is defined but never used                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   1:56  warning  'FileJson2' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   1:67  warning  'FileArchive' is defined but never used                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  22:9   warning  'copyToClipboard' is assigned a value but never used                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  53:23  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\app\admin\content\stories\[id]\page.tsx
+    3:20  warning  'useRef' is defined but never used                        @typescript-eslint/no-unused-vars
+    6:47  warning  'ImageIcon' is defined but never used                     @typescript-eslint/no-unused-vars
+    6:69  warning  'Plus' is defined but never used                          @typescript-eslint/no-unused-vars
+    7:8   warning  'Link' is defined but never used                          @typescript-eslint/no-unused-vars
+    9:8   warning  'Image' is defined but never used                         @typescript-eslint/no-unused-vars
+   49:10  warning  'ssotLinks' is assigned a value but never used            @typescript-eslint/no-unused-vars
+   49:21  warning  'setSsotLinks' is assigned a value but never used         @typescript-eslint/no-unused-vars
+   50:10  warning  'showSsotDropdown' is assigned a value but never used     @typescript-eslint/no-unused-vars
+   50:28  warning  'setShowSsotDropdown' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  150:17  error    Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+  184:17  error    Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\admin\content\stories\page.tsx
+  86:85  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\admin\content\topics\page.tsx
+  1:10  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\dashboard\page.tsx
+   99:55   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   99:88   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  105:91   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  105:117  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\culturepower\src\app\admin\inbox\page.tsx
+  1:47  warning  'MoreHorizontal' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\participation\events\page.tsx
+  1:18  warning  'Plus' is defined but never used           @typescript-eslint/no-unused-vars
+  1:32  warning  'CalendarCheck' is defined but never used  @typescript-eslint/no-unused-vars
+  2:10  warning  'Button' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\participation\members\page.tsx
+  1:18  warning  'Plus' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\participation\newsletter\page.tsx
+  1:10  warning  'Search' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\participation\partnerships\page.tsx
+  1:18  warning  'Plus' is defined but never used    @typescript-eslint/no-unused-vars
+  1:24  warning  'Filter' is defined but never used  @typescript-eslint/no-unused-vars
+  1:49  warning  'Phone' is defined but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\publishing\queue\page.tsx
+   1:56  warning  'History' is defined but never used       @typescript-eslint/no-unused-vars
+  16:14  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:36  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\app\admin\publishing\scheduled\page.tsx
+  2:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+  4:10  warning  'Chip' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\review\[id]\page.tsx
+  4:82  warning  'ChevronRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\settings\users\page.tsx
+  1:18  warning  'ShieldAlert' is defined but never used     @typescript-eslint/no-unused-vars
+  1:45  warning  'MoreHorizontal' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\app\admin\settings\workflow\page.tsx
+  1:10  warning  'Info' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\components\domain\data\DataFeatured.tsx
+  5:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  5:79  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  9:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\domain\event\EventsClient.tsx
+  146:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\components\domain\expert\ExpertsClient.tsx
+  66:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\components\domain\home\EditorCuration.tsx
+  31:32  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  39:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\components\domain\home\FloatingPillarsMenu.tsx
+   5:10  warning  'Sparkles' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   5:20  warning  'Replace' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  13:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\User\culturepower\src\components\domain\home\FloatingPillarsMenu.tsx:13:5
+  11 |   // SSR 諛⑹? ( hydration mismatch 諛⑹? )
+  12 |   useEffect(() => {
+> 13 |     setIsMounted(true)
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  14 |     // 3珥????먮룞?쇰줈 ?쒕쾲 ?댁뼱???뚰듃 ?쒓났
+  15 |     const timer = setTimeout(() => setIsOpen(true), 1500)
+  16 |     const timerClose = setTimeout(() => setIsOpen(false), 5000)  react-hooks/set-state-in-effect
+
+C:\Users\User\culturepower\src\components\domain\home\HeroSearch.tsx
+  1:18  warning  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\components\domain\home\HomeEventsHighlight.tsx
+  2:20  warning  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\components\domain\home\HomeTrustBlock.tsx
+  33:66  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  33:72  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\User\culturepower\src\components\domain\home\HomeVisionMission.tsx
+  9:11  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  9:31  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\User\culturepower\src\components\domain\publishing\ContentRefEditor.tsx
+  10:38  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  15:54  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  27:34  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  37:18  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\Users\User\culturepower\src\components\domain\publishing\ContentRefEditor.tsx:37:18
+  35 |     }
+  36 |     setItems([...items, {
+> 37 |       id: `new-${Date.now()}`,
+     |                  ^^^^^^^^^^ Cannot call impure function
+  38 |       content_id: result.id,
+  39 |       content_type: result.content_type,
+  40 |       display_order: items.length,  react-hooks/purity
+
+C:\Users\User\culturepower\src\components\domain\publishing\CustomBannerEditor.tsx
+   7:44  warning  'GripVertical' is defined but never used  @typescript-eslint/no-unused-vars
+  42:69  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\domain\publishing\FeaturedManager.tsx
+   5:10  warning  'Home' is defined but never used          @typescript-eslint/no-unused-vars
+  15:9   error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\domain\publishing\ImageUploader.tsx
+   4:32  warning  'ImageIcon' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  45:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  56:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\components\domain\publishing\PublishActionBtn.tsx
+  31:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\domain\publishing\ScheduledActions.tsx
+  6:19  warning  'CalendarDays' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\User\culturepower\src\components\domain\review\ReviewAssignBtn.tsx
+  20:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\domain\review\ReviewProcessBtn.tsx
+  35:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\domain\settings\SiteMenuManager.tsx
+  11:17  warning  'setMenus' is assigned a value but never used              @typescript-eslint/no-unused-vars
+  85:9   error    'newTargetOrder' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\User\culturepower\src\components\domain\settings\TaxonomyManager.tsx
+  143:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\domain\story\StoriesClient.tsx
+  19:85  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  76:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\User\culturepower\src\components\layout\DynamicSectionHero.tsx
+  57:99  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\User\culturepower\src\components\seo\JsonLd.tsx
+  4:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\components\ui\RichTextEditor.tsx
+   7:24   warning  'Heading2' is defined but never used      @typescript-eslint/no-unused-vars
+   7:34   warning  'Heading3' is defined but never used      @typescript-eslint/no-unused-vars
+  63:109  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  84:82   error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\archive.ts
+   22:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  159:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\brief.ts
+  22:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\content.ts
+   15:18   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  102:40   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:42   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:41   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:41   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  141:40   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  141:50   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:45   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:42   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:74   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:42   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  173:66   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  175:39   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:40   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  180:18   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  255:35   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  271:40   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  271:108  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  272:18   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  323:121  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  355:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  397:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  441:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  448:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  455:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  462:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\public.ts
+   36:25  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   74:12  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   75:15  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   76:15  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   83:47  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   88:22  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  109:23  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  143:7   error  'query' is never reassigned. Use 'const' instead  prefer-const
+  169:7   error  'query' is never reassigned. Use 'const' instead  prefer-const
+  198:23  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  237:7   error  'query' is never reassigned. Use 'const' instead  prefer-const
+  258:37  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  279:23  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  336:46  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\publishing.ts
+   46:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   64:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   68:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   82:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   85:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   88:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   90:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   90:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  269:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  271:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\review.ts
+  105:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\seo.ts
+  90:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\settings.ts
+  33:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\actions\story.ts
+   35:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   36:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   37:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   41:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   67:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   73:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   78:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   95:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  157:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  159:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  163:66  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  171:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  172:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  233:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\src\lib\utils\audit.ts
+  1:115  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\User\culturepower\test-db.js
+  1:1   error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\test_diag.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\test_diag2.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\test_exact.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\test_http.js
+  1:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\test_http2.js
+  1:15  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\test_story.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+C:\Users\User\culturepower\tests\e2e\public-routes.spec.ts
+  1:1  error  Do not use "@ts-nocheck" because it alters compilation errors  @typescript-eslint/ban-ts-comment
+
+C:\Users\User\culturepower\tmp_cleanup.js
+  1:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  9:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+??291 problems (178 errors, 113 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.
+

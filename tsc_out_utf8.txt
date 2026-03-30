@@ -1,5 +1,13 @@
-﻿src/app/(public)/data/page.tsx(40,38): error TS7006: Parameter 'doc' implicitly has an 'any' type.
-src/app/(public)/data/page.tsx(67,35): error TS7006: Parameter 'vid' implicitly has an 'any' type.
-src/app/(public)/data/page.tsx(104,38): error TS7006: Parameter 'gal' implicitly has an 'any' type.
-src/app/(public)/webzine/stories/page.tsx(65,26): error TS2322: Type 'PublicStory[]' is not assignable to type 'Story[]'.
-  Type 'PublicStory' is missing the following properties from type 'Story': status, creator_id, author_expert_id, reviewer_id, and 4 more.
+﻿src/components/domain/event/EventsClient.tsx(210,72): error TS2322: Type '{ className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+src/components/domain/event/EventsClient.tsx(213,68): error TS2322: Type '{ className: string; title: string; }' is not assignable to type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+  Property 'title' does not exist on type 'IntrinsicAttributes & Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>'.
+src/components/domain/home/HeroSearch.tsx(11,15): error TS2322: Type '"secondary"' is not assignable to type '"primary" | "default" | "reviewed" | "issue" | "success" | undefined'.
+src/components/domain/home/HomeActivities.tsx(39,24): error TS2339: Property 'id' does not exist on type 'PageBanner | { title: string; link_url: string; image_url: null; }'.
+  Property 'id' does not exist on type '{ title: string; link_url: string; image_url: null; }'.
+src/components/domain/home/HomeActivities.tsx(54,22): error TS2339: Property 'subtitle' does not exist on type 'PageBanner | { title: string; link_url: string; image_url: null; }'.
+  Property 'subtitle' does not exist on type '{ title: string; link_url: string; image_url: null; }'.
+src/components/domain/home/HomeActivities.tsx(55,82): error TS2339: Property 'subtitle' does not exist on type 'PageBanner | { title: string; link_url: string; image_url: null; }'.
+  Property 'subtitle' does not exist on type '{ title: string; link_url: string; image_url: null; }'.
+src/components/domain/publishing/ContentRefEditor.tsx(104,47): error TS2322: Type '"outline"' is not assignable to type '"primary" | "secondary" | "tertiary" | "tool" | undefined'.
+src/components/domain/publishing/CustomBannerEditor.tsx(72,39): error TS2339: Property 'error' does not exist on type '{ success: boolean; }'.

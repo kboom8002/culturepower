@@ -14,7 +14,7 @@ export async function HomeActivities() {
     { title: "문화정책 연구와 공론장 형성", link_url: "/answers?topic=cultural-policy-governance", image_url: null },
     { title: "지역문화대전환 순회토론회", link_url: "/events?series=regional-culture-transition", image_url: null },
     { title: "문화산업·AI·K-푸드·기초예술 토론회", link_url: "/events?category=forum-report", image_url: null }
-  ];
+  ] as any[];
 
   return (
     <section className="w-full bg-surface-soft py-24 px-4 border-t border-b border-line-default">

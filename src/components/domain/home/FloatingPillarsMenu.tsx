@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Sparkles, Replace, Combine, Zap, CheckCircle2 } from "lucide-react"
+import { Combine, Zap, CheckCircle2 } from "lucide-react"
 
 export function FloatingPillarsMenu() {
   const [isMounted, setIsMounted] = useState(false)
@@ -10,7 +10,7 @@ export function FloatingPillarsMenu() {
 
   // SSR 방지 ( hydration mismatch 방지 )
   useEffect(() => {
-    setIsMounted(true)
+    setTimeout(() => setIsMounted(true), 0)
     // 3초 후 자동으로 한번 열어서 힌트 제공
     const timer = setTimeout(() => setIsOpen(true), 1500)
     const timerClose = setTimeout(() => setIsOpen(false), 5000)

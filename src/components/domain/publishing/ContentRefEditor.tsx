@@ -34,7 +34,7 @@ export function ContentRefEditor({ slotId, initialItems, max }: { slotId: string
       return
     }
     setItems([...items, {
-      id: `new-${Date.now()}`,
+      id: `new-${items.length}-${result.id}`,
       content_id: result.id,
       content_type: result.content_type,
       display_order: items.length,
@@ -101,7 +101,7 @@ export function ContentRefEditor({ slotId, initialItems, max }: { slotId: string
                 ))}
               </div>
               <div className="text-right">
-                <Dialog.Close asChild><Button variant="outline">닫기</Button></Dialog.Close>
+                <Dialog.Close asChild><Button variant="secondary">닫기</Button></Dialog.Close>
               </div>
             </Dialog.Content>
           </Dialog.Portal>

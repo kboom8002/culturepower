@@ -207,10 +207,10 @@ export function EventsClient({ initialEvents, initialCategory }: { initialEvents
                     
                     <div className="flex items-center gap-2 text-neutral-400 shrink-0">
                       {(evt.has_result_assets || (evt.documents && evt.documents.length > 0)) && (
-                        <FileText className="w-4 h-4 text-emerald-600" title="결과물/리포트 보유" />
+                        <span title="결과물/리포트 보유"><FileText className="w-4 h-4 text-emerald-600" /></span>
                       )}
                       {isVideo && (
-                        <Video className="w-4 h-4 text-purple-600" title="관련 영상 제공" />
+                        <span title="관련 영상 제공"><Video className="w-4 h-4 text-purple-600" /></span>
                       )}
                     </div>
                   </div>

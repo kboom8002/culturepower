@@ -69,7 +69,7 @@ export function CustomBannerEditor({
       const payload = items.map((i, idx) => ({ ...i, display_order: idx }))
       const res = await updatePageBanners(slotId, payload)
       if (res.success) alert("저장되었습니다.")
-      else alert("오류가 발생했습니다: " + res.error)
+      else alert("오류가 발생했습니다: " + (res as any).error)
     })
   }
 

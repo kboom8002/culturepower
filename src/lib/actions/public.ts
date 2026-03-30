@@ -140,7 +140,7 @@ export async function getPublicStories(): Promise<PublicStory[]> {
 export async function getPublicStoryById(slug: string): Promise<PublicStory | null> {
   const supabase = await createPublicClient()
   
-  let query = supabase.from('stories').select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text)').eq('slug', slug).maybeSingle()
+  const query = supabase.from('stories').select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text)').eq('slug', slug).maybeSingle()
   const { data, error } = await query
   
   if (error || !data) return null
@@ -166,7 +166,7 @@ export async function getPublicAnswers(): Promise<PublicAnswer[]> {
 export async function getPublicAnswerById(slug: string): Promise<PublicAnswer | null> {
   const supabase = await createPublicClient()
   
-  let query = supabase.from('answers').select('*, topics!primary_topic_id(name_ko, slug, description)').eq('slug', slug).maybeSingle()
+  const query = supabase.from('answers').select('*, topics!primary_topic_id(name_ko, slug, description)').eq('slug', slug).maybeSingle()
   const { data, error } = await query
   
   if (error || !data) return null
@@ -234,7 +234,7 @@ export async function getPublicEvents(): Promise<PublicEvent[]> {
 
 export async function getPublicEventDetail(id: string) {
   const supabase = await createPublicClient()
-  let query = supabase.from('events').select(`
+  const query = supabase.from('events').select(`
     *, 
     topics!primary_topic_id(name_ko, slug, description),
     featured_image_asset:media_assets!featured_image_asset_id(public_url),

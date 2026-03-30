@@ -8,7 +8,7 @@ export function HeroSearch() {
       {/* Eyebrow */}
       <div className="mb-6 flex flex-wrap gap-2 justify-center">
         <Chip variant="primary">공식 문화정책 네트워크</Chip>
-        <Chip variant="secondary">국가 문화전략 플랫폼</Chip>
+        <Chip variant="default">국가 문화전략 플랫폼</Chip>
       </div>
       
       {/* Title */}

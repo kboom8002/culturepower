@@ -59,7 +59,7 @@ export default function AdminEditEventPage() {
         setIsLoadingData(false)
       })
     } else {
-      setIsLoadingData(false)
+      setTimeout(() => setIsLoadingData(false), 0)
     }
   }, [isNew, eventId])
 

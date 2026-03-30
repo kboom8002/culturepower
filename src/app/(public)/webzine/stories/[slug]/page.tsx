@@ -70,8 +70,8 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
 
         {/* Foundation & Context Navigation */}
         {basedOnAnswers && basedOnAnswers.length > 0 && (
-           <BasedOnAnswersList answers={basedOnAnswers.map((a: any) => ({
-             id: a.id || Math.random().toString(),
+           <BasedOnAnswersList answers={basedOnAnswers.map((a: any, index: number) => ({
+             id: a.id || `answer-fallback-${index}`,
              title: a.title || "관련 지식 정답카드",
              href: `/answers/${a.id}`
            }))} />
