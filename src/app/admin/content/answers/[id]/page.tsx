@@ -66,7 +66,7 @@ export default function AdminAnswerEditorPage() {
     init()
   }, [answerId, isNew])
 
-  const handleSave = async (targetStatus: 'Draft' | 'Review') => {
+  const handleSave = async (targetStatus: 'Draft' | 'Review' | 'Scheduled' | 'Public' | 'Archived') => {
     if (!title) {
        alert("질문 타이틀을 입력해주세요.")
        return
@@ -88,8 +88,12 @@ export default function AdminAnswerEditorPage() {
       if (res.success) {
          if (targetStatus === 'Review') {
             await submitToReview('Answer', res.id as string)
+            alert("승인 큐 등록 완료")
+         } else if (targetStatus === 'Public') {
+            alert("수정사항이 즉시 퍼블릭에 반영되었습니다.")
+         } else {
+            alert("임시저장 완료")
          }
-         alert(targetStatus === 'Draft' ? "임시저장 완료" : "승인 큐 등록 완료")
          router.push("/admin/content/answers")
       } else {
          alert("에러: " + res.error)
@@ -128,8 +132,8 @@ export default function AdminAnswerEditorPage() {
                 {isSaving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} 
                 {isNew ? '임시저장' : '수정사항 저장'}
              </Button>
-             <Button variant="tool" onClick={() => handleSave('Review')} disabled={isSaving} className="px-4 bg-brand-50 text-brand-700 hover:bg-brand-100">
-                <PenTool className="w-4 h-4 mr-2" /> 승인 큐 등록
+             <Button variant="tool" onClick={() => handleSave(status === 'Public' ? 'Public' : 'Review')} disabled={isSaving} className="px-4 bg-brand-50 text-brand-700 hover:bg-brand-100">
+                <PenTool className="w-4 h-4 mr-2" /> {status === 'Public' ? '즉시 업데이트 (퍼블릭 반영)' : '승인 큐 등록'}
              </Button>
           </div>
        </div>

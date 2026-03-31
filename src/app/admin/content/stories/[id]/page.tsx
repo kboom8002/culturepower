@@ -28,6 +28,7 @@ export default function AdminEditStoryPage() {
   const [expertIds, setExpertIds] = useState<string[]>([])
   const [relatedAnswerIds, setRelatedAnswerIds] = useState<string[]>([])
   const [bodyHtml, setBodyHtml] = useState("")
+  const [currentStatus, setCurrentStatus] = useState<string>('Draft')
   const [isLoadingData, setIsLoadingData] = useState(true)
 
   // DB States
@@ -84,6 +85,7 @@ export default function AdminEditStoryPage() {
            if (story.related_answer_ids) setRelatedAnswerIds(story.related_answer_ids)
            if (story.tag_ids) setTagIds(story.tag_ids)
            if (story.og_image_url) setThumbnailPreview(story.og_image_url)
+           if (story.status) setCurrentStatus(story.status)
         }
       }
       setIsLoadingData(false)
@@ -109,7 +111,7 @@ export default function AdminEditStoryPage() {
     setRelatedAnswerIds(relatedAnswerIds.filter(a => a !== id))
   }
 
-  const buildPayload = (status: 'Draft' | 'Review') => {
+  const buildPayload = (status: string) => {
     return { 
       title, 
       deck, 
@@ -163,7 +165,9 @@ export default function AdminEditStoryPage() {
       if(!confirm("대표 썸네일 이미지가 없습니다. 이대로 발행 대기열에 올리시겠습니까?")) return
     }
     setIsPublishing(true)
-    const payload = buildPayload('Review')
+    
+    const targetStatus = currentStatus === 'Public' ? 'Public' : 'Review'
+    const payload = buildPayload(targetStatus)
     
     try {
       if (isNew) {
@@ -176,8 +180,12 @@ export default function AdminEditStoryPage() {
       } else {
         const res = await updateStory(storyId, payload)
         if(res.success) {
-          await submitToReview('Story', res.data.id)
-          alert("발행 승인 요청 등록!")
+          if (targetStatus === 'Review') {
+            await submitToReview('Story', res.data.id)
+            alert("발행 승인 요청 등록!")
+          } else {
+            alert("퍼블릭에 즉시 업데이트 되었습니다!")
+          }
           router.push("/admin/content/stories")
         } else alert(`실패: ${res.error}`)
       }
@@ -230,7 +238,7 @@ export default function AdminEditStoryPage() {
             </Button>
             <Button variant="primary" size="sm" onClick={handlePublish} disabled={isSaving || isPublishing} className="font-medium">
               {isPublishing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileCheck className="w-4 h-4 mr-2" />}
-              {isPublishing ? "처리 중..." : (isNew ? "발행 요청 (큐 등록)" : "수정 및 재승인")}
+              {isPublishing ? "처리 중..." : (isNew ? "발행 요청 (큐 등록)" : (currentStatus === 'Public' ? "즉시 발행 (수정 업데이트)" : "수정 및 재승인"))}
             </Button>
           </div>
         </div>
