@@ -118,11 +118,17 @@ async function ensureMediaAsset(supabase: any, url: string) {
   if (!url) return null;
   const { data } = await supabase.from('media_assets').select('id').eq('public_url', url).maybeSingle()
   if (data) return data.id;
+
+  const { data: assetType, error: typeErr } = await supabase.from('media_asset_types').select('id').eq('slug', 'featured-image').maybeSingle()
+  if (typeErr || !assetType) {
+    console.error("DEBUG ensureMediaAsset missing type:", typeErr)
+    return null
+  }
   
   const { data: newData, error } = await supabase.from('media_assets').insert({
     public_url: url,
-    asset_type: 'image',
-    filename: url.split('/').pop() || 'uploaded.jpg'
+    asset_type_id: assetType.id,
+    title: 'Event cover image'
   }).select('id').single()
   
   if (error) console.error("Error creating media asset:", error)
