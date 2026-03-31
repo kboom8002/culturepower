@@ -13,6 +13,7 @@ interface DynamicSectionHeroProps {
     summary: string | null
     type: 'answers' | 'stories' | 'events'
     tagName?: string
+    href?: string
   }
   defaultTitle: string
   defaultDescription: string
@@ -47,7 +48,7 @@ export function DynamicSectionHero({ topic, heroItem, defaultTitle, defaultDescr
         {heroItem && (
           <div className="flex-1 w-full max-w-xl relative">
             <Link 
-              href={`/${heroItem.type}/${heroItem.id}`}
+              href={heroItem.href || `/${heroItem.type}/${heroItem.id}`}
               className="group block w-full bg-white/10 border border-white/20 rounded-2xl p-6 md:p-8 backdrop-blur-xl hover:bg-white/20 hover:border-white/40 transition-all shadow-2xl relative overflow-hidden"
             >
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-500/30 blur-3xl rounded-full group-hover:bg-blue-400/40 transition-colors"></div>

@@ -49,7 +49,8 @@ export default async function StoriesIndexPage({ searchParams }: { searchParams:
     title: rawHeroStory.title,
     summary: rawHeroStory.meta_description || rawHeroStory.section || '',
     type: 'stories' as const,
-    tagName: currentTopic?.name || rawHeroStory.story_type || rawHeroStory.section || "기획 기사"
+    tagName: currentTopic?.name || rawHeroStory.story_type || rawHeroStory.section || "기획 기사",
+    href: `/webzine/stories/${rawHeroStory.slug}`
   } : undefined
 
   return (
