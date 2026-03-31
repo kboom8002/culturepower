@@ -151,7 +151,7 @@ async function mapDbToEvent(supabase: any, row: any): Promise<ArchiveEvent> {
     round_no: row.round_no || null,
     has_result_assets: row.has_result_assets || false,
     event_status: row.event_status || null,
-    featured_image_url: row.media_assets?.public_url || null,
+    featured_image_url: row.featured_image_asset?.public_url || null,
     series_id: row.event_series?.[0]?.series_id || null,
   }
 }
@@ -203,7 +203,7 @@ async function mapEventToDb(supabase: any, data: Partial<ArchiveEvent>) {
 export async function getEvents(): Promise<ArchiveEvent[]> {
   if (!isSupabaseConfigured()) return MOCK_EVENTS
   const supabase = await createArchiveClient()
-  const { data, error } = await supabase.from('events').select('*, media_assets!featured_image_asset_id(public_url), event_series(series_id)').order('start_at', { ascending: false })
+  const { data, error } = await supabase.from('events').select('*, featured_image_asset:media_assets!featured_image_asset_id(public_url), event_series(series_id)').order('start_at', { ascending: false })
   if (error || !data) { console.error("Error fetching events:", error); return [] }
   const results = await Promise.all(data.map(d => mapDbToEvent(supabase, d)))
   return results
@@ -212,7 +212,7 @@ export async function getEvents(): Promise<ArchiveEvent[]> {
 export async function getEventById(id: string): Promise<ArchiveEvent | null> {
   if (!isSupabaseConfigured()) return MOCK_EVENTS.find(e => e.id === id) || MOCK_EVENTS[0]
   const supabase = await createArchiveClient()
-  const { data, error } = await supabase.from('events').select('*, media_assets!featured_image_asset_id(public_url), event_series(series_id)').eq('id', id).single()
+  const { data, error } = await supabase.from('events').select('*, featured_image_asset:media_assets!featured_image_asset_id(public_url), event_series(series_id)').eq('id', id).single()
   if (error || !data) { console.error(`Error fetching event ${id}:`, error); return null }
   return mapDbToEvent(supabase, data)
 }
