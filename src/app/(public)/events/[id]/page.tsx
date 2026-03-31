@@ -25,7 +25,21 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     description: rawEvent.summary || rawEvent.body_text || "내용이 등록되지 않았습니다.",
     videoUrl: null as string | null, // To be integrated with real videos if they exist
     materials: [] as any[], // To be integrated with real documents if they exist
-    seriesName: seriesObj ? seriesObj.name_ko : null
+    seriesName: seriesObj ? seriesObj.name_ko : null,
+    videos: [] as any[], // To be integrated
+    isPast: false
+  }
+
+  const now = new Date().getTime()
+  const endAt = rawEvent.end_at ? new Date(rawEvent.end_at).getTime() : null
+  const startAt = rawEvent.start_at ? new Date(rawEvent.start_at).getTime() : null
+  
+  if (rawEvent.event_status === 'finished') {
+    data.isPast = true
+  } else if (endAt && endAt < now) {
+    data.isPast = true
+  } else if (!endAt && startAt && startAt < now) {
+    data.isPast = true
   }
 
   return (
@@ -115,13 +129,23 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
           )}
 
           {/* Call to action for Schedule events */}
-          {!isVideo && (
+          {!isVideo && !data.isPast && (
             <div className="mt-12 bg-brand-900 p-8 rounded-2xl text-center text-white">
               <h3 className="text-[20px] font-bold mb-3">본 행사 참여를 희망하십니까?</h3>
               <p className="text-brand-100 text-sm mb-6">현재 잔여 좌석이 있습니다. 서둘러 사전등록을 완료하세요.</p>
-              <button className="bg-white text-brand-900 font-bold px-8 py-3 rounded-lg hover:bg-neutral-100 transition-colors inline-flex items-center gap-2">
+              <a href={rawEvent.registration_url || "#"} className="bg-white text-brand-900 font-bold px-8 py-3 rounded-lg hover:bg-neutral-100 transition-colors inline-flex items-center gap-2">
                 사전 등록 신청하기 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
+            </div>
+          )}
+
+          {!isVideo && data.isPast && (
+            <div className="mt-12 bg-neutral-900 p-8 rounded-2xl text-center text-white">
+              <h3 className="text-[20px] font-bold mb-3">종료된 행사입니다</h3>
+              <p className="text-neutral-300 text-sm mb-6">해당 행사는 사전 등록이 마감되었습니다. 문강 RIO에서 관련 기록물을 확인하세요.</p>
+              <Link href="/webzine" className="bg-white text-neutral-900 font-bold px-8 py-3 rounded-lg hover:bg-neutral-100 transition-colors inline-flex items-center gap-2">
+                관련 아카이브 문서 보기 <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           )}
 
