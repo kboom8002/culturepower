@@ -11,20 +11,49 @@ const CustomImage = Image.extend({
   addAttributes() {
     return {
       ...this.parent?.(),
-      caption: { default: null }
+      caption: {
+        default: null,
+        parseHTML: element => element.getAttribute('data-caption'),
+      }
     }
   },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'figure',
+        getAttrs: (node) => {
+          if (!(node instanceof HTMLElement)) return false;
+          const img = node.querySelector('img');
+          const figcaption = node.querySelector('figcaption');
+          if (!img) return false;
+          return {
+            src: img.getAttribute('src'),
+            alt: img.getAttribute('alt'),
+            title: img.getAttribute('title'),
+            caption: figcaption ? figcaption.innerText : null,
+          }
+        }
+      },
+      ...(this.parent?.() || [])
+    ]
+  },
+
   renderHTML({ HTMLAttributes }) {
     if (HTMLAttributes.caption) {
       const { caption, ...imgAttrs } = HTMLAttributes;
       return [
         'figure', 
         { class: 'flex flex-col items-center my-6 max-w-full' }, 
-        ['img', mergeAttributes(this.options.HTMLAttributes, imgAttrs, { class: 'rounded-2xl border border-line-default w-full mb-3' })], 
+        ['img', mergeAttributes(this.options.HTMLAttributes, imgAttrs, { class: 'rounded-2xl border border-line-default w-full mb-3', 'data-caption': caption })], 
         ['figcaption', { class: 'text-[14px] text-neutral-500 font-medium text-center bg-surface-soft px-4 py-1 rounded-full' }, caption]
       ]
     }
-    return ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { class: 'rounded-2xl border border-line-default w-full my-6' })]
+    return [
+      'figure',
+      { class: 'flex flex-col items-center my-6 max-w-full' },
+      ['img', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { class: 'rounded-2xl border border-line-default w-full' })]
+    ]
   }
 })
 
@@ -38,7 +67,10 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
   const editor = useEditor({
     extensions: [
       StarterKit,
-      CustomImage,
+      CustomImage.configure({
+        inline: false,
+        allowBase64: true,
+      }),
     ],
     content: value,
     immediatelyRender: false,
