@@ -30,6 +30,7 @@ export default function AdminEditEventPage() {
   const [hasResultAssets, setHasResultAssets] = useState(false)
   const [eventStatus, setEventStatus] = useState("")
   const [featuredImage, setFeaturedImage] = useState<string | null>(null)
+  const [posterImage, setPosterImage] = useState<string | null>(null)
 
   const [isLoadingData, setIsLoadingData] = useState(!isNew)
   const [isSaving, setIsSaving] = useState(false)
@@ -55,6 +56,7 @@ export default function AdminEditEventPage() {
            setHasResultAssets(evt.has_result_assets || false)
            if (evt.event_status) setEventStatus(evt.event_status)
            if (evt.featured_image_url) setFeaturedImage(evt.featured_image_url)
+           if (evt.poster_image_url) setPosterImage(evt.poster_image_url)
         }
         setIsLoadingData(false)
       })
@@ -74,7 +76,8 @@ export default function AdminEditEventPage() {
        round_no: roundNo ? parseInt(roundNo) : null,
        has_result_assets: hasResultAssets,
        event_status: eventStatus || null,
-       featured_image_url: featuredImage
+       featured_image_url: featuredImage,
+       poster_image_url: posterImage
     }
     
     if (isNew) {
@@ -136,9 +139,15 @@ export default function AdminEditEventPage() {
           />
           <div className="border-b border-line-soft -mx-8" />
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-neutral-700">대표 이미지 (선택)</label>
-            <ImageUploader value={featuredImage} onChange={setFeaturedImage} bucket="curation_assets" aspectRatio="aspect-video" className="max-w-md" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-neutral-700">대표 썸네일 (목록 와이드형)</label>
+              <ImageUploader value={featuredImage} onChange={setFeaturedImage} bucket="curation_assets" aspectRatio="aspect-[2/1]" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-neutral-700">행사 포스터 (상세 세로형 원본)</label>
+              <ImageUploader value={posterImage} onChange={setPosterImage} bucket="curation_assets" aspectRatio="aspect-[3/4]" />
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

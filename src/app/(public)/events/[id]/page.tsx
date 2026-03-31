@@ -4,6 +4,7 @@ import Link from "next/link"
 
 import { getPublicEventDetail } from "@/lib/actions/public"
 import { notFound } from "next/navigation"
+import { ShareButtons } from "@/components/ui/ShareButtons"
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,6 +23,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     title: rawEvent.title,
     date: rawEvent.start_at ? new Date(rawEvent.start_at).toLocaleString("ko-KR") : "KST 미정",
     location: rawEvent.location_name || "장소 미정 (온라인/오프라인)",
+    posterImageUrl: rawEvent.poster_image_asset?.public_url || null,
     description: rawEvent.summary || rawEvent.body_text || "내용이 등록되지 않았습니다.",
     videoUrl: null as string | null, // To be integrated with real videos if they exist
     materials: [] as any[], // To be integrated with real documents if they exist
@@ -83,6 +85,16 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               {data.location}
             </div>
           </div>
+
+          {data.posterImageUrl && (
+            <div className="w-full flex justify-center mb-12">
+              <img 
+                src={data.posterImageUrl} 
+                alt={`${data.title} 포스터`} 
+                className="w-full max-w-2xl h-auto shadow-sm"
+              />
+            </div>
+          )}
 
           {/* VOD Player Area */}
           {data.videoUrl && (
@@ -148,6 +160,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
               </Link>
             </div>
           )}
+
+          <ShareButtons title={data.title} description={data.description} />
 
         </div>
       </main>

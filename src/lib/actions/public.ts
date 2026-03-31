@@ -238,6 +238,7 @@ export async function getPublicEventDetail(id: string) {
     *, 
     topics!primary_topic_id(name_ko, slug, description),
     featured_image_asset:media_assets!featured_image_asset_id(public_url),
+    poster_image_asset:media_assets!poster_image_asset_id(public_url),
     event_series(series(id, name_ko, slug))
   `).eq('id', id).maybeSingle()
   
@@ -320,6 +321,7 @@ export async function searchAllContent(q: string) {
       *, 
       topics!primary_topic_id(name_ko, slug, description),
       featured_image_asset:media_assets!featured_image_asset_id(public_url),
+      poster_image_asset:media_assets!poster_image_asset_id(public_url),
       event_series(series(id, name_ko, slug))
     `)
     .or(`title.ilike.${qStr},summary.ilike.${qStr}`)

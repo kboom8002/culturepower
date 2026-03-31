@@ -54,14 +54,18 @@ export function ImageUploader({
       {value ? (
         <div className={`relative w-full ${aspectRatio} ${rounded} bg-neutral-100 overflow-hidden border border-line-default group`}>
           <img src={value} alt="Uploaded" className="object-cover w-full h-full" />
-          <button 
-            type="button"
-            onClick={(e) => { e.preventDefault(); onChange(null); }}
-            className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-            title="이미지 삭제"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          
+          {/* Always visible or easily discoverable hover overlay for replacement */}
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+             <button 
+               type="button"
+               onClick={(e) => { e.preventDefault(); onChange(null); }}
+               className="bg-white/90 hover:bg-white text-neutral-900 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg transition-transform hover:scale-105"
+             >
+               <UploadCloud className="w-4 h-4" />
+               이미지 교체 / 삭제
+             </button>
+          </div>
         </div>
       ) : (
         <label className={`w-full ${aspectRatio} ${rounded} border-2 border-dashed border-line-strong hover:border-brand-500 flex flex-col items-center justify-center cursor-pointer bg-neutral-50 hover:bg-brand-50/30 transition-colors group overflow-hidden px-2 text-center`}>
