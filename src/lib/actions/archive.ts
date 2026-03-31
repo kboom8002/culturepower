@@ -134,7 +134,7 @@ async function mapDbToEvent(supabase: any, row: any): Promise<ArchiveEvent> {
     id: row.id,
     title: row.title || '',
     summary: row.summary || null,
-    event_type: row.event_type || 'Conference',
+    event_type: 'Conference',
     status: (await fetchStatusSlug(supabase, row.workflow_status_id)) as any,
     start_date: row.start_at || null,
     end_date: row.end_at || null,
@@ -160,7 +160,6 @@ async function mapEventToDb(supabase: any, data: Partial<ArchiveEvent>) {
   const payload: any = {}
   if (data.title !== undefined) payload.title = data.title
   if (data.summary !== undefined) payload.summary = data.summary
-  if (data.event_type !== undefined) payload.event_type = data.event_type
   if (data.start_date !== undefined) payload.start_at = data.start_date
   if (data.end_date !== undefined) payload.end_at = data.end_date
   if (data.location !== undefined) payload.location_name = data.location
