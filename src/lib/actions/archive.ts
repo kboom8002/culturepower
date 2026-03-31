@@ -136,10 +136,10 @@ async function mapDbToEvent(supabase: any, row: any): Promise<ArchiveEvent> {
     summary: row.summary || null,
     event_type: row.event_type || 'Conference',
     status: (await fetchStatusSlug(supabase, row.workflow_status_id)) as any,
-    start_date: row.start_date || null,
-    end_date: row.end_date || null,
-    location: row.location || null,
-    registration_link: row.registration_link || null,
+    start_date: row.start_at || null,
+    end_date: row.end_at || null,
+    location: row.location_name || null,
+    registration_link: row.registration_url || null,
     slug: row.slug || null,
     published_at: row.published_at,
     created_at: row.created_at,
@@ -161,10 +161,10 @@ async function mapEventToDb(supabase: any, data: Partial<ArchiveEvent>) {
   if (data.title !== undefined) payload.title = data.title
   if (data.summary !== undefined) payload.summary = data.summary
   if (data.event_type !== undefined) payload.event_type = data.event_type
-  if (data.start_date !== undefined) payload.start_date = data.start_date
-  if (data.end_date !== undefined) payload.end_date = data.end_date
-  if (data.location !== undefined) payload.location = data.location
-  if (data.registration_link !== undefined) payload.registration_link = data.registration_link
+  if (data.start_date !== undefined) payload.start_at = data.start_date
+  if (data.end_date !== undefined) payload.end_at = data.end_date
+  if (data.location !== undefined) payload.location_name = data.location
+  if (data.registration_link !== undefined) payload.registration_url = data.registration_link
   if (data.topic_id !== undefined) payload.primary_topic_id = data.topic_id || null
   if (data.round_no !== undefined) payload.round_no = data.round_no
   if (data.has_result_assets !== undefined) payload.has_result_assets = data.has_result_assets
@@ -204,7 +204,7 @@ async function mapEventToDb(supabase: any, data: Partial<ArchiveEvent>) {
 export async function getEvents(): Promise<ArchiveEvent[]> {
   if (!isSupabaseConfigured()) return MOCK_EVENTS
   const supabase = await createArchiveClient()
-  const { data, error } = await supabase.from('events').select('*, media_assets!featured_image_asset_id(public_url), event_series(series_id)').order('start_date', { ascending: false })
+  const { data, error } = await supabase.from('events').select('*, media_assets!featured_image_asset_id(public_url), event_series(series_id)').order('start_at', { ascending: false })
   if (error || !data) { console.error("Error fetching events:", error); return [] }
   const results = await Promise.all(data.map(d => mapDbToEvent(supabase, d)))
   return results
