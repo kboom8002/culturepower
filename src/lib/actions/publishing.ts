@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache'
 export type PublishQueueItem = {
   id: string
   title: string
-  content_type: 'Story' | 'Answer' | 'Event'
+  content_type: 'Story' | 'Answer' | 'Event' | 'Brief' | 'Page'
   status: string
   author_id: string | null
   created_at: string
@@ -67,7 +67,11 @@ export async function getPublishQueue(): Promise<PublishQueueItem[]> {
   if (eErr) console.error("Publish Queue Events Error:", eErr);
   const events = (eventsData || []).map((e: any) => ({ ...e, author_id: e.created_by, status: e.workflow_statuses.slug, content_type: 'Event' as const }))
 
-  return [...stories, ...answers, ...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const { data: briefsData, error: bErr } = await supabase.from('briefs').select('id, title, workflow_statuses!inner(slug), created_by, created_at, published_at').in('workflow_statuses.slug', ['approved', 'in-review']).order('created_at', { ascending: false })
+  if (bErr) console.error("Publish Queue Briefs Error:", bErr);
+  const briefs = (briefsData || []).map((b: any) => ({ ...b, author_id: b.created_by, status: b.workflow_statuses.slug, content_type: 'Brief' as const }))
+
+  return [...stories, ...answers, ...events, ...briefs].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 }
 
 export async function getPublishHistory(page: number = 1, limit: number = 20): Promise<{ items: PublishQueueItem[], total: number }> {
@@ -87,9 +91,12 @@ export async function getPublishHistory(page: number = 1, limit: number = 20): P
   const { data: eData, count: eCount } = await supabase.from('events').select('id, title, workflow_statuses!inner(slug), created_by, created_at, published_at', { count: 'exact' }).in('workflow_statuses.slug', ['published', 'archived']).order('published_at', { ascending: false }).limit(fetchLimit)
   const events = (eData || []).map((e: any) => ({ ...e, author_id: e.created_by, status: e.workflow_statuses.slug, content_type: 'Event' as const }))
 
-  const allItems = [...stories, ...answers, ...events].sort((a: any, b: any) => new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime())
+  const { data: bData, count: bCount } = await supabase.from('briefs').select('id, title, workflow_statuses!inner(slug), created_by, created_at, published_at', { count: 'exact' }).in('workflow_statuses.slug', ['published', 'archived']).order('published_at', { ascending: false }).limit(fetchLimit)
+  const briefs = (bData || []).map((b: any) => ({ ...b, author_id: b.created_by, status: b.workflow_statuses.slug, content_type: 'Brief' as const }))
+
+  const allItems = [...stories, ...answers, ...events, ...briefs].sort((a: any, b: any) => new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime())
   
-  const total = (sCount || 0) + (aCount || 0) + (eCount || 0)
+  const total = (sCount || 0) + (aCount || 0) + (eCount || 0) + (bCount || 0)
   const items = allItems.slice(from, to + 1)
 
   return { items, total }
@@ -108,13 +115,16 @@ export async function getScheduledItems(): Promise<PublishQueueItem[]> {
   const { data: eventsData } = await supabase.from('events').select('id, title, workflow_statuses!inner(slug), created_by, created_at, published_at').eq('workflow_statuses.slug', 'scheduled').order('published_at', { ascending: true })
   const events = (eventsData || []).map((e: any) => ({ ...e, author_id: e.created_by, status: e.workflow_statuses.slug, content_type: 'Event' as const }))
 
-  return [...stories, ...answers, ...events].sort((a: any, b: any) => new Date(a.published_at || "").getTime() - new Date(b.published_at || "").getTime())
+  const { data: briefsData } = await supabase.from('briefs').select('id, title, workflow_statuses!inner(slug), created_by, created_at, published_at').eq('workflow_statuses.slug', 'scheduled').order('published_at', { ascending: true })
+  const briefs = (briefsData || []).map((b: any) => ({ ...b, author_id: b.created_by, status: b.workflow_statuses.slug, content_type: 'Brief' as const }))
+
+  return [...stories, ...answers, ...events, ...briefs].sort((a: any, b: any) => new Date(a.published_at || "").getTime() - new Date(b.published_at || "").getTime())
 }
 
-export async function publishImmediately(id: string, contentType: 'Story' | 'Answer' | 'Event') {
+export async function publishImmediately(id: string, contentType: 'Story' | 'Answer' | 'Event' | 'Brief' | 'Page') {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createPublishingClient()
-  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : 'events'
+  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : contentType === 'Event' ? 'events' : contentType === 'Brief' ? 'briefs' : 'pages'
   
   const statusId = await getStatusId(supabase, 'published')
   if (!statusId) return { success: false, error: 'Published status missing' }
@@ -135,10 +145,10 @@ export async function publishImmediately(id: string, contentType: 'Story' | 'Ans
   return { success: true }
 }
 
-export async function schedulePublish(id: string, contentType: 'Story' | 'Answer' | 'Event', scheduledDate: string) {
+export async function schedulePublish(id: string, contentType: 'Story' | 'Answer' | 'Event' | 'Brief' | 'Page', scheduledDate: string) {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createPublishingClient()
-  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : 'events'
+  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : contentType === 'Event' ? 'events' : contentType === 'Brief' ? 'briefs' : 'pages'
 
   const statusId = await getStatusId(supabase, 'scheduled')
   if (!statusId) return { success: false, error: 'Scheduled status missing' }
@@ -158,10 +168,10 @@ export async function schedulePublish(id: string, contentType: 'Story' | 'Answer
   return { success: true }
 }
 
-export async function returnToReview(id: string, contentType: 'Story' | 'Answer' | 'Event') {
+export async function returnToReview(id: string, contentType: 'Story' | 'Answer' | 'Event' | 'Brief' | 'Page') {
   if (!isSupabaseConfigured()) return { success: true }
   const supabase = await createPublishingClient()
-  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : 'events'
+  const table = contentType === 'Story' ? 'stories' : contentType === 'Answer' ? 'answers' : contentType === 'Event' ? 'events' : contentType === 'Brief' ? 'briefs' : 'pages'
 
   const statusId = await getStatusId(supabase, 'in-review')
   if (!statusId) return { success: false, error: 'in-review status missing' }

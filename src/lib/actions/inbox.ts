@@ -130,6 +130,37 @@ export async function updateInboxItemStatus(id: string, updates: Partial<InboxIt
   return { success: true }
 }
 
+export async function submitInboxItem(formData: FormData) {
+  const type = formData.get('type') as InboxItem['type'] || 'Question'
+  const email = formData.get('email') as string || null
+  const content = formData.get('content') as string
+  const subject = formData.get('subject') as string
+
+  if (!content) return { error: "내용을 입력해주세요." }
+
+  if (!isSupabaseConfigured()) {
+    return { success: true }
+  }
+
+  const supabase = await createInboxClient()
+  const payload = {
+    type,
+    status: 'New',
+    priority: type === 'Correction' ? 'P0' : 'P2',
+    subject,
+    content,
+    reporter_email: email,
+    source_channel: 'Global Floating Form'
+  }
+
+  const { error } = await supabase.from('inbox_items').insert([payload])
+  
+  if (error) return { error: error.message }
+
+  revalidatePath('/admin/inbox')
+  return { success: true }
+}
+
 export async function convertInboxToAnswer(id: string, inboxBody: string, inboxSubject: string) {
   // Inbox 내용을 기반으로 새 Answer를 생성하고 Mapped 상태로 전이
   if (!isSupabaseConfigured()) {

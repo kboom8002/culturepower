@@ -1,6 +1,7 @@
 import { GlobalHeader } from "@/components/layout/GlobalHeader"
 import { GlobalFooter } from "@/components/layout/GlobalFooter"
 import { getSiteMenus } from "@/lib/actions/navigation"
+import { GlobalInboxForm } from "@/components/common/GlobalInboxForm"
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const menus = await getSiteMenus()
@@ -12,6 +13,7 @@ export default async function PublicLayout({ children }: { children: React.React
         {children}
       </main>
       <GlobalFooter />
+      <GlobalInboxForm />
     </div>
   )
 }

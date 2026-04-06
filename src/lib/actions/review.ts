@@ -46,19 +46,34 @@ async function enrichReviewTasks(supabase: SupabaseClient, tasks: ReviewTask[]):
   
   const storyIds = enriched.filter(t => t.content_type === 'Story').map(t => t.content_id)
   const answerIds = enriched.filter(t => t.content_type === 'Answer').map(t => t.content_id)
+  const briefIds = enriched.filter(t => t.content_type === 'Brief').map(t => t.content_id)
+  const eventIds = enriched.filter(t => t.content_type === 'Event').map(t => t.content_id)
+  const pageIds = enriched.filter(t => t.content_type === 'Page').map(t => t.content_id)
 
-  const [storiesRes, answersRes] = await Promise.all([
+  const [storiesRes, answersRes, briefsRes, eventsRes, pagesRes] = await Promise.all([
      storyIds.length > 0 ? supabase.from('stories').select('id, title').in('id', storyIds) : { data: [] },
-     answerIds.length > 0 ? supabase.from('answers').select('id, title').in('id', answerIds) : { data: [] }
+     answerIds.length > 0 ? supabase.from('answers').select('id, title').in('id', answerIds) : { data: [] },
+     briefIds.length > 0 ? supabase.from('briefs').select('id, title').in('id', briefIds) : { data: [] },
+     eventIds.length > 0 ? supabase.from('events').select('id, title').in('id', eventIds) : { data: [] },
+     pageIds.length > 0 ? supabase.from('pages').select('id, title').in('id', pageIds) : { data: [] }
   ])
 
-  const storyMap = new Map((storiesRes.data || []).map((s: { id: string, title: string }) => [s.id, s.title]))
-  const answerMap = new Map((answersRes.data || []).map((a: { id: string, title: string }) => [a.id, a.title]))
+  const storyMap = new Map((storiesRes.data || []).map((s: any) => [s.id, s.title]))
+  const answerMap = new Map((answersRes.data || []).map((a: any) => [a.id, a.title]))
+  const briefMap = new Map((briefsRes.data || []).map((b: any) => [b.id, b.title]))
+  const eventMap = new Map((eventsRes.data || []).map((e: any) => [e.id, e.title]))
+  const pageMap = new Map((pagesRes.data || []).map((p: any) => [p.id, p.title]))
 
-  return enriched.map(t => ({
-      ...t,
-      content_title: t.content_type === 'Story' ? storyMap.get(t.content_id) || 'Unknown Story' : answerMap.get(t.content_id) || 'Unknown Answer'
-  }))
+  return enriched.map(t => {
+      let title = 'Unknown'
+      if (t.content_type === 'Story') title = storyMap.get(t.content_id) || 'Unknown Story'
+      else if (t.content_type === 'Answer') title = answerMap.get(t.content_id) || 'Unknown Answer'
+      else if (t.content_type === 'Brief') title = briefMap.get(t.content_id) || 'Unknown Brief'
+      else if (t.content_type === 'Event') title = eventMap.get(t.content_id) || 'Unknown Event'
+      else if (t.content_type === 'Page') title = pageMap.get(t.content_id) || 'Unknown Page'
+      
+      return { ...t, content_title: title }
+  })
 }
 
 // ----------------------------------------------------

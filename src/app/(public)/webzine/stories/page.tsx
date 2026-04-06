@@ -7,10 +7,10 @@ import { getFeaturedSlots } from "@/lib/actions/publishing"
 
 export const dynamic = 'force-dynamic' // Force dynamic rendering
 
-export default async function StoriesIndexPage({ searchParams }: { searchParams: Promise<{ topic?: string, category?: string }> }) {
+export default async function StoriesIndexPage({ searchParams }: { searchParams: Promise<{ topic?: string, category?: string, section?: string }> }) {
   const resolvedParams = await searchParams
   const topicSlug = resolvedParams.topic
-  const categorySlug = resolvedParams.category
+  const categorySlug = resolvedParams.section || resolvedParams.category
   
   const [stories, topics, featuredSlots] = await Promise.all([
     getPublicStories(),

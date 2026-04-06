@@ -93,8 +93,8 @@ const mapStory = (s: any): PublicStory => ({
   why_this_matters: s.summary || null,
   body: s.body_text || null,
   meta_description: s.meta_description || s.summary || null,
-  section: null,
-  story_type: null,
+  section: s.sections ? (s.sections.slug || s.sections.name_ko) : null,
+  story_type: s.categories ? (s.categories.slug || s.categories.name_ko) : null,
   related_answers_meta: null,
   updated_at: s.updated_at,
   published_at: s.published_at,
@@ -129,7 +129,7 @@ export async function getPublicStories(): Promise<PublicStory[]> {
   const supabase = await createPublicClient()
   const pubId = await getPublishedStatusId(supabase)
   
-  let query = supabase.from('stories').select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text)').order('published_at', { ascending: false })
+  let query = supabase.from('stories').select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text), sections:section_id(slug, name_ko), categories:category_id(slug, name_ko)').order('published_at', { ascending: false })
   if (pubId) query = query.eq('workflow_status_id', pubId)
 
   const { data, error } = await query
@@ -140,7 +140,7 @@ export async function getPublicStories(): Promise<PublicStory[]> {
 export async function getPublicStoryById(slug: string): Promise<PublicStory | null> {
   const supabase = await createPublicClient()
   
-  const query = supabase.from('stories').select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text)').eq('slug', slug).maybeSingle()
+  const query = supabase.from('stories').select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text), sections:section_id(slug, name_ko), categories:category_id(slug, name_ko)').eq('slug', slug).maybeSingle()
   const { data, error } = await query
   
   if (error || !data) return null
@@ -309,7 +309,7 @@ export async function searchAllContent(q: string) {
 
   // Stories (문강 RIO 스토리)
   let stoQuery = supabase.from('stories')
-    .select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text)')
+    .select('*, topics!primary_topic_id(name_ko, slug, description), featured_image:media_assets!featured_image_asset_id(public_url, alt_text), sections:section_id(slug, name_ko), categories:category_id(slug, name_ko)')
     .or(`title.ilike.${qStr},summary.ilike.${qStr},subtitle.ilike.${qStr}`)
     .order('published_at', { ascending: false })
     .limit(10)

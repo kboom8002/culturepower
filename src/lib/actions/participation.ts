@@ -142,6 +142,36 @@ export async function getSubscribers(): Promise<NewsletterSubscriber[]> {
   return (data || []) as NewsletterSubscriber[]
 }
 
+export async function subscribeToNewsletter(formData: FormData) {
+  const email = formData.get('email') as string
+  if (!email || !email.includes('@')) return { error: "유효한 이메일을 입력해주세요." }
+  
+  if (!isSupabaseConfigured()) {
+    // mock behavior
+    return { success: true, message: "구독 신청이 완료되었습니다!" }
+  }
+  
+  const supabase = await createParticipationClient()
+  
+  const { data: existing } = await supabase.from('newsletter_subscribers').select('id, status').eq('email', email).maybeSingle()
+  
+  if (existing) {
+     if (existing.status !== 'Active') {
+        const { error } = await supabase.from('newsletter_subscribers').update({ status: 'Active', updated_at: new Date().toISOString() }).eq('id', existing.id)
+        if (error) return { error: error.message }
+        revalidatePath('/admin/participation/newsletter')
+        return { success: true, message: "구독이 다시 활성화되었습니다!" }
+     }
+     return { success: true, message: "이미 구독 중인 이메일입니다." }
+  }
+
+  const { error } = await supabase.from('newsletter_subscribers').insert({ email, status: 'Active', source_cta: 'Join Page' })
+  if (error) return { error: error.message }
+  
+  revalidatePath('/admin/participation/newsletter')
+  return { success: true, message: "구독 신청이 완료되었습니다!" }
+}
+
 export async function getAudienceSegments(): Promise<AudienceSegment[]> {
   if (!isSupabaseConfigured()) return [{ id: "SEG-001", name: "일반 구독자", description: "Default segment", created_at: "" }]
   const supabase = await createParticipationClient()

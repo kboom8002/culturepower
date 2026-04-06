@@ -81,10 +81,28 @@ export async function getSiteMenus(): Promise<MainMenuWithItems[]> {
   const roots = allMenus.filter(m => m.parent_id === null)
   const children = allMenus.filter(m => m.parent_id !== null)
 
-  const tree: MainMenuWithItems[] = roots.map(root => ({
-    ...root,
-    items: children.filter(c => c.parent_id === root.id)
-  }))
+  const tree: MainMenuWithItems[] = roots.map(root => {
+    const rootChildren = children.filter(c => c.parent_id === root.id)
+    
+    if (root.label === '문강 RIO' && !rootChildren.some(c => c.label === '최신 기사')) {
+      rootChildren.push({
+        id: 'latest-article-menu',
+        parent_id: root.id,
+        label: '최신 기사',
+        href: '/webzine/stories',
+        display_order: 15,
+        is_active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      rootChildren.sort((a, b) => a.display_order - b.display_order)
+    }
+
+    return {
+      ...root,
+      items: rootChildren
+    }
+  })
 
   return tree
 }

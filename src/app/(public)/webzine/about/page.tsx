@@ -51,6 +51,9 @@ export default function WebzineAboutPage() {
               </p>
               
               <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
+                <a href="#founders-note" className="px-5 py-3 rounded-lg bg-brand-500 text-white font-extrabold hover:bg-brand-400 transition-colors shadow-lg shadow-brand-500/30 text-[15px] flex items-center gap-2 border border-brand-400">
+                  <ScrollText className="w-4 h-4" /> 창간사 읽기
+                </a>
                 <a href="#rio-framework" className="px-5 py-3 rounded-lg bg-white text-brand-900 font-bold hover:bg-neutral-100 transition-colors shadow-sm text-[15px]">
                   문강의 구조 보기
                 </a>
@@ -527,7 +530,74 @@ export default function WebzineAboutPage() {
       </section>
 
       {/* ---------------------------------------------------- */}
-      {/* Section J: 문강의 토픽 구조 및 최종 문안 */}
+      {/* Section J: 창간사 (Founder's Note)                 */}
+      {/* ---------------------------------------------------- */}
+      <section id="founders-note" className="w-full py-32 bg-[#F8F9FA] border-t border-line-default relative overflow-hidden scroll-mt-20">
+        {/* Decorative Watermark */}
+        <div className="absolute top-10 left-10 text-[240px] text-neutral-200/40 font-serif leading-none select-none pointer-events-none tracking-tighter">"</div>
+        
+        <div className="container mx-auto max-w-4xl px-4 relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-1.5 mb-6 rounded-full border border-brand-200 text-brand-700 bg-brand-50 text-[13px] font-bold tracking-widest uppercase">
+              Founder's Note • 창간사
+            </span>
+            <h2 className="text-[32px] md:text-[42px] font-extrabold text-neutral-900 tracking-tight leading-[1.3] mb-8 break-keep text-balance">
+              "문화는 국가의 설계도이며,<br />우리의 생존 전략입니다"
+            </h2>
+          </div>
+          
+          <div className="bg-white p-8 sm:p-12 md:p-16 rounded-[32px] shadow-[0_10px_40px_rgba(0,0,0,0.03)] border border-line-soft relative">
+            {/* Minimal top border accent */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-brand-500 rounded-b-lg"></div>
+
+            <div className="prose prose-lg max-w-none prose-p:text-neutral-700 prose-p:leading-[1.8] prose-p:mb-6 prose-strong:text-brand-700 prose-strong:font-bold prose-headings:text-neutral-900 font-serif text-[16px] md:text-[18px]">
+              <p>
+                대한민국 문화의 새로운 길을 모색하는 웹진 <strong>문강(文江)</strong>의 창간을 진심으로 기쁘게 생각합니다.
+              </p>
+              <p>
+                지난 1년 동안 (사)문화강국네트워크는 국회와 지역 현장을 누비며 대한민국이 문화 강국으로 도약하기 위한 국가 전략을 수립하고, '지역문화 대전환'을 위한 발걸음을 멈추지 않았습니다. 저는 그 현장에서 우리 문화가 처한 냉혹한 현실과 동시에 무한한 가능성을 목격했습니다.
+              </p>
+              <p>
+                제가 여러 세미나를 통해 거듭 강조해 왔듯이, <strong>"문화는 단순한 복지가 아니라 국가의 생존 전략이자 미래 산업의 핵심"</strong>입니다. 이제 문화는 단순히 보고 즐기는 콘텐츠의 영역을 넘어, 우리 공동체의 미래를 그리는 '국가의 설계도'가 되어야 합니다.
+              </p>
+              <p>
+                현재 K-컬처가 거두고 있는 글로벌 성공은 결코 우연이 아닙니다. 하지만 이 성공을 지속 가능한 국가 산업으로 안착시키기 위해서는 민간의 창의적 네트워크와 정책적 컨트롤타워가 결합한 정교한 시스템이 필수적입니다. 또한, 중앙에 집중된 문화 권력을 지역으로 분산시켜 주민이 주체가 되는 '문화 자치'를 실현하고, 우리 고유의 유전자인 'K-다움'을 확립하는 것이 시대적 소명입니다.
+              </p>
+              <div className="my-10 h-px w-24 bg-brand-200 mx-auto"></div>
+              <p>
+                웹진 《문강》은 바로 이러한 문제의식에서 출발했습니다. 우리는 단순한 정책 정보를 전달하거나 과거의 활동을 기록하는 데 머물지 않겠습니다. 우리 웹진의 슬로건처럼 <strong>"기록이 아니라 제안을, 리뷰가 아니라 대안을"</strong> 제시하는 정책 설계 플랫폼이 되고자 합니다.
+              </p>
+              <p>
+                현장의 실험을 국가 정책으로 승격시키고, 복잡한 법과 제도를 현장의 언어로 번역하며, 정책 입안자와 예술가가 실질적으로 소통하는 '가교(Bridge)'가 되겠습니다. 학술지의 난해함보다는 '읽히는 실용성'을, 기관 소식지의 일방적 홍보보다는 '현장의 생생한 목소리'를 담아내겠습니다.
+              </p>
+              <p>
+                문화가 국가를 설계하고, 지역이 문화가 되는 세상을 꿈꿉니다. 《문강》이 내딛는 이 첫걸음에 문화 정책 담당자, 예술가, 그리고 시민 여러분의 적극적인 참여와 비판을 기대합니다.
+              </p>
+              <p>
+                우리의 제안이 대한민국의 내일을 바꾸는 대안이 될 때까지, 문화강국네트워크와 《문강》은 현장의 목소리를 멈추지 않고 기록하며 설계하겠습니다.
+              </p>
+            </div>
+            
+            <div className="mt-16 pt-10 border-t border-line-default flex flex-col sm:flex-row items-center justify-between gap-6 relative">
+              <div className="flex gap-5 items-center">
+                <div className="w-16 h-16 bg-neutral-900 rounded-full flex items-center justify-center shadow-md">
+                   <span className="text-xl font-bold text-white tracking-wider">이우종</span>
+                </div>
+                <div>
+                   <p className="text-sm text-neutral-500 font-medium mb-1 tracking-widest uppercase">2026년 2월</p>
+                   <p className="text-[17px] font-extrabold text-neutral-900">(사)문화강국네트워크 이사장 <span className="text-[20px] ml-1 text-brand-700 tracking-widest">이우종</span></p>
+                </div>
+              </div>
+              <div className="hidden sm:block opacity-10">
+                 <div className="text-5xl text-neutral-600 font-medium italic select-none" style={{ fontFamily: 'Georgia, serif' }}>Woo Jong</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------- */}
+      {/* Section K: 문강의 토픽 구조 및 최종 문안 */}
       {/* ---------------------------------------------------- */}
       <section className="w-full pt-24 pb-12 bg-white border-t border-line-strong">
         <div className="container mx-auto max-w-5xl px-4">

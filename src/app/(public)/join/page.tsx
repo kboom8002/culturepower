@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/layout/PageHeader"
 import { Button } from "@/components/ui/button"
 import { Users, Mail, ArrowRight } from "lucide-react"
+import { NewsletterForm } from "@/components/domain/participation/NewsletterForm"
 
 export default function JoinPage() {
   return (
@@ -24,9 +25,7 @@ export default function JoinPage() {
               가장 뜨거운 문화/정책 쟁점과 심층 해설(Story)을 매주 이메일로 받아보세요. 
               국민 누구나 무료로 구독 가능합니다.
             </p>
-            <Button variant="primary" size="lg" className="w-full justify-between mt-auto">
-              이메일 구독 신청 <ArrowRight className="w-5 h-5" />
-            </Button>
+            <NewsletterForm />
           </div>
 
           {/* Membership */}
