@@ -8,7 +8,7 @@ import * as Dialog from "@radix-ui/react-dialog"
 
 type Props = {
   itemId: string
-  contentType: 'Story' | 'Answer' | 'Event'
+  contentType: 'Story' | 'Answer' | 'Event' | 'Brief' | 'Page'
 }
 
 export function PublishActionGroup({ itemId, contentType }: Props) {
