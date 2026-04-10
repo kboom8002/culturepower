@@ -28,79 +28,81 @@ export default function WebzineAboutPage() {
       {/* ---------------------------------------------------- */}
       {/* Section A: Hero */}
       {/* ---------------------------------------------------- */}
-      <section className="relative w-full bg-brand-900 overflow-hidden pt-32 pb-24 px-4 border-b border-brand-800">
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-brand-900/50 to-transparent z-10 pointer-events-none"></div>
+      <section className="relative w-full overflow-hidden pt-32 pb-32 px-4 flex items-center justify-center min-h-[700px] border-b border-neutral-900" 
+               style={{ backgroundImage: "url('/images/rio_hero_bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
+        {/* Overlay Gradients */}
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/60 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-surface-page to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-brand-950/40 backdrop-blur-[2px] z-10 mix-blend-multiply pointer-events-none"></div>
         
-        <div className="container relative z-20 mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="container relative z-20 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             
-            <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
-              <span className="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/10 border border-white/20 text-white text-[13px] font-bold tracking-widest uppercase">
+            <div className="lg:col-span-1" /> {/* Spacer for centering */}
+            <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left drop-shadow-xl p-8 rounded-[32px]">
+              <span className="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[13px] font-extrabold tracking-widest uppercase shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
                 국가 문화전략 플랫폼
               </span>
-              <h1 className="text-[44px] md:text-[56px] font-extrabold text-white tracking-tight leading-[1.1] mb-4">
+              <h1 className="text-[48px] md:text-[64px] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-brand-300 tracking-tight leading-[1.05] mb-6">
                 문강 文江 RIO
               </h1>
-              <p className="text-[20px] md:text-[24px] text-white/90 font-bold tracking-tight mb-8">
-                기록이 아닌 제안, 평론이 아닌 대안
+              <p className="text-[22px] md:text-[28px] text-white/95 font-bold tracking-tight mb-8 leading-snug">
+                기록이 아닌 제안, <span className="text-brand-300">평론이 아닌 대안</span>
               </p>
-              <p className="text-[17px] md:text-[18px] text-white/80 leading-[1.7] max-w-2xl font-medium mb-10 text-balance">
-                문강 RIO는 문화강국 의제를 정책설계, 현장증명, 실무도구의 구조로 번역하는 정책형 웹진입니다. 
-                단순 뉴스가 아닌, 국회·지자체·현장 실무자가 행정과 기획에 즉시 인용할 수 있는 
-                기사·리포트·원페이저·캘린더·데이터·뉴스레터를 생산합니다.
+              <p className="text-[17px] md:text-[18px] text-white/80 leading-[1.75] max-w-2xl font-medium mb-12 text-balance drop-shadow-2xl">
+                문강 RIO는 문화강국 의제를 정책설계, 현장증명, 실무도구의 구조로 번역하는 가장 치열한 정책형 웹진입니다. 
+                국회·지자체·현장 실무자가 행정과 기획에 즉시 인용할 수 있는 최고 품질의 
+                기사·리포트·데이터·뉴스레터를 맹렬하게 생산합니다.
               </p>
               
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                <a href="#founders-note" className="px-5 py-3 rounded-lg bg-brand-500 text-white font-extrabold hover:bg-brand-400 transition-colors shadow-lg shadow-brand-500/30 text-[15px] flex items-center gap-2 border border-brand-400">
-                  <ScrollText className="w-4 h-4" /> 창간사 읽기
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                <a href="#founders-note" className="px-6 py-4 rounded-2xl bg-gradient-to-r from-brand-600 to-brand-500 text-white font-extrabold hover:from-brand-500 hover:to-brand-400 transition-all shadow-[0_0_24px_rgba(33,181,196,0.5)] hover:shadow-[0_0_32px_rgba(33,181,196,0.7)] hover:-translate-y-1 text-[16px] flex items-center gap-2 border border-brand-400/50">
+                  <ScrollText className="w-5 h-5" /> 창간사 전문 보기
                 </a>
-                <a href="#rio-framework" className="px-5 py-3 rounded-lg bg-white text-brand-900 font-bold hover:bg-neutral-100 transition-colors shadow-sm text-[15px]">
-                  문강의 구조 보기
-                </a>
-                <a href="#sections" className="px-5 py-3 rounded-lg bg-white/10 text-white font-bold hover:bg-white/20 transition-colors shadow-sm border border-white/20 text-[15px]">
-                  6개 섹션 보기
-                </a>
-                <a href="#newsletter" className="px-5 py-3 rounded-lg bg-white/10 text-white font-bold hover:bg-white/20 transition-colors shadow-sm border border-white/20 text-[15px]">
-                  뉴스레터 구독
+                <a href="#rio-framework" className="group px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-md text-white font-bold hover:bg-white/20 transition-all shadow-[0_8px_32px_rgba(0,0,0,0.2)] border border-white/20 text-[16px] flex items-center gap-2">
+                  문강의 체계 살피기 <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </a>
               </div>
             </div>
             
-            <div className="lg:col-span-5 h-full flex flex-col justify-center">
-              <div className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full"></div>
-                <h3 className="text-white/60 text-sm font-bold uppercase tracking-widest mb-6">문강 작업 흐름 다이어그램</h3>
+            <div className="lg:col-span-4 h-full flex flex-col justify-center hidden lg:flex">
+              <div className="bg-white/5 backdrop-blur-xl rounded-[32px] p-10 border border-white/10 shadow-[0_24px_64px_rgba(0,0,0,0.4)] relative overflow-hidden group hover:border-brand-300/30 transition-colors">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-brand-400/20 blur-[60px] rounded-full group-hover:bg-brand-400/30 transition-colors"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-brand-600/20 blur-[40px] rounded-full"></div>
                 
-                <div className="flex flex-col gap-6">
+                <h3 className="text-white/60 text-sm font-extrabold uppercase tracking-widest mb-8 border-b border-white/10 pb-4 relative z-10">문강 작업 흐름</h3>
+                
+                <div className="flex flex-col gap-8 relative z-10">
                   {/* Step 1 */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm shrink-0 border border-white/30 shadow-inner">1</div>
+                  <div className="flex items-start gap-5">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center text-white font-extrabold text-[15px] shrink-0 border border-white/20 shadow-inner">Q</div>
                     <div>
-                      <span className="text-white font-bold text-[16px] block mb-1">Question</span>
-                      <p className="text-white/70 text-[13px] leading-relaxed">파편화된 현상과 정책 수요를 발견하고 구조화된 문화강국 핵심 질문을 설계합니다.</p>
+                      <span className="text-white font-bold text-[17px] block mb-1.5 tracking-tight">Question <span className="text-white/50 text-sm font-normal ml-1">(본질적 질문)</span></span>
+                      <p className="text-white/60 text-[13.5px] leading-relaxed">파편화된 현상 속에서 구조화된 정책 수요와 핵심 의제를 발굴합니다.</p>
                     </div>
                   </div>
                   
                   {/* Step 2 */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm shrink-0 border border-white/30 shadow-inner">2</div>
+                  <div className="flex items-start gap-5">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500/80 to-brand-600/80 flex items-center justify-center text-white font-extrabold text-[15px] shrink-0 shadow-[0_0_16px_rgba(33,181,196,0.3)] border border-brand-400/50">R</div>
                     <div>
-                      <span className="text-white font-bold text-[16px] block mb-1">R·I·O</span>
-                      <p className="text-white/70 text-[13px] leading-relaxed">무엇을 바꿀 것인지(Reform), 어떻게 실행할지(Implementation), 어떤 효과가 날지(Outcomes) 3단계로 치밀하게 분석합니다.</p>
+                      <span className="text-white font-bold text-[17px] block mb-1.5 tracking-tight">R·I·O <span className="text-brand-300/80 text-sm font-normal ml-1">(개혁/실행/효과)</span></span>
+                      <p className="text-white/80 text-[13.5px] leading-relaxed">무엇을 바꿀지, 어떻게 실행할지, 어떤 효과가 날지를 3단계로 치밀하게 분석합니다.</p>
                     </div>
                   </div>
                   
                   {/* Step 3 */}
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-900 font-extrabold text-sm shrink-0 shadow-[0_0_15px_rgba(255,255,255,0.3)] border border-white/50">3</div>
+                  <div className="flex items-start gap-5">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-white to-white/90 flex items-center justify-center text-brand-900 font-extrabold text-[15px] shrink-0 shadow-[0_0_24px_rgba(255,255,255,0.4)]">T</div>
                     <div>
-                      <span className="text-white font-bold text-[16px] block mb-1">Tools</span>
-                      <p className="text-white/80 text-[13px] leading-relaxed font-medium">단순 기사 외에 One-Pager, Data Lab, 지원사업 Calendar, Subscription 형태로 번역되어 배포됩니다.</p>
+                      <span className="text-white font-bold text-[17px] block mb-1.5 tracking-tight">Tools <span className="text-white/50 text-sm font-normal ml-1">(실무 인용 도구)</span></span>
+                      <p className="text-white/60 text-[13.5px] leading-relaxed font-medium">분석된 대안을 브리핑, 데이터랩, 캘린더 등 툴킷 형태로 현장에 즉각 배포합니다.</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div className="lg:col-span-1" />
             
           </div>
         </div>
