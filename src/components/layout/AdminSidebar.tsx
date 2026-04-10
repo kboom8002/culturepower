@@ -28,7 +28,7 @@ const ADMIN_MENUS = [
     href: "/admin/content",
     submenus: [
       { label: "주제 (Topics)", href: "/admin/content/topics" },
-      { label: "핵심 질문 (Answers)", href: "/admin/content/answers" },
+      { label: "정답카드 (Answers)", href: "/admin/content/answers" },
       { label: "기사/스토리 (Stories)", href: "/admin/content/stories" },
       { label: "브리프 (Briefs)", href: "/admin/content/briefs" },
       { label: "전문가 풀 (Experts)", href: "/admin/content/experts" },

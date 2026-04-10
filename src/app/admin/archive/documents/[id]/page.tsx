@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { getDocumentById, updateDocument, createDocument, deleteDocument, getEvents, ArchiveEvent } from "@/lib/actions/archive"
+import { FileUploader } from "@/components/domain/publishing/FileUploader"
 
 export default function AdminEditDocumentPage() {
   const params = useParams()
@@ -150,13 +151,11 @@ export default function AdminEditDocumentPage() {
           
           <div className="flex flex-col gap-2">
             <label className="text-sm font-bold text-neutral-700">파일 저장소 URL (업로드 링크) <span className="text-danger-500">*</span></label>
-            <input 
-              type="url" 
-              placeholder="https://..." 
-              className="w-full p-3 border rounded-xl focus:outline-none focus:border-brand-500"
-              value={fileUrl} onChange={e => setFileUrl(e.target.value)}
+            <FileUploader 
+               value={fileUrl} 
+               onChange={setFileUrl} 
+               bucket="curation_assets" 
             />
-            <p className="text-xs text-neutral-500">현재 클라우드 스토리지를 별도 연동하지 않으므로 URL 형태로 다운로드/접근 경로를 기재합니다.</p>
           </div>
           
           <div className="flex flex-col gap-2">

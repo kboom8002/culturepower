@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Save, FileCheck, Loader2, Video, FileText, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { getEventById, updateEvent, createEvent, deleteEvent, getSeriesList } from "@/lib/actions/archive"
+import { getEventById, updateEvent, createEvent, deleteEvent, getSeriesList, getEventAssetCounts } from "@/lib/actions/archive"
 import { getTopics, ContentTopic } from "@/lib/actions/content"
 import { ImageUploader } from "@/components/domain/publishing/ImageUploader"
 
@@ -34,6 +34,7 @@ export default function AdminEditEventPage() {
 
   const [isLoadingData, setIsLoadingData] = useState(!isNew)
   const [isSaving, setIsSaving] = useState(false)
+  const [assetCounts, setAssetCounts] = useState({ docs: 0, vids: 0, gals: 0 })
 
   useEffect(() => {
     Promise.all([getTopics(), getSeriesList()]).then(([t, s]) => {
@@ -60,6 +61,7 @@ export default function AdminEditEventPage() {
         }
         setIsLoadingData(false)
       })
+      getEventAssetCounts(eventId).then(setAssetCounts)
     } else {
       setTimeout(() => setIsLoadingData(false), 0)
     }
@@ -226,21 +228,38 @@ export default function AdminEditEventPage() {
               </p>
               
               <div className="flex flex-col gap-3">
-                 <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl border border-white/5">
-                    <FileText className="w-5 h-5 text-brand-300" />
-                    <div className="flex-1">
-                      <div className="text-sm font-bold">자료집 / 발제문</div>
-                      <div className="text-[10px] text-brand-300">문서 등록 시스템과 연동 예정</div>
+                 <Link href={`/admin/archive/documents/new?event_id=${eventId}`} className="flex items-center justify-between bg-white/10 p-3 rounded-xl border border-white/5 hover:bg-white/20 transition-colors group">
+                    <div className="flex items-center gap-3">
+                      <FileText className={`w-5 h-5 ${assetCounts.docs > 0 ? "text-brand-300" : "text-neutral-500"}`} />
+                      <div>
+                        <div className="text-sm font-bold text-white group-hover:text-brand-100">자료집 / 발제문</div>
+                        <div className="text-[10px] text-brand-200/70">{assetCounts.docs > 0 ? `${assetCounts.docs}건 등록됨` : '등록된 문서 없음 - 클릭시 추가'}</div>
+                      </div>
                     </div>
-                 </div>
+                    {assetCounts.docs > 0 && <div className="w-6 h-6 rounded-full bg-brand-500/30 flex items-center justify-center"><FileCheck className="w-3 h-3 text-brand-300" /></div>}
+                 </Link>
                  
-                 <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl border border-white/5">
-                    <Video className="w-5 h-5 text-brand-300" />
-                    <div className="flex-1">
-                      <div className="text-sm font-bold">영상 기록</div>
-                      <div className="text-[10px] text-brand-300">비디오 스트리밍 링크 연동 예정</div>
+                 <Link href={`/admin/archive/videos/new?event_id=${eventId}`} className="flex items-center justify-between bg-white/10 p-3 rounded-xl border border-white/5 hover:bg-white/20 transition-colors group">
+                    <div className="flex items-center gap-3">
+                      <Video className={`w-5 h-5 ${assetCounts.vids > 0 ? "text-brand-300" : "text-neutral-500"}`} />
+                      <div>
+                        <div className="text-sm font-bold text-white group-hover:text-brand-100">영상 기록</div>
+                        <div className="text-[10px] text-brand-200/70">{assetCounts.vids > 0 ? `${assetCounts.vids}건 등록됨` : '등록된 영상 없음 - 클릭시 추가'}</div>
+                      </div>
                     </div>
-                 </div>
+                    {assetCounts.vids > 0 && <div className="w-6 h-6 rounded-full bg-brand-500/30 flex items-center justify-center"><FileCheck className="w-3 h-3 text-brand-300" /></div>}
+                 </Link>
+
+                 <Link href={`/admin/archive/galleries/new?event_id=${eventId}`} className="flex items-center justify-between bg-white/10 p-3 rounded-xl border border-white/5 hover:bg-white/20 transition-colors group">
+                    <div className="flex items-center gap-3">
+                      <ImageIcon className={`w-5 h-5 ${assetCounts.gals > 0 ? "text-brand-300" : "text-neutral-500"}`} />
+                      <div>
+                        <div className="text-sm font-bold text-white group-hover:text-brand-100">사진 갤러리</div>
+                        <div className="text-[10px] text-brand-200/70">{assetCounts.gals > 0 ? `${assetCounts.gals}건 등록됨` : '등록된 갤러리 없음 - 클릭시 추가'}</div>
+                      </div>
+                    </div>
+                    {assetCounts.gals > 0 && <div className="w-6 h-6 rounded-full bg-brand-500/30 flex items-center justify-center"><FileCheck className="w-3 h-3 text-brand-300" /></div>}
+                 </Link>
               </div>
             </div>
           </div>

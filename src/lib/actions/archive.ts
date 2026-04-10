@@ -330,6 +330,17 @@ export async function getEventCompletions(): Promise<EventCompletionStatus[]> {
   return completions
 }
 
+export async function getEventAssetCounts(eventId: string) {
+  if (!isSupabaseConfigured()) return { docs: 1, vids: 0, gals: 0 }
+  const supabase = await createArchiveClient()
+  const [{ count: docs }, { count: vids }, { count: gals }] = await Promise.all([
+    supabase.from('documents').select('*', { count: 'exact', head: true }).eq('related_event_id', eventId),
+    supabase.from('videos').select('*', { count: 'exact', head: true }).eq('related_event_id', eventId),
+    supabase.from('galleries').select('*', { count: 'exact', head: true }).eq('related_event_id', eventId),
+  ])
+  return { docs: docs || 0, vids: vids || 0, gals: gals || 0 }
+}
+
 // Media Actions (Videos, Documents, Galleries)
 
 export async function getVideos(): Promise<ArchiveVideo[]> {
