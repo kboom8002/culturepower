@@ -181,6 +181,7 @@ export async function getAuditLogs(): Promise<AuditLog[]> {
   ]
   const supabase = await createSettingsClient()
   const { data } = await supabase.from('audit_logs').select('*, admin_users(name, email)').order('created_at', { ascending: false }).limit(100)
+  return (data || []) as AuditLog[]
 }
 
 // ----------------------------------------------------
