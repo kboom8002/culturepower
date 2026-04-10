@@ -34,10 +34,14 @@ export default async function AnswersIndexPage() {
     <div className="flex flex-col w-full bg-surface-page min-h-screen pb-24">
       {faqs.length > 0 && <FAQPageJsonLd faqs={faqs} />}
       {/* 1. 고도화된 Hero 섹션 (기존 about 페이지 내용 통합) */}
-      <section className="relative w-full bg-brand-950 overflow-hidden pt-16 pb-12 px-4 shadow-inner">
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-page to-transparent z-10"></div>
+      <section 
+        className="relative w-full bg-brand-950 overflow-hidden pt-24 pb-20 px-4 shadow-inner"
+        style={{ backgroundImage: "url('/images/answers_hero_bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}
+      >
+        <div className="absolute inset-0 bg-brand-950/60 backdrop-blur-[2px] z-0 pointer-events-none mix-blend-multiply"></div>
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-surface-page via-surface-page/80 to-transparent z-10"></div>
         {/* Subtle accent glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-500/20 blur-[100px] rounded-full pointer-events-none"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-brand-500/20 blur-[100px] rounded-full pointer-events-none z-0"></div>
 
         <div className="container relative z-20 mx-auto max-w-5xl flex flex-col items-center text-center">
           <span className="inline-flex items-center gap-1.5 px-4 py-1.5 mb-6 rounded-full bg-white/10 text-white font-extrabold text-sm tracking-widest border border-white/20 shadow-sm backdrop-blur-sm">
