@@ -31,10 +31,10 @@ export function TaxonomyManager({ initialTaxonomies }: { initialTaxonomies: Taxo
     setIsModalOpen(true)
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (tax: Taxonomy) => {
     if (!confirm("정말 이 분류 계통을 삭제하시겠습니까? 연결된 콘텐츠가 고아 객체가 될 수 있습니다.")) return
     startTransition(async () => {
-      await deleteTaxonomy(id)
+      await deleteTaxonomy(tax.id, tax.type)
     })
   }
 
@@ -87,6 +87,7 @@ export function TaxonomyManager({ initialTaxonomies }: { initialTaxonomies: Taxo
                    {tax.type === 'Category' && <span className="flex items-center gap-1.5 text-brand-600 font-bold text-xs"><FolderTree className="w-3.5 h-3.5" /> Category</span>}
                    {tax.type === 'Tag' && <span className="flex items-center gap-1.5 text-purple-600 font-bold text-xs"><Hash className="w-3.5 h-3.5" /> Tag</span>}
                    {tax.type === 'Series' && <span className="flex items-center gap-1.5 text-warning-600 font-bold text-xs"><Layers className="w-3.5 h-3.5" /> Series</span>}
+                   {tax.type === 'Section' && <span className="flex items-center gap-1.5 text-blue-600 font-bold text-xs"><Layers className="w-3.5 h-3.5" /> Section</span>}
                 </td>
                 <td className="px-6 py-4">
                    <div className="flex flex-col">
@@ -102,7 +103,7 @@ export function TaxonomyManager({ initialTaxonomies }: { initialTaxonomies: Taxo
                     <Button variant="tool" size="sm" onClick={() => handleOpenEdit(tax)} disabled={isPending}>
                       <Edit2 className="w-4 h-4 text-neutral-500" />
                     </Button>
-                    <Button variant="tool" size="sm" onClick={() => handleDelete(tax.id)} disabled={isPending}>
+                    <Button variant="tool" size="sm" onClick={() => handleDelete(tax)} disabled={isPending}>
                       <Trash2 className="w-4 h-4 text-danger-500" />
                     </Button>
                   </div>
@@ -144,9 +145,10 @@ export function TaxonomyManager({ initialTaxonomies }: { initialTaxonomies: Taxo
                     className="border border-line-strong rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-500"
                     required
                   >
-                    <option value="Category">Category (기사, 정답 섹션)</option>
+                    <option value="Category">Category (기사, 정답 카테고리)</option>
+                    <option value="Section">Section (LNB 섹션)</option>
                     <option value="Tag">Tag (자유 키워드)</option>
-                    <option value="Series">Series (연재물 묶음)</option>
+                    <option value="Series">Series (기획 연재물 묶음)</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-1.5">

@@ -17,7 +17,7 @@ export type AdminUser = {
 
 export type Taxonomy = {
   id: string
-  type: 'Category' | 'Tag' | 'Series'
+  type: 'Category' | 'Tag' | 'Series' | 'Section'
   name: string
   slug: string
   description: string | null
@@ -34,6 +34,16 @@ export type AuditLog = {
   ip_address: string | null
   created_at: string
   admin_users?: { name: string, email: string } | null
+}
+
+export type SiteSettings = {
+  id?: string
+  site_name: string
+  site_description: string | null
+  contact_email: string | null
+  logo_url: string | null
+  favicon_url: string | null
+  seo_keywords: string | null
 }
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -80,25 +90,56 @@ export async function updateAdminRole(id: string, role: string) {
 // Taxonomies
 // ----------------------------------------------------
 export async function getTaxonomies(typeFilter?: string): Promise<Taxonomy[]> {
-  if (!isSupabaseConfigured()) return [
-    { id: "TAX-1", type: "Category", name: "정책동향", slug: "policy", description: "문화 정책 관련 기사", created_at: new Date().toISOString() },
-    { id: "TAX-2", type: "Tag", name: "AI혁신", slug: "ai-innovation", description: null, created_at: new Date().toISOString() }
-  ]
+  if (!isSupabaseConfigured()) return []
   const supabase = await createSettingsClient()
-  let query = supabase.from('taxonomies').select('*').order('type', { ascending: true }).order('name', { ascending: true })
-  if (typeFilter) query = query.eq('type', typeFilter)
-  const { data } = await query
-  return (data || []) as Taxonomy[]
+  
+  const taxonomies: Taxonomy[] = []
+
+  const fetchTable = async (tableName: string, typeName: Taxonomy['type']) => {
+    if (typeFilter && typeFilter !== typeName) return
+    const { data } = await supabase.from(tableName).select('*').order('created_at', { ascending: false })
+    if (data) {
+      taxonomies.push(...data.map(d => ({
+        id: d.id,
+        type: typeName,
+        name: d.name_ko || d.name,
+        slug: d.slug,
+        description: d.description || null,
+        created_at: d.created_at || new Date().toISOString()
+      })))
+    }
+  }
+
+  await Promise.all([
+    fetchTable('categories', 'Category'),
+    fetchTable('tags', 'Tag'),
+    fetchTable('series', 'Series'),
+    fetchTable('sections', 'Section')
+  ])
+
+  return taxonomies.sort((a, b) => a.name.localeCompare(b.name))
+}
+
+const getTableName = (type: Taxonomy['type']) => {
+  switch(type) {
+    case 'Category': return 'categories'
+    case 'Tag': return 'tags'
+    case 'Series': return 'series'
+    case 'Section': return 'sections'
+    default: return 'taxonomies' // fallback
+  }
 }
 
 export async function createTaxonomy(data: Partial<Taxonomy>) {
-  if (!isSupabaseConfigured()) return { success: true }
+  if (!isSupabaseConfigured() || !data.type) return { success: true }
   const supabase = await createSettingsClient()
-  const { error } = await supabase.from('taxonomies').insert([{
-    type: data.type,
-    name: data.name,
+  const tableName = getTableName(data.type)
+  const { error } = await supabase.from(tableName).insert([{
+    name_ko: data.name,
+    name_en: data.name, // Usually required for some locales
     slug: data.slug,
-    description: data.description
+    description: data.description,
+    status: 'active'
   }])
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/settings/taxonomies')
@@ -106,11 +147,11 @@ export async function createTaxonomy(data: Partial<Taxonomy>) {
 }
 
 export async function updateTaxonomy(id: string, data: Partial<Taxonomy>) {
-  if (!isSupabaseConfigured()) return { success: true }
+  if (!isSupabaseConfigured() || !data.type) return { success: true }
   const supabase = await createSettingsClient()
-  const { error } = await supabase.from('taxonomies').update({
-    type: data.type,
-    name: data.name,
+  const tableName = getTableName(data.type)
+  const { error } = await supabase.from(tableName).update({
+    name_ko: data.name,
     slug: data.slug,
     description: data.description
   }).eq('id', id)
@@ -119,14 +160,16 @@ export async function updateTaxonomy(id: string, data: Partial<Taxonomy>) {
   return { success: true }
 }
 
-export async function deleteTaxonomy(id: string) {
-  if (!isSupabaseConfigured()) return { success: true }
+export async function deleteTaxonomy(id: string, type: Taxonomy['type']) {
+  if (!isSupabaseConfigured() || !type) return { success: true }
   const supabase = await createSettingsClient()
-  const { error } = await supabase.from('taxonomies').delete().eq('id', id)
+  const tableName = getTableName(type)
+  const { error } = await supabase.from(tableName).delete().eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/admin/settings/taxonomies')
   return { success: true }
 }
+
 
 // ----------------------------------------------------
 // Audit Logs
@@ -138,5 +181,54 @@ export async function getAuditLogs(): Promise<AuditLog[]> {
   ]
   const supabase = await createSettingsClient()
   const { data } = await supabase.from('audit_logs').select('*, admin_users(name, email)').order('created_at', { ascending: false }).limit(100)
-  return (data || []) as AuditLog[]
+}
+
+// ----------------------------------------------------
+// Site Settings
+// ----------------------------------------------------
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const defaultMock: SiteSettings = {
+    id: "mock-site",
+    site_name: "CulturePower Newsroom",
+    site_description: "문화강국 코리아 정책 및 인사이트 뉴스룸",
+    contact_email: "admin@culturepower.net",
+    logo_url: null,
+    favicon_url: null,
+    seo_keywords: "문화강국, 정책, 지원사업, K-컬처"
+  }
+  
+  if (!isSupabaseConfigured()) return defaultMock
+
+  const supabase = await createSettingsClient()
+  const { data, error } = await supabase.from('site_settings').select('*').limit(1).maybeSingle()
+  
+  if (error || !data) {
+    return defaultMock
+  }
+  
+  return data as SiteSettings
+}
+
+export async function updateSiteSettings(payload: Partial<SiteSettings>) {
+  if (!isSupabaseConfigured()) {
+    revalidatePath('/admin/settings/site')
+    return { success: true }
+  }
+  
+  const supabase = await createSettingsClient()
+  const { data: current } = await supabase.from('site_settings').select('id').limit(1).maybeSingle()
+
+  let error
+  if (current?.id) {
+    const { error: updateError } = await supabase.from('site_settings').update(payload).eq('id', current.id)
+    error = updateError
+  } else {
+    const { error: insertError } = await supabase.from('site_settings').insert([payload])
+    error = insertError
+  }
+
+  if (error) return { success: false, error: error.message }
+  
+  revalidatePath('/admin/settings/site')
+  return { success: true }
 }

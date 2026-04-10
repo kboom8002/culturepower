@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Loader2, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { upsertExpert, Expert } from "@/lib/actions/content"
@@ -16,6 +16,21 @@ export function ExpertEditorModal({ expert, children }: { expert?: Expert, child
   const [imageUrl, setImageUrl] = useState<string | null>(expert?.profile_image_url || null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    if (isOpen) {
+      // Prevent background scrolling when modal is open
+      document.body.style.overflow = 'hidden'
+      // Optional: Prevent layout shift by adding padding equal to scrollbar width
+      // document.body.style.paddingRight = '15px' 
+    } else {
+      document.body.style.overflow = 'unset'
+      // document.body.style.paddingRight = '0px'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,18 +71,18 @@ export function ExpertEditorModal({ expert, children }: { expert?: Expert, child
       </div>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-neutral-900/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-xl shadow-xl overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-line-soft">
+        <div className="fixed inset-0 z-50 flex justify-center bg-neutral-900/50 backdrop-blur-sm p-4 sm:p-6 md:p-12 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl h-fit my-auto animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-4 px-6 border-b border-line-soft">
               <h2 className="font-bold text-lg text-neutral-900">{expert ? '전문가 정보 수정' : '새 전문가 등록'}</h2>
               <button onClick={() => setIsOpen(false)} className="text-neutral-400 hover:text-neutral-700">
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
+            <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-8">
               
-              <div className="flex gap-6 items-start">
+              <div className="flex flex-col sm:flex-row gap-6 items-start">
                   <div className="w-32 shrink-0">
                       <label className="text-sm font-bold text-neutral-700 mb-2 block">프로필 사진</label>
                       <ImageUploader 
@@ -80,7 +95,7 @@ export function ExpertEditorModal({ expert, children }: { expert?: Expert, child
                       />
                   </div>
                   
-                  <div className="flex-1 flex flex-col gap-4">
+                  <div className="flex-1 w-full flex flex-col gap-4">
                       <div className="flex flex-col gap-1.5">
                         <label className="text-sm font-bold text-neutral-700">이름 (Name)</label>
                         <input 
