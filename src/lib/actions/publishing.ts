@@ -195,38 +195,38 @@ export async function getFeaturedContents(): Promise<(FeaturedContent & { title?
   const items = (data || []) as FeaturedContent[]
   if (items.length === 0) return items
 
-  // Gather IDs by content type
-  const storyIds = items.filter(i => i.content_type === 'Story').map(i => i.content_id)
-  const answerIds = items.filter(i => i.content_type === 'Answer').map(i => i.content_id)
-  const eventIds = items.filter(i => i.content_type === 'Event').map(i => i.content_id)
-
-  console.error("DEBUG [getFeaturedContents]: items=", items)
-  console.error("DEBUG [getFeaturedContents]: answerIds=", answerIds)
+  // Gather IDs by content type (case-insensitive to be safe)
+  const groupedIds: Record<string, string[]> = {
+    story: items.filter(i => i.content_type.toLowerCase() === 'story').map(i => i.content_id),
+    answer: items.filter(i => i.content_type.toLowerCase() === 'answer').map(i => i.content_id),
+    event: items.filter(i => i.content_type.toLowerCase() === 'event').map(i => i.content_id),
+    video: items.filter(i => i.content_type.toLowerCase() === 'video').map(i => i.content_id),
+    document: items.filter(i => i.content_type.toLowerCase() === 'document').map(i => i.content_id),
+    gallery: items.filter(i => i.content_type.toLowerCase() === 'gallery').map(i => i.content_id)
+  };
 
   const titleMap: Record<string, string> = {}
 
-  if (storyIds.length > 0) {
-    const { data: s, error } = await supabase.from('stories').select('id, title').in('id', storyIds)
-    if (error) console.error("DEBUG [getFeaturedContents] stories error:", error)
-    s?.forEach(row => titleMap[row.id] = row.title)
-  }
-  if (answerIds.length > 0) {
-    const { data: a, error } = await supabase.from('answers').select('id, title').in('id', answerIds)
-    if (error) console.error("DEBUG [getFeaturedContents] answers error:", error)
-    console.error("DEBUG [getFeaturedContents] fetched answers:", a)
-    a?.forEach(row => titleMap[row.id] = row.title)
-  }
-  if (eventIds.length > 0) {
-    const { data: e, error } = await supabase.from('events').select('id, title').in('id', eventIds)
-    if (error) console.error("DEBUG [getFeaturedContents] events error:", error)
-    e?.forEach(row => titleMap[row.id] = row.title)
+  // Helper to fetch titles
+  const fetchTitles = async (tableName: string, ids: string[]) => {
+    if (ids.length === 0) return;
+    const { data: rows, error } = await supabase.from(tableName).select('id, title').in('id', ids)
+    if (error) console.error(`DEBUG [getFeaturedContents] ${tableName} error:`, error)
+    rows?.forEach(row => titleMap[row.id.toLowerCase()] = row.title)
   }
 
-  console.error("DEBUG [getFeaturedContents]: titleMap=", titleMap)
+  await Promise.all([
+    fetchTitles('stories', groupedIds.story),
+    fetchTitles('answers', groupedIds.answer),
+    fetchTitles('events', groupedIds.event),
+    fetchTitles('videos', groupedIds.video),
+    fetchTitles('documents', groupedIds.document),
+    fetchTitles('galleries', groupedIds.gallery)
+  ])
 
   return items.map(item => ({
     ...item,
-    title: titleMap[item.content_id] || `Unknown (${item.content_id.slice(0, 8)})`
+    title: titleMap[item.content_id.toLowerCase()] || `Unknown (${item.content_id.slice(0, 8)})`
   }))
 }
 

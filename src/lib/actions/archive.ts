@@ -63,6 +63,7 @@ export type ArchiveGallery = {
   id: string
   title: string
   caption_summary: string | null
+  images_json?: any[] | null
   photo_count: number
   status: string
   related_event_id: string | null

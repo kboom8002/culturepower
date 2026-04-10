@@ -6,6 +6,7 @@ import { ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { getGalleryById, updateGallery, createGallery, deleteGallery, getEvents, ArchiveEvent } from "@/lib/actions/archive"
+import { MultiImageUploader } from "@/components/domain/publishing/MultiImageUploader"
 
 export default function AdminEditGalleryPage() {
   const params = useParams()
@@ -16,7 +17,7 @@ export default function AdminEditGalleryPage() {
 
   const [title, setTitle] = useState("")
   const [captionSummary, setCaptionSummary] = useState("")
-  const [photoCount, setPhotoCount] = useState("0")
+  const [images, setImages] = useState<any[]>([])
   const [relatedEventId, setRelatedEventId] = useState("")
   const [status, setStatus] = useState("Draft")
   
@@ -33,7 +34,7 @@ export default function AdminEditGalleryPage() {
           if (gal) {
              setTitle(gal.title)
              setCaptionSummary(gal.caption_summary || "")
-             setPhotoCount(gal.photo_count?.toString() || "0")
+             setImages(gal.images_json || [])
              setRelatedEventId(gal.related_event_id || "")
              setStatus(gal.status || "Draft")
           }
@@ -55,7 +56,8 @@ export default function AdminEditGalleryPage() {
     const payload = { 
       title, 
       caption_summary: captionSummary, 
-      photo_count: parseInt(photoCount) || 0,
+      photo_count: images.length,
+      images_json: images,
       related_event_id: relatedEventId || null,
       status: saveStatus 
     }
@@ -135,12 +137,23 @@ export default function AdminEditGalleryPage() {
                <label className="text-sm font-bold text-neutral-700">현장 사진 장수 (Photo Count)</label>
                <input 
                  type="number" 
-                 className="p-3 border rounded-xl focus:outline-none focus:border-brand-500"
-                 value={photoCount} onChange={e => setPhotoCount(e.target.value)}
-                 placeholder="예: 24"
+                 value={images.length}
+                 readOnly
+                 className="p-3 border border-line-soft bg-neutral-50 rounded-xl focus:outline-none text-neutral-500 font-bold"
                />
-               <p className="text-xs text-neutral-500">MVP 버전에서는 이미지 폴더를 S3에 직접 업로드하고 메타데이터만 기재합니다.</p>
+               <p className="text-xs text-brand-600 font-semibold">사진 장수는 아래에 사진을 업로드하면 자동으로 계산됩니다.</p>
              </div>
+          </div>
+          
+          <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-line-soft">
+            <label className="text-sm font-bold text-neutral-700">갤러리 사진 업로드 (Multi Upload) <span className="text-danger-500">*</span></label>
+            <p className="text-xs text-neutral-500 mb-2">행사 사진들을 드래그하여 한 번에 업로드하세요. WebP로 자동 압축 리사이징됩니다.</p>
+            <MultiImageUploader 
+               value={images}
+               onChange={setImages}
+               bucket="curation_assets" 
+               maxFiles={100}
+            />
           </div>
           
           <div className="flex flex-col gap-2">
