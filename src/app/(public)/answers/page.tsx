@@ -5,8 +5,14 @@ import { AnswerCard } from "@/components/domain/answer/AnswerCard"
 import { getPublicAnswers } from "@/lib/actions/public"
 import { getTopics } from "@/lib/actions/content"
 import { getFeaturedSlots } from "@/lib/actions/publishing"
+import { FAQPageJsonLd } from "@/components/seo/JsonLd"
 
 export const dynamic = 'force-dynamic' // Force dynamic rendering
+
+export const metadata = {
+  title: "정답카드",
+  description: "산발적으로 흩어진 담론 사이에서 길을 잃지 않도록, 명확한 사실 관계와 솔루션만을 압축한 AEO(Answer Engine) 지식 허브입니다."
+}
 
 export default async function AnswersIndexPage() {
   const [answers, topics, featuredSlots] = await Promise.all([
@@ -19,8 +25,14 @@ export default async function AnswersIndexPage() {
   const featuredIds = featuredSlots.map(f => f.content_id)
   const curatedAnswers = answers.filter(a => featuredIds.includes(a.id)).slice(0, 3) // 탑 3개
 
+  const faqs = curatedAnswers.map(a => ({
+    question: a.title,
+    answer: a.summary || "본문을 확인하세요."
+  }))
+
   return (
     <div className="flex flex-col w-full bg-surface-page min-h-screen pb-24">
+      {faqs.length > 0 && <FAQPageJsonLd faqs={faqs} />}
       {/* 1. 고도화된 Hero 섹션 (기존 about 페이지 내용 통합) */}
       <section className="relative w-full bg-brand-950 overflow-hidden pt-16 pb-12 px-4 shadow-inner">
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-surface-page to-transparent z-10"></div>

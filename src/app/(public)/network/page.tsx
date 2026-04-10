@@ -16,10 +16,17 @@ import {
   HeartHandshake
 } from "lucide-react"
 import Link from "next/link"
+import { OrganizationJsonLd } from "@/components/seo/JsonLd"
+
+export const metadata = {
+  title: "사단법인 소개",
+  description: "지역에서 세계로, 문화강국 대한민국. 문화자치와 문화분권의 실현을 목표로 설립된 문화정책 네트워크입니다.",
+}
 
 export default function NetworkIndexPage() {
   return (
     <div className="flex flex-col w-full bg-surface-page min-h-screen selection:bg-brand-200 font-sans pb-24">
+      <OrganizationJsonLd />
       {/* ---------------------------------------------------- */}
       {/* Section 1: Hero */}
       {/* ---------------------------------------------------- */}

@@ -1,3 +1,4 @@
+import { Metadata } from "next"
 import { Breadcrumb } from "@/components/layout/Breadcrumb"
 import { StoryMetaStrip } from "@/components/domain/story/StoryMetaStrip"
 import { DeckBlock } from "@/components/domain/story/DeckBlock"
@@ -8,8 +9,36 @@ import { TrustStrip } from "@/components/domain/trust/TrustStrip"
 import { ShareButtons } from "@/components/ui/ShareButtons"
 import { getPublicStoryById } from "@/lib/actions/public"
 import { notFound } from "next/navigation"
+import { ArticleJsonLd } from "@/components/seo/JsonLd"
 
 export const dynamic = 'force-dynamic' // Force dynamic rendering to bypass cached 404s
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params
+  const data = await getPublicStoryById(resolvedParams.slug)
+  
+  if (!data) return {}
+
+  const description = data.meta_description || data.deck || data.why_this_matters || data.title
+  const coverImage = data.featured_image?.url || "https://culturepower.vercel.app/images/logo.png"
+
+  return {
+    title: data.title,
+    description: description,
+    openGraph: {
+      title: data.title,
+      description: description,
+      type: "article",
+      images: [{ url: coverImage }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: data.title,
+      description: description,
+      images: [coverImage]
+    }
+  }
+}
 
 export default async function StoryDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   // slug param receives the ID based on our index page routing
@@ -36,6 +65,15 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ sl
 
   return (
     <div className="w-full bg-surface-page py-10 md:py-16 min-h-screen">
+      <ArticleJsonLd 
+        title={data.title}
+        description={data.meta_description || data.deck || data.why_this_matters || data.title}
+        publishedAt={data.published_at}
+        updatedAt={data.updated_at}
+        url={`https://culturepower.vercel.app/webzine/stories/${data.slug}`}
+        imageUrl={data.featured_image?.url}
+        authorName={data.experts?.name || "문화강국네트워크 에디터"}
+      />
       <article className="container mx-auto px-4 sm:px-6 max-w-4xl bg-white p-6 md:p-12 md:py-16 rounded-3xl shadow-sm border border-line-default">
         
         {/* Navigation & Meta */}

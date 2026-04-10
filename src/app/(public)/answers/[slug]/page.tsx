@@ -1,11 +1,30 @@
+import { Metadata } from "next"
 import { Breadcrumb } from "@/components/layout/Breadcrumb"
 import { AnswerMetaStrip } from "@/components/domain/answer/AnswerMetaStrip"
 import { TrustStrip } from "@/components/domain/trust/TrustStrip"
 import { ShareButtons } from "@/components/ui/ShareButtons"
 import { getPublicAnswerById } from "@/lib/actions/public"
 import { notFound } from "next/navigation"
+import { FAQPageJsonLd } from "@/components/seo/JsonLd"
 
 export const dynamic = 'force-dynamic' // Bypass cache for immediate real-time rendering
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params
+  const data = await getPublicAnswerById(resolvedParams.slug)
+  
+  if (!data) return {}
+
+  return {
+    title: data.title,
+    description: data.summary || "정답카드 본문을 확인하세요.",
+    openGraph: {
+      title: data.title,
+      description: data.summary || "정답카드 본문을 확인하세요.",
+      type: "article",
+    }
+  }
+}
 
 export default async function AnswerDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   // slug param receives the ID based on our index page routing
@@ -22,6 +41,7 @@ export default async function AnswerDetailPage({ params }: { params: Promise<{ s
   
   return (
     <div className="w-full bg-surface-page py-10 md:py-16 min-h-screen">
+      <FAQPageJsonLd faqs={[{ question: data.title, answer: data.summary || data.title }]} />
       <article className="container mx-auto px-4 sm:px-6 max-w-4xl bg-white p-6 md:p-12 rounded-3xl shadow-sm border border-line-default">
         
         {/* Navigation & Meta */}
