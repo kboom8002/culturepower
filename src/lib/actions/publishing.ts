@@ -187,7 +187,7 @@ export async function returnToReview(id: string, contentType: 'Story' | 'Answer'
 // ----------------------------------------------------
 // Featured Contents Curation
 // ----------------------------------------------------
-export async function getFeaturedContents(): Promise<(FeaturedContent & { title?: string })[]> {
+export async function getFeaturedContents(): Promise<(FeaturedContent & { title?: string, is_deleted?: boolean })[]> {
   if (!isSupabaseConfigured()) return []
   const supabase = await createPublishingClient()
   const { data } = await supabase.from('featured_contents').select('*').order('slot_name', { ascending: true }).order('display_order', { ascending: true })
@@ -224,10 +224,14 @@ export async function getFeaturedContents(): Promise<(FeaturedContent & { title?
     fetchTitles('galleries', groupedIds.gallery)
   ])
 
-  return items.map(item => ({
-    ...item,
-    title: titleMap[item.content_id.toLowerCase()] || `Unknown (${item.content_id.slice(0, 8)})`
-  }))
+  return items.map(item => {
+    const foundTitle = titleMap[item.content_id.toLowerCase()]
+    return {
+      ...item,
+      title: foundTitle || `[삭제된 콘텐츠] (ID: ${item.content_id.slice(0, 8)})`,
+      is_deleted: !foundTitle
+    }
+  })
 }
 
 export async function getFeaturedSlots(slotName: string): Promise<FeaturedContent[]> {

@@ -123,7 +123,7 @@ export function ContentRefEditor({ slotId, initialItems, max }: { slotId: string
             <div className="w-8 h-8 rounded-full bg-neutral-100 flex items-center justify-center font-bold text-xs text-neutral-500">{idx + 1}</div>
             <div className="flex-1 flex flex-col overflow-hidden">
                <span className="text-[10px] font-bold text-brand-600 uppercase tracking-wider">{item.content_type}</span>
-               <span className="font-bold text-sm truncate">{item.title}</span>
+               <span className={`font-bold text-sm truncate ${item.is_deleted ? 'text-danger-500 line-through decoration-danger-500' : 'text-neutral-900'}`}>{item.title}</span>
             </div>
             <Button variant="tertiary" size="sm" onClick={() => handleRemove(item.id)} className="text-danger-500">
               <Trash2 className="w-4 h-4" />

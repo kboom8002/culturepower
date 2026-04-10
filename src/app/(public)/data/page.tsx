@@ -9,7 +9,7 @@ export const revalidate = 60 // 1 min ISR
 export default async function DataHubPage() {
   const [resources, featuredSlots] = await Promise.all([
     getPublicResources(),
-    getFeaturedSlots('Data/Resources') // Matching SLOTS.id in FeaturedManager
+    getFeaturedSlots('resources_hub') // Matching SLOTS.id in FeaturedManager
   ])
 
   return (

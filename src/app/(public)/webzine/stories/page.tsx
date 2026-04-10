@@ -15,7 +15,7 @@ export default async function StoriesIndexPage({ searchParams }: { searchParams:
   const [stories, topics, featuredSlots] = await Promise.all([
     getPublicStories(),
     getTopics(),
-    getFeaturedSlots('Home Stories') // Using 'Home Stories' or generically fetching featured. 
+    getFeaturedSlots('webzine_hero') // Use the explicit webzine_hero slot 
   ])
   
   // 1. Topic Filtering (향후 Story가 topic_id를 가지는 확장성을 고려한 로우 레벨 지원)

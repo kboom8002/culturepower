@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { FeaturedContent, PageBanner } from "@/lib/actions/publishing"
-import { Home, Newspaper, Search, CalendarDays, Database, Star, AppWindow } from "lucide-react"
+import { Home, Newspaper, Search, CalendarDays, Database, Star, AppWindow, FileText, Pickaxe } from "lucide-react"
 import { ContentRefEditor } from "./ContentRefEditor"
 import { CustomBannerEditor } from "./CustomBannerEditor"
 
@@ -27,12 +27,25 @@ const SLOTS: SlotDef[] = [
   { id: "Data/Resources", label: "데이터/자료 추천", page: "home", max: 6, type: "ref", icon: Database },
   
   // 문강 RIO (웹진 메인)
+  { id: "webzine_hero", label: "Hero Story (커버 스토리)", page: "webzine", max: 1, type: "ref", icon: AppWindow },
   { id: "Webzine Editors Pick", label: "Editor's Pick", page: "webzine", max: 3, type: "ref", icon: Newspaper },
+
+  // 정답카드 허브
+  { id: "answers_hub", label: "Top 큐레이션", page: "answers", max: 3, type: "ref", icon: Search },
+
+  // 행사·영상 아카이브
+  { id: "events_hub", label: "Featured Events", page: "events", max: 4, type: "ref", icon: CalendarDays },
+
+  // 실무·데이터 허브
+  { id: "resources_hub", label: "Recommended Tools / Docs", page: "resources", max: 4, type: "ref", icon: Database },
 ]
 
 const GROUPS = [
   { id: "home", label: "🏠 홈페이지", desc: "문화강국네트워크 메인" },
   { id: "webzine", label: "📰 문강 RIO", desc: "정책 웹진 허브" },
+  { id: "answers", label: "💡 정답카드", desc: "AEO 지식 허브" },
+  { id: "events", label: "🗓️ 행사·영상", desc: "아카이브 허브" },
+  { id: "resources", label: "📊 실무·데이터", desc: "통계 및 도구 허브" },
 ]
 
 type Props = {
