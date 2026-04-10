@@ -82,9 +82,9 @@ export function ExpertsClient({ experts, initialRole }: ExpertsClientProps) {
                 <span className="truncate">{expert.organization || '문화강국네트워크 파트너'}</span>
               </div>
 
-              <div className="mt-auto relative bg-surface-page p-4 rounded-2xl border border-line-soft">
-                <Quote className="absolute top-2 left-2 w-6 h-6 text-brand-300/30 rotate-180" />
-                <p className="text-[13px] text-neutral-600 leading-relaxed font-medium line-clamp-3 relative z-10">
+              <div className="mt-auto flex flex-col bg-neutral-50/50 p-4 rounded-2xl border border-line-soft">
+                <Quote className="w-5 h-5 text-brand-300 mb-1.5 rotate-180 fill-brand-300/20" />
+                <p className="text-[13px] text-neutral-600 leading-relaxed font-medium line-clamp-3">
                   {expert.bio || "플랫폼 검증 및 자문에 참여하고 있는 전문가입니다."}
                 </p>
               </div>
