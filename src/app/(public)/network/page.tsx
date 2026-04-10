@@ -23,58 +23,67 @@ export default function NetworkIndexPage() {
       {/* ---------------------------------------------------- */}
       {/* Section 1: Hero */}
       {/* ---------------------------------------------------- */}
-      <section className="relative w-full bg-brand-900 overflow-hidden pt-32 pb-24 px-4 border-b border-brand-800">
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-brand-900/50 to-transparent z-10 pointer-events-none"></div>
+      <section className="relative w-full overflow-hidden pt-32 pb-32 px-4 flex items-center justify-center min-h-[700px] border-b border-neutral-900" 
+               style={{ backgroundImage: "url('/images/network_hero_bg.png')", backgroundSize: "cover", backgroundPosition: "center" }}>
+        {/* Overlay Gradients */}
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/60 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-surface-page to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-brand-950/60 backdrop-blur-[2px] z-10 mix-blend-multiply pointer-events-none"></div>
         
-        <div className="container relative z-20 mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="container relative z-20 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
             
-            <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left">
-              <span className="inline-block px-4 py-1.5 mb-6 rounded-full bg-brand-800 border border-brand-700 text-brand-300 text-[13px] font-bold tracking-widest uppercase">
+            <div className="lg:col-span-1" /> {/* Spacer for centering */}
+            <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left drop-shadow-xl p-8 rounded-[32px]">
+              <span className="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[13px] font-extrabold tracking-widest uppercase shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
                 사단법인 소개
               </span>
-              <h1 className="text-4xl md:text-[52px] font-extrabold text-white tracking-tight mb-8 leading-[1.15] text-balance">
+              <h1 className="text-[48px] md:text-[64px] font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-white to-brand-300 tracking-tight leading-[1.05] mb-8">
                 지역에서 세계로,<br />
                 문화강국 대한민국
               </h1>
-              <p className="text-[18px] text-neutral-300 leading-[1.6] max-w-2xl font-medium mb-10 text-balance">
+              <p className="text-[18px] md:text-[20px] text-white/90 leading-[1.75] max-w-2xl font-medium mb-12 text-balance drop-shadow-2xl">
                 문화강국네트워크는 문화자치와 문화분권의 실현을 목표로 설립된 문화정책 네트워크입니다. 연구와 공론장, 문화교류를 통해 지역과 시민 중심의 문화정책 발전에 기여합니다.
               </p>
               
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                <a href="#purpose" className="px-5 py-2.5 rounded-lg bg-white text-brand-900 font-bold hover:bg-neutral-100 transition-colors shadow-sm text-sm">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                <a href="#purpose" className="px-6 py-4 rounded-2xl bg-gradient-to-r from-white to-white/90 text-brand-900 font-extrabold hover:bg-neutral-100 transition-all shadow-[0_8px_32px_rgba(255,255,255,0.2)] hover:-translate-y-1 text-[16px] flex items-center gap-2 border border-white/50">
                   설립 목적 보기
                 </a>
-                <a href="#vision" className="px-5 py-2.5 rounded-lg bg-brand-800 text-white font-bold hover:bg-brand-700 transition-colors shadow-sm border border-brand-700 text-sm">
-                  비전과 미션 보기
+                <a href="#vision" className="group px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-md text-white font-bold hover:bg-white/20 transition-all shadow-[0_8px_32px_rgba(0,0,0,0.2)] border border-white/20 text-[16px] flex items-center gap-2">
+                  비전과 미션 보기 <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </a>
-                <a href="#history" className="px-5 py-2.5 rounded-lg bg-brand-800 text-white font-bold hover:bg-brand-700 transition-colors shadow-sm border border-brand-700 text-sm">
+                <a href="#history" className="px-6 py-4 rounded-2xl bg-transparent text-white/80 font-bold hover:text-white transition-colors text-[16px] flex items-center gap-2 underline underline-offset-4 decoration-white/30 hover:decoration-white">
                   연혁 보기
                 </a>
               </div>
             </div>
             
-            <div className="lg:col-span-5 h-full flex flex-col justify-center">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-brand-800/60 backdrop-blur-md rounded-2xl p-6 border border-brand-700/50 flex flex-col items-center lg:items-start text-center lg:text-left">
-                  <span className="text-3xl font-extrabold text-white mb-2 block">2025.03</span>
-                  <span className="text-brand-100/90 font-bold text-[15px]">법인 등록 완료</span>
+            <div className="lg:col-span-4 h-full flex flex-col justify-center hidden lg:flex">
+              <div className="grid grid-cols-2 gap-5 relative group">
+                {/* Back glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-brand-400/20 blur-[80px] rounded-full pointer-events-none group-hover:bg-brand-400/30 transition-colors duration-700"></div>
+
+                <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.3)] flex flex-col items-center lg:items-start text-center lg:text-left hover:border-brand-300/30 transition-colors transform hover:-translate-y-1 duration-300 relative z-10">
+                  <span className="text-[32px] font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/80 mb-2 block drop-shadow-md tracking-tight">2025.03</span>
+                  <span className="text-brand-300 font-extrabold text-[15px] tracking-wide">법인 등록 완료</span>
                 </div>
-                <div className="bg-brand-800/60 backdrop-blur-md rounded-2xl p-6 border border-brand-700/50 flex flex-col items-center lg:items-start text-center lg:text-left">
-                  <span className="text-3xl font-extrabold text-white mb-2 block">11<span className="text-2xl font-bold ml-1">회</span></span>
-                  <span className="text-brand-100/90 font-bold text-[15px]">정책토론회 시리즈</span>
+                <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.3)] flex flex-col items-center lg:items-start text-center lg:text-left hover:border-brand-300/30 transition-colors transform hover:-translate-y-1 duration-300 relative z-10">
+                  <span className="text-[32px] font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/80 mb-2 block flex items-baseline drop-shadow-md tracking-tight">11<span className="text-[20px] font-bold ml-1 text-white/70">회</span></span>
+                  <span className="text-brand-300 font-extrabold text-[15px] tracking-wide">정책토론회 시리즈</span>
                 </div>
-                <div className="bg-brand-800/60 backdrop-blur-md rounded-2xl p-6 border border-brand-700/50 flex flex-col items-center lg:items-start text-center lg:text-left">
-                  <span className="text-3xl font-extrabold text-white mb-2 block">I–IV</span>
-                  <span className="text-brand-100/90 font-bold text-[15px]">지역문화대전환 순회</span>
+                <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.3)] flex flex-col items-center lg:items-start text-center lg:text-left hover:border-brand-300/30 transition-colors transform hover:-translate-y-1 duration-300 relative z-10">
+                  <span className="text-[32px] font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/80 mb-2 block drop-shadow-md tracking-tight">I–IV</span>
+                  <span className="text-brand-300 font-extrabold text-[15px] tracking-wide">지역문화대전환 순회</span>
                 </div>
-                <div className="bg-brand-800/60 backdrop-blur-md rounded-2xl p-6 border border-brand-700/50 flex flex-col items-center lg:items-start text-center lg:text-left">
-                  <span className="text-3xl font-extrabold text-white mb-2 block">100<span className="text-2xl font-bold ml-1">+</span></span>
-                  <span className="text-brand-100/90 font-bold text-[15px]">전문가 네트워킹 진행</span>
+                <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.3)] flex flex-col items-center lg:items-start text-center lg:text-left hover:border-brand-300/30 transition-colors transform hover:-translate-y-1 duration-300 relative z-10">
+                  <span className="text-[32px] font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/80 mb-2 block flex items-baseline drop-shadow-md tracking-tight">100<span className="text-[20px] font-bold ml-0.5 text-brand-400">+</span></span>
+                  <span className="text-brand-300 font-extrabold text-[15px] tracking-wide">전문가 네트워킹</span>
                 </div>
               </div>
             </div>
             
+            <div className="lg:col-span-1" />
           </div>
         </div>
       </section>
